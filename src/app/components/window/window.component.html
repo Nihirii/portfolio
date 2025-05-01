@@ -1,0 +1,10 @@
+<div class="window" *ngIf="visible">
+    <div class="window-header" (mousedown)="startDrag($event)">
+      <span>{{ title }}</span>
+      <button (click)="onClose()">✖️</button>
+    </div>
+    <div class="window-content">
+      <ng-content></ng-content>
+    </div>
+  </div>
+  

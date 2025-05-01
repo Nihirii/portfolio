@@ -1,0 +1,23 @@
+.contact-me {
+    padding: 10px;
+    font-size: 14px;
+  
+    ul {
+      list-style: none;
+      padding: 0;
+  
+      li {
+        margin-bottom: 6px;
+  
+        a {
+          text-decoration: none;
+          color: #007bff;
+  
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+  

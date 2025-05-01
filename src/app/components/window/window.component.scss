@@ -1,0 +1,25 @@
+.window {
+    position: absolute;
+    top: 100px; 
+    left: 100px; 
+    width: 250px;
+    border: 2px solid #000;
+    background-color: #fff;
+    box-shadow: 5px 5px #aaa;
+    user-select: none;
+    z-index: 1000;
+  
+    .window-header {
+      background-color: #cdf0ff;
+      padding: 4px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move;
+    }
+  
+    .window-content {
+      padding: 8px;
+    }
+  }
+  

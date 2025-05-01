@@ -1,0 +1,27 @@
+.skills {
+    padding: 10px;
+  
+    .skill {
+      margin-bottom: 10px;
+  
+      span {
+        font-size: 13px;
+        display: block;
+        margin-bottom: 4px;
+      }
+  
+      .bar {
+        height: 6px;
+        background-color: #eee;
+        position: relative;
+        border-radius: 3px;
+  
+        .progress {
+          height: 100%;
+          background-color: #4caf50;
+          border-radius: 3px;
+        }
+      }
+    }
+  }
+  
