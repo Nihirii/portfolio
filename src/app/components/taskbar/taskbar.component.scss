@@ -1,70 +1,49 @@
+@use '../../../styles/variables' as *;
+
+
 .taskbar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 40px;
-    background-color: #d0d0d0;
+    background-color: $color-bg;
+    padding: 4px;
     display: flex;
     align-items: center;
-    padding: 0 10px;
-    z-index: 9999;
   
     .start-btn {
-      padding: 4px 10px;
+      background-color: $color-primary;
+      border: none;
+      padding: 4px 8px;
+      margin-right: 8px;
       cursor: pointer;
-      background-color: #ccc;
-      border: 1px solid #999;
     }
   
     .start-menu {
       position: absolute;
       bottom: 40px;
-      left: 0;
-      background: #fff;
+      background: white;
       border: 1px solid #999;
-      padding: 5px;
-  
-      button {
-        width: 100%;
-        text-align: left;
-        padding: 4px;
-        cursor: pointer;
-        background: none;
-        border: none;
-  
-        &:hover {
-          background: #eee;
-        }
-      }
+      padding: 4px;
     }
   
     .tabs {
       display: flex;
-      margin-left: 10px;
+      gap: 4px;
   
       button {
+        background-color: $color-primary;
         padding: 4px 8px;
-        margin-right: 4px;
-        cursor: pointer;
-        border: 1px solid #999;
-        background-color: #a0e7ff;
-        position: relative;
+        border: none;
   
         &.minimized {
-          background-color: #ddd;
+          background-color: $color-minimized;
         }
   
         &.active {
-          background-color: #a0e7ff;
+          background-color: $color-primary-dark;
         }
   
         .close-btn {
-          position: absolute;
-          right: 2px;
-          top: 2px;
+          margin-left: 8px;
+          font-size: 12px;
           cursor: pointer;
-          font-size: 10px;
         }
       }
     }

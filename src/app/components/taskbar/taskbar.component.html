@@ -1,8 +1,19 @@
 <div class="taskbar">
-    <button (click)="onButtonClick('about')">About me</button>
-    <button (click)="onButtonClick('hobbies')">Hobbies</button>
-    <button (click)="onButtonClick('skills')">Skills</button>
-    <button (click)="onButtonClick('music')">Music</button>
-    <button (click)="onButtonClick('contact')">Contact me</button>
+    <button class="start-btn" (click)="toggleMenu()">🚩 Start</button>
+  
+    <div class="start-menu" *ngIf="showMenu">
+      <button *ngFor="let win of closedWindows" (click)="onClickWindow(win)">
+        {{ win | titlecase }}
+      </button>
+    </div>
+  
+    <div class="tabs">
+      <button *ngFor="let win of openedWindows"
+              [ngClass]="{ 'minimized': win.status === 'minimized', 'active': win.status === 'open' }"
+              (click)="win.status === 'minimized' ? windowService.open(win.name) : windowService.minimize(win.name)">
+        {{ win.name | titlecase }}
+        <span class="close-btn" (click)="windowService.close(win.name); $event.stopPropagation()">✖️</span>
+      </button>
+    </div>
   </div>
   

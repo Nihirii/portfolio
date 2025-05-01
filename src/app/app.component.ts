@@ -13,13 +13,13 @@ import { ContactWindowComponent } from './components/windows/contact-window/cont
   imports: [TaskbarComponent, WindowComponent, AboutWindowComponent, HobbiesWindowComponent,MusicWindowComponent,SkillsWindowComponent, ContactWindowComponent],
   template: `
     <app-taskbar (openWindow)="open($event)"></app-taskbar>
-
     <app-window 
       title="About Me" 
-      [visible]="windows.isVisible('about')"
+      [visible]="isWindowVisible('about')"
       (close)="close('about')">
-        <app-about-window></app-about-window>
+      <app-about-window></app-about-window>
     </app-window>
+
 
     <app-window 
       title="Hobbies" 
@@ -70,6 +70,11 @@ export class AppComponent {
   open(windowName: string) {
     this.windows.open(windowName);
   }
+  isWindowVisible(name: string): boolean {
+    const status = this.windows.windows()[name];
+    return status === 'open';
+  }
+  
 
   close(windowName: string) {
     this.windows.close(windowName);
