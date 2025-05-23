@@ -18,13 +18,33 @@ import { NgIf } from '@angular/common'; // ⬅️ ajoute ça
  
       <h1 class="main-title">Meet the dev/<span class="ui">ui</span></h1>
       <div class="project-folders">
-        <button (click)="project1Open = true">Projet 1</button>
-        <button>Projet 2</button>
-        <button>Projet 3</button>
-        <button>Projet 4</button>
-        <button>Projet 5</button>
-        <button>Ressources</button>
+        <button (click)="project1Open = true">
+          <img src="assets/img/folder.png" alt="dossier" />
+          <span>Projet 1</span>
+        </button>
+        
+        <button>
+          <img src="../assets/img/folder.png" alt="dossier" />
+          <span>Projet 2</span>
+        </button>
+        <button>
+          <img src="assets/img/folder.png" alt="dossier" />
+          <span>Projet 3</span>
+        </button>
+        <button>
+          <img src="assets/img/folder.png" alt="dossier" />
+          <span>Projet 4</span>
+        </button>
+        <button>
+          <img src="assets/img/folder.png" alt="dossier" />
+          <span>Projet 5</span>
+        </button>
+        <button>
+          <img src="assets/img/folder.png" alt="dossier" />
+          <span>Ressources</span>
+        </button>
       </div>
+
 
 
     <app-project-window
@@ -92,17 +112,16 @@ styles: [`
   .main-title {
     position: absolute;
     top: 16px;
-    left: 50%;
+    left: 49%;
     transform: translateX(-50%);
     z-index: 10;
 
     font-family: 'Press Start 2P', monospace;
-    font-size: 24px;
+    font-size: 50px;
     text-align: center!important;
-    background: white;
     padding: 8px 16px;
-    border: 2px solid #000;
-    box-shadow: 4px 4px 0 #000;
+    text-shadow: 3px 3px 0 $color-primary;
+
     color: black;
 
     .ui {
@@ -110,33 +129,37 @@ styles: [`
     }
   }
   .project-folders {
-    position: absolute;
-    bottom: 50px;
-    right:20px;
-    transform: translateX(-50%);
+  position: absolute;
+  bottom: 50px;
+  right: 32px;
+  display: flex;
+  gap: 16px;
+  z-index: 5;
+
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    text-align: center;
+    color: black;
     display: flex;
-    gap: 16px;
+    flex-direction: column;
+    align-items: center;
 
-    button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 10px;
-      text-align: center;
-      color: black;
+    img {
+      width: 100px;
+      height: auto;
+      margin-bottom: 4px;
+    }
 
-      &::before {
-        content: '📁';
-        display: block;
-        font-size: 24px;
-      }
-
-      &:hover {
-        color: #4aa9ff;
-      }
+    &:hover {
+      color: #4aa9ff;
     }
   }
+}
+
 `]
 
 })
