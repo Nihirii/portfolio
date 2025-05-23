@@ -120,13 +120,10 @@ styles: [`
     font-size: 50px;
     text-align: center!important;
     padding: 8px 16px;
-    text-shadow: 3px 3px 0 $color-primary;
+    text-shadow: 5px 5px 0 $color-primary;
 
     color: black;
 
-    .ui {
-      color: $color-primary;
-    }
   }
   .project-folders {
   position: absolute;
