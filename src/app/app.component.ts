@@ -7,14 +7,34 @@ import { HobbiesWindowComponent } from './components/windows/hobbies-window/hobb
 import { MusicWindowComponent } from './components/windows/music-window/music-window.component';
 import { SkillsWindowComponent } from './components/windows/skills-window/skills-window.component';
 import { ContactWindowComponent } from './components/windows/contact-window/contact-window.component';
+import { ProjectWindowComponent } from './components/project-window/project-window.component';
+import { NgIf } from '@angular/common'; // ⬅️ ajoute ça
 @Component({
+  
   selector: 'app-root',
   standalone: true,
-  imports: [TaskbarComponent, WindowComponent, AboutWindowComponent, HobbiesWindowComponent,MusicWindowComponent,SkillsWindowComponent, ContactWindowComponent],
+  imports: [TaskbarComponent, WindowComponent, AboutWindowComponent, HobbiesWindowComponent,MusicWindowComponent,SkillsWindowComponent, ContactWindowComponent,ProjectWindowComponent, NgIf],
   template: `
  
       <h1 class="main-title">Meet the dev/<span class="ui">ui</span></h1>
+      <div class="project-folders">
+        <button (click)="project1Open = true">Projet 1</button>
+        <button>Projet 2</button>
+        <button>Projet 3</button>
+        <button>Projet 4</button>
+        <button>Projet 5</button>
+        <button>Ressources</button>
+      </div>
 
+
+    <app-project-window
+      *ngIf="project1Open"
+      [title]="'Projet 1'"
+      [description]="'Mon premier projet cool'"
+      [techs]="['Angular', 'SCSS']"
+      [link]="'https://github.com/lenadev/projet1'"
+      (close)="project1Open = false">
+    </app-project-window>
 
 
     <app-taskbar (openWindow)="open($event)"></app-taskbar>
@@ -57,19 +77,72 @@ import { ContactWindowComponent } from './components/windows/contact-window/cont
 
 
   `,
-  styles: [`
-    :host {
-      display: block;
-      height: 100vh;
-      background-image: linear-gradient(#f7f7f7 2px, transparent 2px), 
-                        linear-gradient(90deg, #f7f7f7 2px, transparent 2px);
-      background-size: 50px 50px;
-      position: relative;
-      overflow: hidden;
+styles: [`
+@use '../styles/variables' as *;
+  :host {
+    display: block;
+    height: 100vh;
+    background-image: linear-gradient(#f7f7f7 2px, transparent 2px), 
+                      linear-gradient(90deg, #f7f7f7 2px, transparent 2px);
+    background-size: 50px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .main-title {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+
+    font-family: 'Press Start 2P', monospace;
+    font-size: 24px;
+    text-align: center!important;
+    background: white;
+    padding: 8px 16px;
+    border: 2px solid #000;
+    box-shadow: 4px 4px 0 #000;
+    color: black;
+
+    .ui {
+      color: $color-primary;
     }
-  `]
+  }
+  .project-folders {
+    position: absolute;
+    bottom: 50px;
+    right:20px;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 16px;
+
+    button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      text-align: center;
+      color: black;
+
+      &::before {
+        content: '📁';
+        display: block;
+        font-size: 24px;
+      }
+
+      &:hover {
+        color: #4aa9ff;
+      }
+    }
+  }
+`]
+
 })
 export class AppComponent {
+  project1Open = false;
+
   constructor(public windows: WindowService) {}
 
   open(windowName: string) {

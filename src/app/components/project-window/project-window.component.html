@@ -1,0 +1,12 @@
+<app-window [title]="title" (close)="onClose()">
+  <p>{{ description }}</p>
+
+  <div class="techs">
+    <strong>Technos :</strong>
+    <ul>
+      <li *ngFor="let tech of techs">{{ tech }}</li>
+    </ul>
+  </div>
+
+  <a *ngIf="link" [href]="link" target="_blank">Voir sur GitHub</a>
+</app-window>

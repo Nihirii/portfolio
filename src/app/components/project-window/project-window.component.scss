@@ -1,0 +1,22 @@
+@use '../../../styles/variables' as *;
+:host {
+  display: block;
+  padding: 8px;
+
+  p {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  .techs ul {
+    margin: 0;
+    padding-left: 16px;
+    font-size: 11px;
+  }
+
+  a {
+    font-size: 11px;
+    color: $color-primary;
+    text-decoration: underline;
+  }
+}
