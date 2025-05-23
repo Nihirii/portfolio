@@ -12,7 +12,8 @@ import { WindowService } from '../../services/window.service';
 export class TaskbarComponent {
   @Output() openWindow = new EventEmitter<string>();
   showMenu = false;
-
+time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+showLangMenu = false;
   constructor(public windowService: WindowService) {}
 
   toggleMenu() {
@@ -35,6 +36,13 @@ export class TaskbarComponent {
       .filter(([_, status]) => status === 'open' || status === 'minimized')
       .map(([name, status]) => ({ name, status }));
   }
-  
-  
+  toggleLangMenu() {
+    this.showLangMenu = !this.showLangMenu;
+  }
+
+  setLang(lang: string) {
+    console.log('Langue choisie :', lang); 
+    this.showLangMenu = false;
+  }
+    
 }

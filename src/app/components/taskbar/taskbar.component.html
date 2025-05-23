@@ -15,5 +15,16 @@
         <span class="close-btn" (click)="windowService.close(win.name); $event.stopPropagation()">✖️</span>
       </button>
     </div>
+    <div class="taskbar-right">
+      <div class="lang-switch" (click)="toggleLangMenu()">
+        🌐
+        <div class="lang-menu" *ngIf="showLangMenu">
+          <button (click)="setLang('fr')">🇫🇷 Français</button>
+          <button (click)="setLang('en')">🇬🇧 English</button>
+        </div>
+      </div>
+      <span class="clock">{{ time }}</span>
+  </div>
+
   </div>
   
