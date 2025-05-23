@@ -87,12 +87,11 @@ styles: [`
     background-size: 50px 50px;
     position: relative;
     overflow: hidden;
-  }
+
   
   .main-title {
     position: absolute;
     top: 16px;
-    left: 50%;
     transform: translateX(-50%);
     z-index: 10;
 
@@ -112,7 +111,6 @@ styles: [`
   .project-folders {
     position: absolute;
     bottom: 50px;
-    right:20px;
     transform: translateX(-50%);
     display: flex;
     gap: 16px;
@@ -137,6 +135,7 @@ styles: [`
       }
     }
   }
+    }
 `]
 
 })
