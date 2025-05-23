@@ -16,6 +16,10 @@
       </button>
     </div>
     <div class="taskbar-right">
+      <div class="theme-toggle" (click)="toggleDarkMode()">
+        {{ isDarkMode ? '☀️' : '🌙' }}
+      </div>
+
       <div class="lang-switch" (click)="toggleLangMenu()">
         🌐
         <div class="lang-menu" *ngIf="showLangMenu">
@@ -25,6 +29,7 @@
       </div>
       <span class="clock">{{ time }}</span>
   </div>
+
 
   </div>
   

@@ -12,12 +12,17 @@ import { WindowService } from '../../services/window.service';
 export class TaskbarComponent {
   @Output() openWindow = new EventEmitter<string>();
   showMenu = false;
-time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-showLangMenu = false;
+  isDarkMode = false;
+  time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  showLangMenu = false;
   constructor(public windowService: WindowService) {}
 
   toggleMenu() {
     this.showMenu = !this.showMenu;
+  }
+  toggleDarkMode() {
+    this.isDarkMode = !this.isDarkMode;
+    console.log('Dark mode:', this.isDarkMode ? 'activé' : 'désactivé');
   }
 
   onClickWindow(name: string) {
@@ -41,7 +46,7 @@ showLangMenu = false;
   }
 
   setLang(lang: string) {
-    console.log('Langue choisie :', lang); 
+    console.log('Langue choisie :', lang); // à remplacer plus tard par un vrai switch i18n
     this.showLangMenu = false;
   }
     

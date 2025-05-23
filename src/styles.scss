@@ -1,2 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 @use 'styles/variables' as *;
+body {
+  font-family: 'Press Start 2P', monospace;
+}
+.main-title {
+  font-family: 'Press Start 2P', monospace;
+}

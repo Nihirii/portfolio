@@ -127,6 +127,17 @@
       }
     }
   }
+  
+.theme-toggle {
+  cursor: pointer;
+  padding: 2px 6px;
+  border: 1px solid #666;
+  background: #f0f0f0;
+
+  &:hover {
+    background: #e0e0e0;
+  }
+}
 
   }
 }

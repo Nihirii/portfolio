@@ -12,6 +12,11 @@ import { ContactWindowComponent } from './components/windows/contact-window/cont
   standalone: true,
   imports: [TaskbarComponent, WindowComponent, AboutWindowComponent, HobbiesWindowComponent,MusicWindowComponent,SkillsWindowComponent, ContactWindowComponent],
   template: `
+ 
+      <h1 class="main-title">Meet the dev/<span class="ui">ui</span></h1>
+
+
+
     <app-taskbar (openWindow)="open($event)"></app-taskbar>
     <app-window 
       title="About Me" 
