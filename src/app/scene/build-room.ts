@@ -341,26 +341,6 @@ export function buildRoom(): RoomBuild {
     plane(gTV, 2.4, 1.5, m, TV.x, 0.98, D - 0.012, Math.PI);
     dimLight(pointLight(root, 0x5aaaff, 2.2, 3, TV.x, 0.95, D - 0.35), 0.1, 2.2);
   }
-  // suspension macramé près de la porte-fenêtre
-  cyl(gTV, 0.004, 0.004, 0.6, '#e8dcc8', 1.2, 1.85, 3.05, 4);
-  cyl(gTV, 0.09, 0.07, 0.12, '#fbf7f0', 1.2, 1.75, 3.05, 16);
-  for (let k = 0; k < 14; k++) {
-    const a = (k / 14) * Math.PI * 2;
-    const L = 0.2 + rnd() * 0.25;
-    const lf = box(
-      gTV,
-      0.018,
-      0.006,
-      L,
-      '#8bc47a',
-      1.2 + Math.cos(a) * L * 0.4,
-      1.85 - L * 0.25,
-      3.05 + Math.sin(a) * L * 0.4,
-      0,
-    );
-    lf.rotation.set(0.7, -a + Math.PI / 2, 0);
-  }
-
   // ---------- bureau ----------
   const deskTop = DESK.height;
   box(root, DESK.width, 0.04, DESK.depth, '#d9b48c', DESK.x, deskTop - 0.04, DESK.z, 0.01);
@@ -446,28 +426,13 @@ export function buildRoom(): RoomBuild {
 
   // lampe à lave du bureau : allumée le soir, ou au clic
   const lava = buildLavaLamp(root, register, DESK_ITEMS.lamp.x, deskTop - 0.02, DESK_ITEMS.lamp.z);
-  // casque + plante sur le bureau
+  // casque sur le bureau
   {
     const t = new THREE.Mesh(new THREE.TorusGeometry(0.08, 0.015, 10, 24, Math.PI), mat('#e8e6ea'));
     t.position.set(1.3, deskTop + 0.01, 0.62);
     t.rotation.x = -Math.PI / 2;
     t.castShadow = true;
     root.add(t);
-    cyl(root, 0.05, 0.045, 0.09, '#ffffff', 1.65, deskTop - 0.02, 0.15, 14);
-    for (let k = 0; k < 7; k++) {
-      const a = (k / 7) * 6.28;
-      sph(
-        root,
-        0.04,
-        '#6aa86c',
-        1.65 + Math.cos(a) * 0.04,
-        0.86 + rnd() * 0.05,
-        0.15 + Math.sin(a) * 0.04,
-        0.7,
-        1.3,
-        0.35,
-      ).rotation.y = a;
-    }
   }
   buildDuck(root, register, 3.12, deskTop, 0.68);
 
@@ -655,11 +620,6 @@ export function buildRoom(): RoomBuild {
     );
     sph(root, 0.08, '#f3dcc0', x + 0.08, y0 + 0.52, z);
     box(root, 0.1, 0.14, 0.06, glow('#9fd4ff', 0.6), x - 0.08, y0 + 0.44, z, 0.01);
-    cyl(root, 0.03, 0.03, 0.12, '#3b3b44', x + 0.1, y0 + 1.24, z);
-    [-0.02, 0.05].forEach((d) => {
-      cyl(root, 0.004, 0.004, 0.18, '#6a8a4a', x + 0.1 + d, y0 + 1.36, z);
-      sph(root, 0.03, '#f7c948', x + 0.1 + d, y0 + 1.55, z, 1, 0.4, 1);
-    });
     const globe = glow('#fff0d8', 1.3);
     dimEmissive(globe, 0.2, 1.4);
     sph(root, 0.08, globe, x - 0.07, y0 + 0.92, z);
@@ -749,7 +709,7 @@ export function buildRoom(): RoomBuild {
     box(g, 0.05, 0.008, 0.002, '#77777f', TX, 0.585, D - 0.277, 0);
     register('tv', g);
   }
-  // console, lampe champignon, plante, peluche
+  // lampe champignon
   // peluche Cinnamoroll (easter egg)
   {
     const plush = group(root, 'plush');
@@ -785,21 +745,6 @@ export function buildRoom(): RoomBuild {
     cap.position.set(TX - 0.82, 0.69, D - 0.2);
     root.add(cap);
     dimLight(pointLight(root, 0xffc98a, 0.25, 2.5, TX - 0.82, 0.72, D - 0.35), 0.05, 1.3);
-    cyl(root, 0.07, 0.06, 0.12, '#f2b8c6', TX + 0.82, 0.51, D - 0.3, 16);
-    for (let k = 0; k < 9; k++) {
-      const a = (k / 9) * 6.28;
-      sph(
-        root,
-        0.06,
-        '#5f9a62',
-        TX + 0.82 + Math.cos(a) * 0.06,
-        0.68 + rnd() * 0.08,
-        D - 0.3 + Math.sin(a) * 0.05,
-        0.7,
-        1.4,
-        0.35,
-      ).rotation.y = a;
-    }
   }
 
   // colonnes BESTÅ vitrées + étagère à affiches (masquées avec le mur en vue d'ensemble)
@@ -930,25 +875,6 @@ function buildMediaColumns(
     );
     box(c, w - 0.04, 0.48, 0.38, '#f3efe8', 0, 0.06, 0, 0.01);
     dimLight(pointLight(g, 0xffd9a6, 0.7, 1.6, xc, 1.6, D - 0.5), 0.05, 0.7);
-    // plante retombante sur le dessus
-    cyl(c, 0.08, 0.07, 0.12, '#ffffff', 0, h, 0, 16);
-    for (let k = 0; k < 10; k++) {
-      const a = (k / 10) * Math.PI * 2;
-      const L = 0.2 + rnd() * 0.35;
-      const v = box(
-        c,
-        0.02,
-        L,
-        0.006,
-        '#7fb873',
-        Math.cos(a) * 0.08,
-        h + 0.08 - L,
-        Math.sin(a) * 0.07,
-        0,
-      );
-      v.rotation.y = a;
-      v.rotation.x = 0.15;
-    }
     cols.push(c);
   });
   // étagère à affiches entre les deux colonnes

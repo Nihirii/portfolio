@@ -57,7 +57,7 @@ function buildAquarium({
   tank.position.y = 0.025 + h / 2;
   g.add(tank);
   box(g, w - 0.01, 0.03, d - 0.01, '#e9dccb', 0, 0.025, 0, 0.004); // sable
-  // petits galets et une plante
+  // petits galets
   for (let k = 0; k < 6; k++)
     sph(
       g,
@@ -70,20 +70,6 @@ function buildAquarium({
       0.6,
       1,
     );
-  for (let k = 0; k < 5; k++) {
-    const leaf = box(
-      g,
-      0.008,
-      0.08 + rnd() * 0.06,
-      0.004,
-      '#7fb873',
-      0.14 + k * 0.01,
-      0.055,
-      0.02,
-      0,
-    );
-    leaf.rotation.z = -0.2 + k * 0.1;
-  }
   const led = glow('#bfe4ff', 1.5);
   dimEmissive(led, 0.3, 2);
   box(g, w - 0.04, 0.006, 0.02, led, 0, h + 0.018, 0, 0);
