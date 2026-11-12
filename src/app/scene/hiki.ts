@@ -156,6 +156,11 @@ export class Hiki {
     this.timer = 60;
   }
 
+  /** Survol : elle remarque le curseur et bouge une oreille. */
+  notice() {
+    if (this.earTwitch <= 0) this.earTwitch = 0.6;
+  }
+
   /** Tant que l'on caresse, elle reste immobile. */
   isBeingPetted(): boolean {
     return this.petTimer > 0;

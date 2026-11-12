@@ -60,33 +60,6 @@
     visibility: hidden;
   }
 }
-/* Petit repère sur les objets principaux (utile au toucher, sans survol) */
-.hotspot--primary::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 10px;
-  height: 10px;
-  margin: -5px 0 0 -5px;
-  border-radius: 50%;
-  background: #fff;
-  border: 2px solid var(--c-rose-strong);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--c-rose) 45%, transparent);
-  animation: beacon 2.4s ease-in-out infinite;
-}
-.hotspot--primary {
-  opacity: 1;
-}
-.stage.is-focused .hotspot--primary::after,
-.stage.is-petting .hotspot--primary::after {
-  opacity: 0;
-}
-@keyframes beacon {
-  50% {
-    box-shadow: 0 0 0 7px color-mix(in srgb, var(--c-rose) 15%, transparent);
-  }
-}
 .label {
   position: absolute;
   left: 0;

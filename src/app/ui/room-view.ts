@@ -43,7 +43,6 @@ import type { RoomScene } from '../scene/room-scene';
               #hot
               type="button"
               class="hotspot"
-              [class.hotspot--primary]="o.primary"
               [attr.data-id]="o.id"
               [attr.aria-label]="ariaLabel(o)"
               (focus)="onFocus(o.id)"

@@ -65,6 +65,8 @@ export class RoomScene {
   private petting = false;
   private lastStroke = 0;
   private strokes = 0;
+  /** Position de repos des objets, et intensité de l'animation de survol (0 → 1). */
+  private rest = new Map<InteractiveObjectId, { pos: THREE.Vector3; rot: THREE.Euler; lift: number }>();
   private eggAnims: {
     obj: THREE.Object3D;
     t: number;
@@ -116,6 +118,11 @@ export class RoomScene {
     this.outline.hiddenEdgeColor.set('#b38fff');
     this.composer.addPass(this.outline);
     this.composer.addPass(new OutputPass());
+
+    this.room.interactives.forEach((obj, id) => {
+      if (id !== 'hiki')
+        this.rest.set(id, { pos: obj.position.clone(), rot: obj.rotation.clone(), lift: 0 });
+    });
 
     this.applyNight();
     this.resize();
@@ -238,8 +245,8 @@ export class RoomScene {
       obj,
       t: 0,
       kind: id,
-      base: obj.rotation.clone(),
-      basePos: obj.position.clone(),
+      base: this.rest.get(id)?.rot.clone() ?? obj.rotation.clone(),
+      basePos: this.rest.get(id)?.pos.clone() ?? obj.position.clone(),
     });
     if (id === 'egg-controller') this.flashTv();
   }
@@ -302,6 +309,7 @@ export class RoomScene {
 
     if (!this.reducedMotion) this.room.tickers.forEach((f) => f(t));
     this.hiki.update(dt, t, this.night);
+    this.stepHover(dt, t);
     this.stepEggs(dt);
     this.updateWalls();
     if (this.pointerDirty) {
@@ -536,6 +544,7 @@ export class RoomScene {
       this.hovered = id;
       this.updateOutline();
       this.cb.hover(id);
+      if (id === 'hiki' && !this.reducedMotion) this.hiki.notice();
     }
     this.canvas.style.cursor = id ? (id === 'hiki' ? 'grab' : 'pointer') : '';
   }
@@ -558,6 +567,25 @@ export class RoomScene {
     const c = b.getCenter(new THREE.Vector3());
     c.y = b.max.y + 0.04;
     return c;
+  }
+
+  /**
+   * Au survol (ou au focus clavier), l'objet se soulève légèrement et flotte :
+   * on voit tout de suite qu'il est interactif. Désactivé en mouvement réduit.
+   */
+  private stepHover(dt: number, t: number) {
+    const k = Math.min(1, dt * 10);
+    this.rest.forEach((r, id) => {
+      const obj = this.room.interactives.get(id)!;
+      if (this.eggAnims.some((a) => a.obj === obj)) return;
+      const active =
+        !this.reducedMotion && !this.focused && (id === this.hovered || id === this.keyboardHighlight);
+      const target = active ? 1 : 0;
+      if (target === 0 && r.lift === 0) return;
+      r.lift += (target - r.lift) * k;
+      if (target === 0 && r.lift < 0.002) r.lift = 0;
+      obj.position.y = r.pos.y + r.lift * (0.035 + Math.sin(t * 4) * 0.008);
+    });
   }
 
   private stepEggs(dt: number) {
