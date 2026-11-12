@@ -1,0 +1,26 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+}
+main {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  outline: none;
+}
+.skip {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 50;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--c-surface);
+  border: 2px solid var(--c-focus);
+  font-weight: 800;
+  &:focus {
+    top: 12px;
+  }
+}

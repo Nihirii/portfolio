@@ -1,0 +1,110 @@
+/**
+ * Types partagés entre les données éditoriales (fiches, objets) et la scène 3D.
+ * Modifier un texte, un lien ou l'objet associé à une fiche se fait dans
+ * `sheets.ts` et `interactive-objects.ts`, sans toucher au code de la scène.
+ */
+
+/** Identifiant d'une fiche HTML. */
+export type SheetId =
+  | 'about'
+  | 'hubtv'
+  | 'azura'
+  | 'league-of-stone'
+  | 'tamagotchi'
+  | 'ganeshka'
+  | 'web-services'
+  | 'work';
+
+/** Illustrations originales disponibles pour les fiches (dessinées en CSS/SVG). */
+export type SheetVisual =
+  'hubtv' | 'azura' | 'cards' | 'pet' | 'swatches' | 'server' | 'work' | 'about';
+
+export interface RepoLink {
+  label: string;
+  /** URL complète du dépôt. `null` tant qu'elle n'est pas connue. */
+  url: string | null;
+  /**
+   * Le lien n'est affiché que si le dépôt est public.
+   * HubTV et Azura restent `false` tant que leurs dépôts sont privés.
+   */
+  isPublic: boolean;
+}
+
+export interface SheetSection {
+  heading: string;
+  items: string[];
+}
+
+export interface Sheet {
+  id: SheetId;
+  /** `project` apparaît dans la liste « Projets ». */
+  kind: 'project' | 'work' | 'about';
+  title: string;
+  /** Une ligne d'accroche sous le titre. */
+  tagline: string;
+  summary: string;
+  sections: SheetSection[];
+  stack: string[];
+  repos: RepoLink[];
+  visual: SheetVisual;
+  /** Objet de la scène associé (pour la caméra et la vue 2D). */
+  objectId: InteractiveObjectId | null;
+}
+
+/** Identifiant d'un objet cliquable dans le salon. */
+export type InteractiveObjectId =
+  | 'monitor-left'
+  | 'monitor-right'
+  | 'kallax-cards'
+  | 'kallax-console'
+  | 'kallax-binder'
+  | 'kallax-server'
+  | 'notebook'
+  | 'cv-sheet'
+  | 'tv'
+  | 'hiki'
+  | 'egg-eva-jacket'
+  | 'egg-controller'
+  | 'egg-plush';
+
+/** Ce qui se passe quand on active un objet. */
+export type ObjectAction =
+  | { type: 'sheet'; sheetId: SheetId }
+  | { type: 'cv' }
+  | { type: 'tv-toggle' }
+  | { type: 'pet' }
+  | { type: 'easter-egg'; eggId: EasterEggId };
+
+export type EasterEggId = 'eva-jacket' | 'controller' | 'plush';
+
+export interface InteractiveObject {
+  id: InteractiveObjectId;
+  /** Nom affiché au survol / focus et lu par les lecteurs d'écran. */
+  label: string;
+  action: ObjectAction;
+  /** Objet « principal » : reçoit contour + étiquette. Les easter eggs restent discrets. */
+  primary: boolean;
+  /**
+   * Cadrage caméra quand l'objet est sélectionné, exprimé en décalage
+   * depuis le centre de l'objet (mètres, repère de la pièce).
+   * `null` = pas de rapprochement.
+   */
+  focus: { offset: [number, number, number]; distanceScale?: number } | null;
+}
+
+export interface EasterEgg {
+  id: EasterEggId;
+  title: string;
+  message: string;
+}
+
+export interface Profile {
+  name: string;
+  role: string;
+  city: string;
+  /** Pseudo GitHub. Laisser vide pour masquer les liens GitHub. */
+  githubUsername: string;
+  /** Chemin public du CV (servi depuis `public/`). */
+  cvPdfPath: string;
+  cvDownloadName: string;
+}
