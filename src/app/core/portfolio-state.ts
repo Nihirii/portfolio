@@ -60,11 +60,15 @@ export class PortfolioState {
       const id = this.openSheetId();
       const hash = id ? `#${id}` : this.cvOpen() ? '#cv' : this.projectsOpen() ? '#projets' : '';
       if (this.win && this.win.location.hash !== hash) {
-        this.win.history.replaceState(
-          null,
-          '',
-          hash || this.win.location.pathname + this.win.location.search,
-        );
+        try {
+          this.win.history.replaceState(
+            null,
+            '',
+            hash || this.win.location.pathname + this.win.location.search,
+          );
+        } catch {
+          /* cadre restreint (aperçu) : le lien direct n'est simplement pas mis à jour */
+        }
       }
     });
   }
