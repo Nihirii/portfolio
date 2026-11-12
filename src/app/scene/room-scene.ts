@@ -9,6 +9,7 @@ import { InteractiveObjectId } from '../data/types';
 import { buildRoom, RoomBuild } from './build-room';
 import { Hiki, PetReaction } from './hiki';
 import { INSIDE, OVERVIEW } from './room-layout';
+import { MoveKey, Walker } from './walker';
 
 export interface RoomSceneCallbacks {
   /** Survol à la souris (null = rien). */
@@ -29,7 +30,7 @@ interface View {
   fov?: number;
 }
 
-/** `inside` : à hauteur d'yeux au milieu de la pièce ; `top` : diorama vu d'en haut. */
+/** `inside` : marche à la première personne ; `top` : diorama vu d'en haut. */
 export type ViewMode = 'inside' | 'top';
 
 export class RoomScene {
@@ -42,6 +43,12 @@ export class RoomScene {
   private room: RoomBuild;
   /** @internal exposé pour les tests en mode dev */
   readonly hiki = new Hiki();
+  /** @internal déplacement à la première personne (exposé pour les tests en mode dev) */
+  readonly walker = new Walker();
+  private looking: { id: number; x: number; y: number } | null = null;
+  private inputEnabled = true;
+  private pointerInside = false;
+  private keyOf = new Map<string, MoveKey>();
   private raycaster = new THREE.Raycaster();
   private timer = new THREE.Timer();
   private frameId = 0;
@@ -149,6 +156,10 @@ export class RoomScene {
     window.addEventListener('pointerup', this.onPointerUp);
     window.addEventListener('pointercancel', this.onPointerUp);
     canvas.addEventListener('pointerleave', this.onPointerLeave);
+    canvas.addEventListener('pointerenter', this.onPointerEnter);
+    window.addEventListener('keydown', this.onKeyDown);
+    window.addEventListener('keyup', this.onKeyUp);
+    window.addEventListener('blur', this.onBlur);
 
     this.loop();
   }
@@ -180,6 +191,21 @@ export class RoomScene {
    */
   setInsets(right: number, bottom: number) {
     this.insetTarget = { right, bottom };
+  }
+
+  /** Marche désactivée quand une fiche est ouverte (le clavier sert alors à la fiche). */
+  setInputEnabled(enabled: boolean) {
+    this.inputEnabled = enabled;
+    if (!enabled) {
+      this.walker.release();
+      this.keyOf.clear();
+      this.looking = null;
+    }
+  }
+
+  /** Joystick tactile : x = pas de côté, y = avancer (-1 → 1). */
+  setMoveInput(x: number, y: number) {
+    this.walker.stick.set(x, y);
   }
 
   /** Clin d'œil HubTV : la TV s'illumine brièvement en mode TV. */
@@ -220,7 +246,14 @@ export class RoomScene {
       position: center.clone().add(offset),
       fov: this.overview.fov,
     };
-    if (!this.savedView) this.savedView = this.currentView();
+    if (!this.savedView) {
+      if (this.viewMode === 'inside') {
+        this.walker.release();
+        this.savedView = { ...this.walker.view(), fov: this.camera.fov };
+      } else {
+        this.savedView = this.currentView();
+      }
+    }
     this.focused = id;
     this.controls.enabled = false;
     this.startTween(to, 1.0);
@@ -232,7 +265,19 @@ export class RoomScene {
     const back = this.savedView;
     this.savedView = null;
     this.focused = null;
-    this.startTween(back, 0.9, () => (this.controls.enabled = true));
+    this.startTween(back, 0.9, () => this.enterModeControls());
+  }
+
+  /** Après une transition : marche (pièce) ou orbite limitée (vue d'en haut). */
+  private enterModeControls() {
+    if (this.viewMode === 'inside') {
+      this.controls.enabled = false;
+      this.walker.apply(this.camera, this.controls.target);
+    } else {
+      this.configureOrbit();
+      this.controls.enabled = true;
+      this.controls.update();
+    }
   }
 
   /** Passe de la vue intérieure à la vue d'en haut (et inversement). */
@@ -246,26 +291,23 @@ export class RoomScene {
       return;
     }
     this.controls.enabled = false;
+    this.walker.release();
     if (immediate) {
       this.camera.position.copy(this.overview.position);
       this.controls.target.copy(this.overview.target);
       this.camera.fov = this.overview.fov ?? OVERVIEW.fov;
       this.applyViewOffset();
-      this.configureOrbit();
-      this.controls.enabled = true;
-      this.controls.update();
+      this.enterModeControls();
       return;
     }
-    this.startTween(this.overview, 1.3, () => {
-      this.configureOrbit();
-      this.controls.enabled = true;
-    });
+    // au retour dans la pièce, on reprend la dernière position (le Walker la garde)
+    this.startTween(this.overview, 1.3, () => this.enterModeControls());
   }
 
   resetView() {
     this.savedView = null;
     this.focused = null;
-    this.startTween(this.overview, 0.9, () => (this.controls.enabled = true));
+    this.startTween(this.overview, 0.9, () => this.enterModeControls());
   }
 
   /** Position écran (px, relative à l'hôte) d'un objet ; null si derrière la caméra. */
@@ -305,6 +347,10 @@ export class RoomScene {
     window.removeEventListener('pointerup', this.onPointerUp);
     window.removeEventListener('pointercancel', this.onPointerUp);
     this.canvas.removeEventListener('pointerleave', this.onPointerLeave);
+    this.canvas.removeEventListener('pointerenter', this.onPointerEnter);
+    window.removeEventListener('keydown', this.onKeyDown);
+    window.removeEventListener('keyup', this.onKeyUp);
+    window.removeEventListener('blur', this.onBlur);
     this.controls.dispose();
     this.composer.dispose();
     this.scene.traverse((o) => {
@@ -351,7 +397,17 @@ export class RoomScene {
 
     this.stepInsets(dt);
     if (this.tween) this.stepTween(dt);
-    else this.controls.update();
+    else if (this.viewMode === 'inside') {
+      if (!this.focused) {
+        const moved = this.walker.update(dt, {
+          frozen: this.petting || !this.inputEnabled,
+          reducedMotion: this.reducedMotion,
+        });
+        this.walker.apply(this.camera, this.controls.target);
+        // ce qui est sous le curseur change quand on marche
+        if (moved && this.pointerInside) this.pointerDirty = true;
+      }
+    } else this.controls.update();
 
     if (!this.reducedMotion) this.room.tickers.forEach((f) => f(t));
     this.hiki.update(dt, t, this.night);
@@ -372,13 +428,7 @@ export class RoomScene {
   private computeOverview(): View {
     const aspectNow = (this.host.clientWidth || 1) / (this.host.clientHeight || 1);
     if (this.viewMode === 'inside') {
-      const position = new THREE.Vector3(...INSIDE.position);
-      const dir = new THREE.Vector3(...INSIDE.lookAt).sub(position).normalize();
-      return {
-        position,
-        target: position.clone().addScaledVector(dir, 0.08),
-        fov: aspectNow < 1 ? INSIDE.fovPortrait : INSIDE.fov,
-      };
+      return { ...this.walker.view(), fov: aspectNow < 1 ? INSIDE.fovPortrait : INSIDE.fov };
     }
     const target = new THREE.Vector3(...OVERVIEW.target);
     const dir = new THREE.Vector3(...OVERVIEW.direction).normalize();
@@ -393,18 +443,7 @@ export class RoomScene {
   }
 
   private configureOrbit() {
-    if (this.viewMode === 'inside') {
-      // regarder autour de soi : rotation libre, sans zoom
-      const d = this.overview.position.distanceTo(this.overview.target);
-      this.controls.minDistance = this.controls.maxDistance = d;
-      this.controls.minAzimuthAngle = -Infinity;
-      this.controls.maxAzimuthAngle = Infinity;
-      this.controls.minPolarAngle = 1.05;
-      this.controls.maxPolarAngle = 1.95;
-      this.controls.rotateSpeed = -0.35;
-      this.controls.enableZoom = false;
-      return;
-    }
+    if (this.viewMode === 'inside') return; // marche : OrbitControls inactif
     this.controls.rotateSpeed = 0.5;
     this.controls.enableZoom = true;
     const dist = this.overview.position.distanceTo(this.overview.target);
@@ -491,11 +530,15 @@ export class RoomScene {
     this.configureOrbit();
     // si l'on est en vue d'ensemble, suivre le nouveau cadrage
     if (old && !this.focused && !this.tween) {
-      this.camera.position.copy(this.overview.position);
-      this.controls.target.copy(this.overview.target);
       this.camera.fov = this.overview.fov ?? OVERVIEW.fov;
       this.applyViewOffset();
-      this.controls.update();
+      if (this.viewMode === 'inside') {
+        this.walker.apply(this.camera, this.controls.target);
+      } else {
+        this.camera.position.copy(this.overview.position);
+        this.controls.target.copy(this.overview.target);
+        this.controls.update();
+      }
     }
   }
 
@@ -513,7 +556,8 @@ export class RoomScene {
   private tmp = new THREE.Vector3();
   private updateWalls() {
     for (const w of this.room.walls) {
-      w.group.visible = this.tmp.copy(this.camera.position).sub(w.center).dot(w.normal) < 0;
+      // marge de 50 cm : le mur reste visible quand on se tient dans le renfoncement de l'entrée
+      w.group.visible = this.tmp.copy(this.camera.position).sub(w.center).dot(w.normal) < 0.5;
     }
   }
 
@@ -521,6 +565,8 @@ export class RoomScene {
 
   private onPointerDown = (e: PointerEvent) => {
     if (e.button !== 0 && e.pointerType === 'mouse') return;
+    // joystick et autres contrôles HTML : ce n'est pas un geste sur la scène
+    if (e.target !== this.canvas) return;
     this.setPointer(e);
     const id = this.pick();
     const onHiki = id === 'hiki';
@@ -533,10 +579,27 @@ export class RoomScene {
       this.canvas.style.cursor = 'grabbing';
       this.cb.petGesture(true);
       e.preventDefault();
+      return;
+    }
+    // vue de la pièce : glisser pour regarder autour de soi
+    if (this.viewMode === 'inside' && !this.focused && !this.tween && this.inputEnabled) {
+      this.looking = { id: e.pointerId, x: e.clientX, y: e.clientY };
+      // garder le geste même si le pointeur sort de la scène
+      try {
+        this.canvas.setPointerCapture(e.pointerId);
+      } catch {
+        /* pointeur déjà relâché */
+      }
     }
   };
 
   private onPointerMove = (e: PointerEvent) => {
+    if (this.looking && e.pointerId === this.looking.id && !this.petting) {
+      this.walker.look(e.clientX - this.looking.x, e.clientY - this.looking.y);
+      this.looking.x = e.clientX;
+      this.looking.y = e.clientY;
+    }
+    if (e.target !== this.canvas && !this.petting && !this.looking) return;
     this.setPointer(e);
     if (this.petting) {
       const now = performance.now();
@@ -554,6 +617,7 @@ export class RoomScene {
   };
 
   private onPointerUp = (e: PointerEvent) => {
+    if (this.looking?.id === e.pointerId) this.looking = null;
     const d = this.down;
     this.down = null;
     if (!d || d.id !== e.pointerId) return;
@@ -562,7 +626,7 @@ export class RoomScene {
     if (this.petting) {
       this.petting = false;
       this.canvas.style.cursor = '';
-      if (!this.focused) this.controls.enabled = true;
+      if (!this.focused && this.viewMode === 'top') this.controls.enabled = true;
       this.cb.petGesture(false);
       if (this.strokes === 0) this.petHiki(); // simple clic ou toucher
       return;
@@ -574,7 +638,36 @@ export class RoomScene {
     }
   };
 
+  private onPointerEnter = () => {
+    this.pointerInside = true;
+  };
+
+  private onKeyDown = (e: KeyboardEvent) => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (this.viewMode !== 'inside' || this.focused || !this.inputEnabled) return;
+    const t = e.target as HTMLElement | null;
+    if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    const k = moveKeyFor(e.key);
+    if (!k) return;
+    e.preventDefault();
+    this.keyOf.set(e.code, k);
+    this.walker.press(k, true);
+  };
+
+  private onKeyUp = (e: KeyboardEvent) => {
+    const k = this.keyOf.get(e.code) ?? moveKeyFor(e.key);
+    this.keyOf.delete(e.code);
+    if (k && ![...this.keyOf.values()].includes(k)) this.walker.press(k, false);
+  };
+
+  private onBlur = () => {
+    this.walker.release();
+    this.keyOf.clear();
+    this.looking = null;
+  };
+
   private onPointerLeave = () => {
+    this.pointerInside = false;
     if (this.hovered) {
       this.hovered = null;
       this.updateOutline();
@@ -700,5 +793,27 @@ export class RoomScene {
       }
       return true;
     });
+  }
+}
+
+/** ZQSD (AZERTY), WASD (QWERTY) et flèches. */
+function moveKeyFor(key: string): MoveKey | null {
+  switch (key.toLowerCase()) {
+    case 'z':
+    case 'w':
+    case 'arrowup':
+      return 'forward';
+    case 's':
+    case 'arrowdown':
+      return 'back';
+    case 'q':
+    case 'a':
+    case 'arrowleft':
+      return 'left';
+    case 'd':
+    case 'arrowright':
+      return 'right';
+    default:
+      return null;
   }
 }

@@ -116,43 +116,94 @@
     opacity: 0;
   }
 }
-.hint {
+.help {
   position: absolute;
   left: 50%;
   bottom: max(16px, env(safe-area-inset-bottom));
   translate: -50% 0;
-  margin: 0;
-  padding: 8px 14px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--c-surface) 85%, transparent);
+  width: min(440px, calc(100% - 32px));
+  padding: 14px 16px 12px;
+  border-radius: var(--radius-m);
+  background: color-mix(in srgb, var(--c-surface) 92%, transparent);
   border: 2px solid var(--c-line);
-  font-size: 13px;
-  font-weight: 700;
+  box-shadow: 0 10px 30px var(--c-shadow);
+  font-size: 14px;
   color: var(--c-text-soft);
+  backdrop-filter: blur(8px);
+  ul {
+    margin: 6px 0 10px;
+    padding-left: 18px;
+  }
+  li {
+    margin-bottom: 3px;
+  }
+  b {
+    color: var(--c-text);
+  }
+  p {
+    margin: 6px 0 10px;
+  }
+}
+.help__title {
+  margin: 0;
+  font-size: 16px;
+  color: var(--c-text);
+}
+.help__ok {
+  min-height: 34px;
+  padding: 4px 14px;
+  font-size: 13px;
+}
+kbd {
+  display: inline-block;
+  min-width: 20px;
+  margin: 0 1px;
+  padding: 0 5px;
+  border-radius: 5px;
+  border: 1px solid var(--c-line);
+  border-bottom-width: 3px;
+  background: var(--c-surface);
+  font: 800 12px var(--font-body);
+  text-align: center;
+  color: var(--c-text);
+}
+.help-toggle {
+  position: absolute;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--c-line);
+  background: color-mix(in srgb, var(--c-surface) 90%, transparent);
+  font: 800 16px var(--font-display);
+  color: var(--c-text-soft);
+  cursor: pointer;
+}
+/* Joystick tactile (mobile) */
+.stick {
+  position: absolute;
+  left: max(20px, env(safe-area-inset-left));
+  bottom: max(24px, env(safe-area-inset-bottom));
+  width: 116px;
+  height: 116px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--c-surface) 45%, transparent);
+  border: 2px solid color-mix(in srgb, var(--c-surface) 80%, transparent);
+  box-shadow: 0 6px 20px var(--c-shadow);
+  touch-action: none;
+  display: grid;
+  place-items: center;
+  z-index: 2;
+}
+.stick__knob {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--c-rose);
+  border: 2px solid var(--c-rose-strong);
+  box-shadow: 0 3px 0 var(--c-rose-strong);
   pointer-events: none;
-  white-space: nowrap;
-  transition: opacity 0.3s;
-}
-.hint--hidden {
-  opacity: 0;
-}
-.hint--touch {
-  display: none;
-}
-@media (hover: none) and (pointer: coarse) {
-  .hint--desktop {
-    display: none;
-  }
-  .hint--touch {
-    display: inline;
-  }
-}
-@media (max-width: 520px) {
-  .hint {
-    white-space: normal;
-    width: calc(100% - 32px);
-    text-align: center;
-  }
 }
 .is-petting {
   cursor: grabbing;
@@ -164,4 +215,10 @@
   background:
     radial-gradient(70% 60% at 30% 20%, #3b2d57 0%, transparent 70%),
     radial-gradient(60% 60% at 90% 10%, #2c3260 0%, transparent 70%), var(--c-bg);
+}
+@media (hover: none) and (pointer: coarse) {
+  .help {
+    bottom: auto;
+    top: 12px;
+  }
 }

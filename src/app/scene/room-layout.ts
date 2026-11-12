@@ -163,12 +163,91 @@ export const OVERVIEW = {
   fov: 34,
 };
 
-/** Vue intérieure (par défaut) : à hauteur d'yeux, au milieu de la pièce. */
+/** Vue de la pièce (par défaut) : à la première personne, on démarre près de l'entrée. */
 export const INSIDE = {
-  position: [3.45, 1.6, 2.35] as [number, number, number],
-  /** Point regardé au départ : le coin bureau / KALLAX. */
-  lookAt: [1.1, 0.78, 0.95] as [number, number, number],
-  fov: 64,
+  /** Position de départ au sol (x, z), dans le renfoncement de l'entrée. */
+  start: { x: 0.55, z: 0.12 },
+  /** Point regardé au départ : le salon. */
+  lookAt: [3.6, 1.15, 2.3] as [number, number, number],
+  /** Hauteur des yeux (m). */
+  eyeHeight: 1.6,
+  /** Allure de marche (m/s). */
+  walkSpeed: 1.35,
+  /** Rayon du « corps » pour les collisions (m). */
+  bodyRadius: 0.26,
+  fov: 66,
   /** Champ de vision en portrait (téléphone). */
-  fovPortrait: 82,
+  fovPortrait: 80,
 };
+
+/** Obstacle rectangulaire au sol (x, z). */
+export interface RectCollider {
+  minX: number;
+  maxX: number;
+  minZ: number;
+  maxZ: number;
+}
+/** Obstacle circulaire au sol (chaise, vase…). */
+export interface CircleCollider {
+  x: number;
+  z: number;
+  r: number;
+}
+
+/**
+ * Collisions de la vue à la première personne : murs et gros meubles.
+ * Déduites des cotes ci-dessus ; les petits objets (gamelle, tapis) se franchissent.
+ */
+export function colliders(): { rects: RectCollider[]; circles: CircleCollider[] } {
+  const far = 50;
+  const W = ROOM.width;
+  const D = ROOM.depth;
+  const deskHalfW = DESK.width / 2;
+  const seatEnd = SOFA.z0 + SOFA.seatDepth;
+  const chaiseEnd = SOFA.z0 + SOFA.chaiseDepth;
+  const chaiseX1 = SOFA.x0 + SOFA.armWidth + SOFA.chaiseWidth;
+  const rects: RectCollider[] = [
+    // murs (le renfoncement de la porte d'entrée fait 1 m de large)
+    { minX: -far, maxX: 0, minZ: -far, maxZ: far },
+    { minX: W, maxX: far, minZ: -far, maxZ: far },
+    { minX: -far, maxX: far, minZ: D, maxZ: far },
+    { minX: 1.0, maxX: far, minZ: -far, maxZ: 0 },
+    { minX: -far, maxX: far, minZ: -far, maxZ: -ROOM.doorRecessDepth },
+    // meubles
+    { minX: DESK.x - deskHalfW, maxX: DESK.x + deskHalfW, minZ: 0, maxZ: DESK.z + DESK.depth / 2 },
+    { minX: 0, maxX: 0.12, minZ: 0.74, maxZ: 1.36 }, // miroir
+    {
+      minX: 0,
+      maxX: KALLAX.depth + 0.02,
+      minZ: KALLAX.z - KALLAX.size / 2,
+      maxZ: KALLAX.z + KALLAX.size / 2,
+    },
+    {
+      minX: CAT_TREE.x - 0.25,
+      maxX: CAT_TREE.x + 0.25,
+      minZ: CAT_TREE.z - 0.23,
+      maxZ: CAT_TREE.z + 0.23,
+    },
+    { minX: SOFA.x0, maxX: SOFA.x1, minZ: 0, maxZ: seatEnd }, // canapé + rebord
+    { minX: SOFA.x0, maxX: chaiseX1, minZ: seatEnd, maxZ: chaiseEnd }, // méridienne
+    {
+      minX: COFFEE_TABLE.x - 0.5,
+      maxX: COFFEE_TABLE.x + 0.5,
+      minZ: COFFEE_TABLE.z - 0.28,
+      maxZ: COFFEE_TABLE.z + 0.28,
+    },
+    // meuble TV + colonnes BESTÅ
+    {
+      minX: MEDIA_WALL.columnsX[0] - MEDIA_WALL.columnWidth / 2,
+      maxX: MEDIA_WALL.columnsX[1] + MEDIA_WALL.columnWidth / 2,
+      minZ: D - TV.cabinetDepth,
+      maxZ: D,
+    },
+    { minX: W - 0.15, maxX: W, minZ: WINDOW.z - 0.55, maxZ: WINDOW.z + 0.55 }, // radiateur
+  ];
+  const circles: CircleCollider[] = [
+    { x: CHAIRS.gaming.x, z: CHAIRS.gaming.z, r: 0.33 }, // chaise gaming
+    { x: SUNFLOWERS.x, z: SUNFLOWERS.z, r: 0.1 },
+  ];
+  return { rects, circles };
+}

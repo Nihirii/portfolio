@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   ElementRef,
   inject,
@@ -57,14 +58,58 @@ import type { RoomScene } from '../scene/room-scene';
       <div class="label" #label aria-hidden="true"></div>
       <div class="hearts" #hearts aria-hidden="true"></div>
 
-      <p class="hint" [class.hint--hidden]="state.anyPanelOpen()">
-        <span class="hint--desktop"
-          >Glissez pour regarder autour de vous · cliquez sur un objet · Tab pour parcourir</span
+      @if (walking() && touch() && !state.anyPanelOpen()) {
+        <div
+          class="stick"
+          #stick
+          role="presentation"
+          (pointerdown)="stickStart($event)"
+          (pointermove)="stickMove($event)"
+          (pointerup)="stickEnd($event)"
+          (pointercancel)="stickEnd($event)"
         >
-        <span class="hint--touch"
-          >Touchez un objet pour l'ouvrir · glissez sur Hiki pour la caresser</span
+          <span class="stick__knob" [style.transform]="knob()"></span>
+        </div>
+      }
+
+      @if (helpOpen() && !state.anyPanelOpen()) {
+        <section class="help" aria-labelledby="help-title">
+          <h2 id="help-title" class="help__title">Se déplacer dans le salon</h2>
+          @if (!walking()) {
+            <p>Glissez pour orienter la vue, molette ou pincement pour zoomer.</p>
+          } @else if (touch()) {
+            <ul>
+              <li><b>Marcher</b> : joystick en bas à gauche</li>
+              <li><b>Regarder</b> : glissez sur la scène</li>
+              <li><b>Ouvrir</b> : touchez un objet · glissez sur Hiki pour la caresser</li>
+            </ul>
+          } @else {
+            <ul>
+              <li>
+                <b>Marcher</b> : <kbd>Z</kbd><kbd>Q</kbd><kbd>S</kbd><kbd>D</kbd>, <kbd>W</kbd
+                ><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> ou les flèches
+              </li>
+              <li><b>Regarder</b> : cliquez-glissez</li>
+              <li>
+                <b>Ouvrir</b> : cliquez sur un objet, ou <kbd>Tab</kbd> puis <kbd>Entrée</kbd>
+              </li>
+            </ul>
+          }
+          <button type="button" class="chip chip--primary help__ok" (click)="closeHelp()">
+            Compris
+          </button>
+        </section>
+      }
+      @if (!helpOpen() && !state.anyPanelOpen()) {
+        <button
+          type="button"
+          class="help-toggle"
+          aria-label="Aide aux commandes"
+          (click)="helpOpen.set(true)"
         >
-      </p>
+          ?
+        </button>
+      }
     </div>
   `,
   styleUrl: './room-view.scss',
@@ -77,6 +122,14 @@ export class RoomView implements AfterViewInit, OnDestroy {
 
   protected readonly objects = INTERACTIVE_OBJECTS;
   protected readonly ready = signal(false);
+  /** Vue de la pièce (marche à la première personne) ou vue d'en haut. */
+  protected readonly walking = computed(() => !this.state.viewFromAbove());
+  protected readonly touch = signal(
+    typeof matchMedia !== 'undefined' && matchMedia('(hover: none) and (pointer: coarse)').matches,
+  );
+  protected readonly helpOpen = signal(false);
+  protected readonly knob = signal('translate(0px, 0px)');
+  private stickPointer: number | null = null;
 
   private readonly host = viewChild.required<ElementRef<HTMLElement>>('host');
   private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
@@ -138,7 +191,57 @@ export class RoomView implements AfterViewInit, OnDestroy {
     this.scene!.setTvOn(this.state.tvOn());
     this.scene!.setViewMode(this.state.viewFromAbove() ? 'top' : 'inside', true);
     this.ready.set(true);
+    // aide discrète aux commandes, au premier lancement seulement
+    try {
+      if (!localStorage.getItem('salon-aide-commandes')) this.helpOpen.set(true);
+    } catch {
+      this.helpOpen.set(true);
+    }
     this.syncCamera(this.state.openSheetId(), this.state.cvOpen(), this.state.anyPanelOpen());
+  }
+
+  protected closeHelp() {
+    this.helpOpen.set(false);
+    try {
+      localStorage.setItem('salon-aide-commandes', '1');
+    } catch {
+      /* stockage indisponible */
+    }
+  }
+
+  // ---------- joystick tactile ----------
+
+  protected stickStart(e: PointerEvent) {
+    if (this.stickPointer !== null) return;
+    this.stickPointer = e.pointerId;
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    this.stickMove(e);
+  }
+
+  protected stickMove(e: PointerEvent) {
+    if (e.pointerId !== this.stickPointer) return;
+    const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const radius = r.width / 2;
+    let dx = e.clientX - (r.left + radius);
+    let dy = e.clientY - (r.top + radius);
+    const len = Math.hypot(dx, dy);
+    const max = radius * 0.62;
+    if (len > max) {
+      dx = (dx / len) * max;
+      dy = (dy / len) * max;
+    }
+    this.knob.set(`translate(${dx.toFixed(0)}px, ${dy.toFixed(0)}px)`);
+    // petite zone morte au centre
+    const nx = Math.abs(dx) < max * 0.12 ? 0 : dx / max;
+    const ny = Math.abs(dy) < max * 0.12 ? 0 : -dy / max;
+    this.scene?.setMoveInput(nx, ny);
+  }
+
+  protected stickEnd(e: PointerEvent) {
+    if (e.pointerId !== this.stickPointer) return;
+    this.stickPointer = null;
+    this.knob.set('translate(0px, 0px)');
+    this.scene?.setMoveInput(0, 0);
   }
 
   ngOnDestroy() {
@@ -248,6 +351,7 @@ export class RoomView implements AfterViewInit, OnDestroy {
     if (open && !cv)
       scene.setInsets(mobile ? 0 : Math.min(492, w * 0.42 + 32), mobile ? sheetH : 0);
     else scene.setInsets(0, 0);
+    scene.setInputEnabled(!open);
     if (!open && this.wasPanelOpen) scene.unfocus();
     this.wasPanelOpen = open;
   }

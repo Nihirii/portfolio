@@ -76,20 +76,33 @@ passage, ses liaisons et ses endroits de sieste (le canapé est privilégié la 
 
 ## Fonctionnement
 
-- **Vue de la pièce** (par défaut) : à hauteur d’yeux, au milieu du salon ; glisser pour regarder autour de soi.
+- **Vue de la pièce** (par défaut) : à la première personne. On démarre près de l’entrée, tourné vers
+  le salon, à hauteur d’yeux.
+  - Ordinateur : **ZQSD**, **WASD** ou les **flèches** pour avancer, reculer et se déplacer de côté ;
+    **cliquer-glisser** pour regarder autour de soi.
+  - Mobile : **joystick** en bas à gauche pour marcher ; **glisser** sur la scène pour regarder
+    (les deux en même temps avec deux doigts).
+  - Collisions avec les murs et les gros meubles (bureau, canapé, KALLAX, chaise gaming, table basse,
+    meuble TV et BESTÅ…) : on glisse le long d’un meuble sans le traverser ni rester coincé.
+    Les obstacles sont déduits des cotes, dans `colliders()` de `room-layout.ts`.
+  - Léger balancement de marche, coupé en mouvement réduit. Allure, hauteur des yeux et rayon du corps
+    se règlent dans `INSIDE` (`room-layout.ts`).
+  - Une aide discrète aux commandes s’affiche au premier lancement ; le bouton **?** la rouvre.
 - **Vue d’en haut** (bouton dans la barre) : diorama en trois-quarts, on peut orienter légèrement la caméra
-  et zoomer un peu. Les murs côté caméra disparaissent.
+  et zoomer un peu. Les murs côté caméra disparaissent. Au retour dans la pièce, on reprend sa dernière
+  position.
 - **Survol / focus clavier** : contour rose et nom de l’objet. Les easter eggs restent discrets.
-- **Sélection** : la caméra se rapproche, la fiche s’ouvre à droite (en bas sur mobile) ; fermer la fiche
-  (bouton, Échap ou clic à côté) ramène à la vue précédente et rend le focus à l’objet.
+- **Sélection** : un clic (ou un toucher) ouvre la fiche ; un glissement pour regarder autour ne compte pas
+  comme un clic. La caméra se rapproche, la fiche s’ouvre à droite (en bas sur mobile) ; la fermer
+  (bouton, Échap ou clic à côté) rend exactement la position et l’orientation d’avant, et le focus à l’objet.
 - **Jour / Nuit** : transition progressive des lumières. Le jour, le soleil entre par la fenêtre ; la nuit,
   la lumière vient de la lampe du bureau, des écrans, du ruban LED et du halo du meuble TV.
 - **TV TCL** : un clic l’allume ou l’éteint. Ouvrir HubTV depuis l’écran gauche l’illumine brièvement
   en « mode TV » ; la manette près du canapé aussi.
 - **Hiki** marche, s’assoit, dort. **Caresser Hiki** : maintenir le clic et frotter son dos (ou glisser le
   doigt sur mobile) ; un simple clic, un toucher ou Entrée au clavier suffit aussi. Elle s’arrête, ferme
-  les yeux et remue doucement la queue ; si elle dort, elle bouge une oreille. Le geste suspend la rotation
-  de la caméra jusqu’au relâchement. Ronronnement synthétisé, coupé par défaut (bouton **Son**).
+  les yeux et remue doucement la queue ; si elle dort, elle bouge une oreille. Pendant la caresse, la caméra
+  reste immobile (ni rotation ni marche) jusqu’au relâchement. Ronronnement synthétisé, coupé par défaut (bouton **Son**).
 - **CV** : feuille « CV — Léna Simonin » près du clavier, distincte du carnet « Mon travail ». La fenêtre
   affiche le PDF (rendu avec pdf.js, lisible aussi sur mobile, en plein écran), avec **Télécharger le PDF**.
 - **Easter eggs** : guitare (survol = petit air original synthétisé si le son est activé ; un clic
