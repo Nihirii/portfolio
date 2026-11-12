@@ -8,7 +8,7 @@ import { INTERACTIVE_OBJECTS, objectById } from '../data/interactive-objects';
 import { InteractiveObjectId } from '../data/types';
 import { buildRoom, RoomBuild } from './build-room';
 import { Hiki, PetReaction } from './hiki';
-import { OVERVIEW } from './room-layout';
+import { INSIDE, OVERVIEW } from './room-layout';
 
 export interface RoomSceneCallbacks {
   /** Survol à la souris (null = rien). */
@@ -26,7 +26,11 @@ export interface RoomSceneCallbacks {
 interface View {
   position: THREE.Vector3;
   target: THREE.Vector3;
+  fov?: number;
 }
+
+/** `inside` : à hauteur d'yeux au milieu de la pièce ; `top` : diorama vu d'en haut. */
+export type ViewMode = 'inside' | 'top';
 
 export class RoomScene {
   private renderer: THREE.WebGLRenderer;
@@ -47,11 +51,13 @@ export class RoomScene {
   private nightTarget = 0;
   private tvOn = false;
   private tvFlashTimer = 0;
+  private tvFlashKind: 'hubtv' | 'retro' = 'hubtv';
   private reducedMotion = false;
   private inset = { right: 0, bottom: 0 };
   private insetTarget = { right: 0, bottom: 0 };
 
   private overview!: View;
+  private viewMode: ViewMode = 'inside';
   private savedView: View | null = null;
   private tween: { from: View; to: View; t: number; duration: number; done?: () => void } | null =
     null;
@@ -66,7 +72,10 @@ export class RoomScene {
   private lastStroke = 0;
   private strokes = 0;
   /** Position de repos des objets, et intensité de l'animation de survol (0 → 1). */
-  private rest = new Map<InteractiveObjectId, { pos: THREE.Vector3; rot: THREE.Euler; lift: number }>();
+  private rest = new Map<
+    InteractiveObjectId,
+    { pos: THREE.Vector3; rot: THREE.Euler; lift: number }
+  >();
   private eggAnims: {
     obj: THREE.Object3D;
     t: number;
@@ -128,6 +137,8 @@ export class RoomScene {
     this.resize();
     this.camera.position.copy(this.overview.position);
     this.controls.target.copy(this.overview.target);
+    this.camera.fov = this.overview.fov ?? OVERVIEW.fov;
+    this.applyViewOffset();
     this.controls.update();
 
     this.resizeObserver = new ResizeObserver(() => this.resize());
@@ -172,8 +183,9 @@ export class RoomScene {
   }
 
   /** Clin d'œil HubTV : la TV s'illumine brièvement en mode TV. */
-  flashTv() {
-    this.tvFlashTimer = 2.8;
+  flashTv(kind: 'hubtv' | 'retro' = 'hubtv') {
+    this.tvFlashKind = kind;
+    this.tvFlashTimer = kind === 'retro' ? 4.5 : 2.8;
   }
 
   /** Contour + nom quand un objet reçoit le focus clavier. */
@@ -203,7 +215,11 @@ export class RoomScene {
     const aspect = (this.host.clientWidth || 1) / (this.host.clientHeight || 1);
     const scale = (def.focus.distanceScale ?? 1) * (aspect < 1 ? 1.25 / Math.max(aspect, 0.45) : 1);
     const offset = new THREE.Vector3(ox, oy, oz).multiplyScalar(Math.min(scale, 2.6));
-    const to: View = { target: center, position: center.clone().add(offset) };
+    const to: View = {
+      target: center,
+      position: center.clone().add(offset),
+      fov: this.overview.fov,
+    };
     if (!this.savedView) this.savedView = this.currentView();
     this.focused = id;
     this.controls.enabled = false;
@@ -217,6 +233,33 @@ export class RoomScene {
     this.savedView = null;
     this.focused = null;
     this.startTween(back, 0.9, () => (this.controls.enabled = true));
+  }
+
+  /** Passe de la vue intérieure à la vue d'en haut (et inversement). */
+  setViewMode(mode: ViewMode, immediate = false) {
+    if (mode === this.viewMode && !immediate) return;
+    this.viewMode = mode;
+    this.overview = this.computeOverview();
+    if (this.focused) {
+      // on y reviendra à la fermeture de la fiche
+      this.savedView = this.overview;
+      return;
+    }
+    this.controls.enabled = false;
+    if (immediate) {
+      this.camera.position.copy(this.overview.position);
+      this.controls.target.copy(this.overview.target);
+      this.camera.fov = this.overview.fov ?? OVERVIEW.fov;
+      this.applyViewOffset();
+      this.configureOrbit();
+      this.controls.enabled = true;
+      this.controls.update();
+      return;
+    }
+    this.startTween(this.overview, 1.3, () => {
+      this.configureOrbit();
+      this.controls.enabled = true;
+    });
   }
 
   resetView() {
@@ -249,6 +292,9 @@ export class RoomScene {
       basePos: this.rest.get(id)?.pos.clone() ?? obj.position.clone(),
     });
     if (id === 'egg-controller') this.flashTv();
+    if (id === 'egg-bowl') this.hiki.goTo('bowl');
+    if (id === 'egg-retro') this.flashTv('retro');
+    this.room.eggEffects.get(id)?.();
   }
 
   dispose() {
@@ -294,7 +340,7 @@ export class RoomScene {
     if (this.tvFlashTimer > 0) this.tvFlashTimer -= dt;
     const flashing = this.tvFlashTimer > 0;
     const screen = this.room.tv.screen;
-    const wantMap = flashing ? this.room.tv.hubtv : this.room.tv.jellyfish;
+    const wantMap = flashing ? this.room.tv[this.tvFlashKind] : this.room.tv.jellyfish;
     if (screen.emissiveMap !== wantMap) {
       screen.emissiveMap = wantMap;
       screen.needsUpdate = true;
@@ -324,19 +370,43 @@ export class RoomScene {
   // ---------- caméra ----------
 
   private computeOverview(): View {
+    const aspectNow = (this.host.clientWidth || 1) / (this.host.clientHeight || 1);
+    if (this.viewMode === 'inside') {
+      const position = new THREE.Vector3(...INSIDE.position);
+      const dir = new THREE.Vector3(...INSIDE.lookAt).sub(position).normalize();
+      return {
+        position,
+        target: position.clone().addScaledVector(dir, 0.08),
+        fov: aspectNow < 1 ? INSIDE.fovPortrait : INSIDE.fov,
+      };
+    }
     const target = new THREE.Vector3(...OVERVIEW.target);
     const dir = new THREE.Vector3(...OVERVIEW.direction).normalize();
     const aspect = (this.host.clientWidth || 1) / (this.host.clientHeight || 1);
     // Assez de recul pour que la pièce entière tienne, même en portrait.
     const span = 7.4;
-    const vfov = THREE.MathUtils.degToRad(this.camera.fov);
+    const vfov = THREE.MathUtils.degToRad(OVERVIEW.fov);
     const hfov = 2 * Math.atan(Math.tan(vfov / 2) * aspect);
     const fit = span / 2 / Math.tan(hfov / 2);
     const distance = Math.max(OVERVIEW.distance, fit * 0.92);
-    return { target, position: target.clone().addScaledVector(dir, distance) };
+    return { target, position: target.clone().addScaledVector(dir, distance), fov: OVERVIEW.fov };
   }
 
   private configureOrbit() {
+    if (this.viewMode === 'inside') {
+      // regarder autour de soi : rotation libre, sans zoom
+      const d = this.overview.position.distanceTo(this.overview.target);
+      this.controls.minDistance = this.controls.maxDistance = d;
+      this.controls.minAzimuthAngle = -Infinity;
+      this.controls.maxAzimuthAngle = Infinity;
+      this.controls.minPolarAngle = 1.05;
+      this.controls.maxPolarAngle = 1.95;
+      this.controls.rotateSpeed = -0.35;
+      this.controls.enableZoom = false;
+      return;
+    }
+    this.controls.rotateSpeed = 0.5;
+    this.controls.enableZoom = true;
     const dist = this.overview.position.distanceTo(this.overview.target);
     const offset = this.overview.position.clone().sub(this.overview.target);
     const sph = new THREE.Spherical().setFromVector3(offset);
@@ -349,7 +419,11 @@ export class RoomScene {
   }
 
   private currentView(): View {
-    return { position: this.camera.position.clone(), target: this.controls.target.clone() };
+    return {
+      position: this.camera.position.clone(),
+      target: this.controls.target.clone(),
+      fov: this.camera.fov,
+    };
   }
 
   private startTween(to: View, duration: number, done?: () => void) {
@@ -368,6 +442,10 @@ export class RoomScene {
     const e = tw.t < 0.5 ? 4 * tw.t ** 3 : 1 - (-2 * tw.t + 2) ** 3 / 2;
     this.camera.position.lerpVectors(tw.from.position, tw.to.position, e);
     this.controls.target.lerpVectors(tw.from.target, tw.to.target, e);
+    if (tw.from.fov !== undefined && tw.to.fov !== undefined) {
+      this.camera.fov = tw.from.fov + (tw.to.fov - tw.from.fov) * e;
+      this.applyViewOffset();
+    }
     this.camera.lookAt(this.controls.target);
     if (tw.t >= 1) {
       this.tween = null;
@@ -415,6 +493,8 @@ export class RoomScene {
     if (old && !this.focused && !this.tween) {
       this.camera.position.copy(this.overview.position);
       this.controls.target.copy(this.overview.target);
+      this.camera.fov = this.overview.fov ?? OVERVIEW.fov;
+      this.applyViewOffset();
       this.controls.update();
     }
   }
@@ -579,7 +659,9 @@ export class RoomScene {
       const obj = this.room.interactives.get(id)!;
       if (this.eggAnims.some((a) => a.obj === obj)) return;
       const active =
-        !this.reducedMotion && !this.focused && (id === this.hovered || id === this.keyboardHighlight);
+        !this.reducedMotion &&
+        !this.focused &&
+        (id === this.hovered || id === this.keyboardHighlight);
       const target = active ? 1 : 0;
       if (target === 0 && r.lift === 0) return;
       r.lift += (target - r.lift) * k;
@@ -599,7 +681,16 @@ export class RoomScene {
       } else if (a.kind === 'egg-controller') {
         a.obj.position.x = a.basePos.x + Math.sin(a.t * 70) * 0.006 * fade;
         a.obj.rotation.y = a.base.y + Math.sin(a.t * 55) * 0.08 * fade;
-      } else {
+      } else if (a.kind === 'egg-guitar' || a.kind === 'egg-sunflowers') {
+        a.obj.rotation.z = a.base.z + Math.sin(a.t * 9) * 0.06 * fade;
+      } else if (
+        a.kind === 'egg-bowl' ||
+        a.kind === 'egg-duck' ||
+        a.kind === 'egg-teardown' ||
+        a.kind === 'egg-retro'
+      ) {
+        a.obj.position.y = a.basePos.y + Math.abs(Math.sin(a.t * 10)) * 0.015 * fade;
+      } else if (a.kind === 'egg-eva-jacket') {
         a.obj.rotation.z = a.base.z + Math.sin(a.t * 14) * 0.12 * fade;
       }
       if (k >= 1) {

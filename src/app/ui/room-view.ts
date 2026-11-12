@@ -14,6 +14,7 @@ import {
   viewChildren,
 } from '@angular/core';
 import { PortfolioState } from '../core/portfolio-state';
+import { GuitarSound } from '../core/guitar-sound';
 import { PurrSound } from '../core/purr';
 import { INTERACTIVE_OBJECTS, objectById, objectForSheet } from '../data/interactive-objects';
 import { InteractiveObject, InteractiveObjectId } from '../data/types';
@@ -58,7 +59,7 @@ import type { RoomScene } from '../scene/room-scene';
 
       <p class="hint" [class.hint--hidden]="state.anyPanelOpen()">
         <span class="hint--desktop"
-          >Glissez pour orienter la vue · cliquez sur un objet · Tab pour parcourir</span
+          >Glissez pour regarder autour de vous · cliquez sur un objet · Tab pour parcourir</span
         >
         <span class="hint--touch"
           >Touchez un objet pour l'ouvrir · glissez sur Hiki pour la caresser</span
@@ -71,6 +72,7 @@ import type { RoomScene } from '../scene/room-scene';
 export class RoomView implements AfterViewInit, OnDestroy {
   protected readonly state = inject(PortfolioState);
   private readonly purr = inject(PurrSound);
+  private readonly guitar = inject(GuitarSound);
   private readonly zone = inject(NgZone);
 
   protected readonly objects = INTERACTIVE_OBJECTS;
@@ -84,6 +86,7 @@ export class RoomView implements AfterViewInit, OnDestroy {
 
   private scene: RoomScene | null = null;
   private hovered: InteractiveObjectId | null = null;
+  private lastHover: InteractiveObjectId | null = null;
   private focusedHotspot: InteractiveObjectId | null = null;
   private wasPanelOpen = false;
   private petAnnounced = false;
@@ -97,6 +100,10 @@ export class RoomView implements AfterViewInit, OnDestroy {
     effect(() => {
       const r = this.state.reducedMotion();
       untracked(() => this.scene?.setReducedMotion(r));
+    });
+    effect(() => {
+      const above = this.state.viewFromAbove();
+      untracked(() => this.scene?.setViewMode(above ? 'top' : 'inside'));
     });
     effect(() => {
       const on = this.state.tvOn();
@@ -129,6 +136,7 @@ export class RoomView implements AfterViewInit, OnDestroy {
     this.scene!.setNight(this.state.night(), true);
     this.scene!.setReducedMotion(this.state.reducedMotion());
     this.scene!.setTvOn(this.state.tvOn());
+    this.scene!.setViewMode(this.state.viewFromAbove() ? 'top' : 'inside', true);
     this.ready.set(true);
     this.syncCamera(this.state.openSheetId(), this.state.cvOpen(), this.state.anyPanelOpen());
   }
@@ -175,6 +183,14 @@ export class RoomView implements AfterViewInit, OnDestroy {
         this.scene?.petHiki();
         break;
       case 'easter-egg':
+        if (o.action.eggId === 'guitar') {
+          // cliquer la guitare active le son (geste explicite) puis joue l'air
+          if (!this.state.soundOn()) {
+            this.state.soundOn.set(true);
+            this.state.announce('Son activé.');
+          }
+          this.guitar.play();
+        }
         this.scene?.playEgg(id);
         this.state.showEgg(o.action.eggId);
         break;
@@ -192,6 +208,12 @@ export class RoomView implements AfterViewInit, OnDestroy {
   }
 
   private onHover(id: InteractiveObjectId | null) {
+    // survoler la guitare joue un petit air (si le son est activé)
+    if (id === 'egg-guitar' && id !== this.lastHover && this.state.soundOn()) {
+      this.guitar.play();
+      this.scene?.playEgg('egg-guitar');
+    }
+    this.lastHover = id;
     // Les easter eggs restent discrets : pas d'étiquette au survol.
     this.hovered = id && objectById(id).primary ? id : null;
   }

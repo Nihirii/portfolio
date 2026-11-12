@@ -3,22 +3,31 @@ import { PortfolioState } from '../core/portfolio-state';
 import { EASTER_EGGS } from '../data/interactive-objects';
 import { githubProfileUrl, PROFILE } from '../data/profile';
 import { PROJECT_SHEETS, sheetById } from '../data/sheets';
+import { Avatar } from './avatar';
 import { SheetVisual } from './sheet-visual';
 
 /** Version 2D : même contenu, sans WebGL, entièrement navigable au clavier. */
 @Component({
   selector: 'app-flat-view',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SheetVisual],
+  imports: [SheetVisual, Avatar],
   template: `
     <div class="flat">
       @if (!state.webglAvailable()) {
         <p class="notice">Votre navigateur n'affiche pas la 3D : voici la version 2D du salon.</p>
       }
       <section class="hero" aria-labelledby="hero-title">
+        <app-avatar [size]="132" />
         <h1 id="hero-title">{{ profile.name }}</h1>
         <p class="hero__role">{{ profile.role }} à {{ profile.city }}</p>
         <p class="hero__text">{{ about.summary }}</p>
+        <ul class="likes" aria-label="Ce que j'aime">
+          @for (like of profile.likes; track like.label) {
+            <li>
+              <span aria-hidden="true">{{ like.icon }}</span> {{ like.label }}
+            </li>
+          }
+        </ul>
         <div class="hero__actions">
           <button type="button" class="chip chip--primary" (click)="state.openCv()">CV</button>
           <button type="button" class="chip" (click)="state.openSheet('about')">À propos</button>
@@ -100,6 +109,22 @@ import { SheetVisual } from './sheet-visual';
     .hero__text {
       max-width: 640px;
       font-size: 17px;
+    }
+    .likes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 0 0 16px;
+      padding: 0;
+      list-style: none;
+      li {
+        padding: 4px 12px;
+        border-radius: 999px;
+        background: var(--c-surface);
+        border: 2px solid var(--c-line);
+        font-weight: 800;
+        font-size: 14px;
+      }
     }
     .hero__actions {
       display: flex;

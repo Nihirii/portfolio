@@ -18,6 +18,8 @@ export class PortfolioState {
   readonly reducedMotion = signal(this.media('(prefers-reduced-motion: reduce)'));
   readonly soundOn = signal(false);
   readonly tvOn = signal(false);
+  /** Caméra : au milieu de la pièce (par défaut) ou vue d'en haut. */
+  readonly viewFromAbove = signal(false);
 
   /** Fiche ouverte (et objet d'origine, pour rendre le focus au bon endroit). */
   readonly openSheetId = signal<SheetId | null>(null);

@@ -65,7 +65,15 @@ export type InteractiveObjectId =
   | 'hiki'
   | 'egg-eva-jacket'
   | 'egg-controller'
-  | 'egg-plush';
+  | 'egg-plush'
+  | 'egg-guitar'
+  | 'egg-aquarium'
+  | 'egg-sunflowers'
+  | 'egg-stars'
+  | 'egg-bowl'
+  | 'egg-retro'
+  | 'egg-teardown'
+  | 'egg-duck';
 
 /** Ce qui se passe quand on active un objet. */
 export type ObjectAction =
@@ -75,7 +83,18 @@ export type ObjectAction =
   | { type: 'pet' }
   | { type: 'easter-egg'; eggId: EasterEggId };
 
-export type EasterEggId = 'eva-jacket' | 'controller' | 'plush';
+export type EasterEggId =
+  | 'eva-jacket'
+  | 'controller'
+  | 'plush'
+  | 'guitar'
+  | 'aquarium'
+  | 'sunflowers'
+  | 'stars'
+  | 'bowl'
+  | 'retro'
+  | 'teardown'
+  | 'duck';
 
 export interface InteractiveObject {
   id: InteractiveObjectId;
@@ -98,6 +117,12 @@ export interface EasterEgg {
   message: string;
 }
 
+export interface Like {
+  /** Petit pictogramme (émoji) affiché devant le libellé. */
+  icon: string;
+  label: string;
+}
+
 export interface Profile {
   name: string;
   role: string;
@@ -107,4 +132,8 @@ export interface Profile {
   /** Chemin public du CV (servi depuis `public/`). */
   cvPdfPath: string;
   cvDownloadName: string;
+  /** Avatar affiché dans « À propos » (servi depuis `public/`). */
+  avatarPath: string;
+  /** Ce que j'aime : affiché dans « À propos » et la version 2D. */
+  likes: Like[];
 }

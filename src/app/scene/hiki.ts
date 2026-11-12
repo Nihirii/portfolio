@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { mat, sph } from './helpers';
 import { HIKI } from './room-layout';
 
-type SpotName = keyof typeof HIKI.spots;
+export type SpotName = keyof typeof HIKI.spots;
 type Behaviour = 'walk' | 'idle' | 'sit' | 'sleep';
 export type PetReaction = 'purr' | 'ear';
 
@@ -95,6 +95,7 @@ export class Hiki {
   private heading = -2.4;
   private petTimer = 0;
   private earTwitch = 0;
+  private destination: SpotName | null = null;
   private lookYaw = 0;
   private reducedMotion = false;
   private night = 0;
@@ -154,6 +155,23 @@ export class Hiki {
     this.hop = null;
     this.behaviour = b;
     this.timer = 60;
+  }
+
+  /** Rejoint un endroit précis (ex. sa gamelle), puis s'y assoit un moment. */
+  goTo(spot: SpotName) {
+    if (this.behaviour === 'sleep' && this.reducedMotion) return;
+    if (this.spot === spot && !this.path.length) {
+      this.behaviour = 'sit';
+      this.timer = 6;
+      return;
+    }
+    const path = this.route(this.spot, spot);
+    if (path.length > 1) {
+      this.petTimer = 0;
+      this.path = path.slice(1);
+      this.behaviour = 'walk';
+      this.destination = spot;
+    }
   }
 
   /** Survol : elle remarque le curseur et bouge une oreille. */
@@ -311,6 +329,14 @@ export class Hiki {
     this.spot = spot;
     this.path.shift();
     if (!this.path.length) {
+      if (this.destination === spot) {
+        // arrivée à la destination demandée (gamelle) : elle s'assoit et mange
+        this.destination = null;
+        this.behaviour = 'sit';
+        this.timer = 6;
+        if (spot === 'bowl') this.heading = this.root.rotation.y = Math.PI;
+        return;
+      }
       this.behaviour = 'idle';
       this.timer = 0.6 + Math.random();
     }

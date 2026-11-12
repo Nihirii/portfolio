@@ -298,3 +298,115 @@ export function notebookTexture(): THREE.CanvasTexture {
     });
   });
 }
+
+/** Petits pixel arts originaux pour les cadres du bureau. */
+export function pixelArtTexture(kind: 'jelly' | 'cat' | 'pad'): THREE.CanvasTexture {
+  const art: Record<string, { bg: string; rows: string[]; colors: Record<string, string> }> = {
+    jelly: {
+      bg: '#2b2440',
+      colors: { p: '#f2b8c6', l: '#ffe3ef', w: '#ffffff', b: '#c8b4ef' },
+      rows: [
+        '............',
+        '....pppp....',
+        '..pplllppp..',
+        '.pplwlllppp.',
+        '.pplllllppp.',
+        '.pppppppppp.',
+        '..b.b..b.b..',
+        '..b.b..b.b..',
+        '.b..b..b..b.',
+        '.b...b.b..b.',
+        '..b..b..b...',
+        '............',
+      ],
+    },
+    cat: {
+      bg: '#f6d6e2',
+      colors: { c: '#7a6150', d: '#4e3d33', y: '#d8c24a', n: '#c98b88' },
+      rows: [
+        '............',
+        '..c......c..',
+        '..cc....cc..',
+        '..cccccccc..',
+        '.ccyccccycc.',
+        '.cccccnccc..',
+        '..cccccccc..',
+        '...cdcdcc...',
+        '..cccccccc..',
+        '..cccccccccc',
+        '..cc.cc.cc.c',
+        '............',
+      ],
+    },
+    pad: {
+      bg: '#cfe8ff',
+      colors: { g: '#6b6b78', d: '#3b3b46', r: '#e38aa3', v: '#8f7ae6' },
+      rows: [
+        '............',
+        '............',
+        '..gggggggg..',
+        '.gggggggggg.',
+        '.gdgggggrgg.',
+        '.dddgggvgrg.',
+        '.gdgggggvgg.',
+        '.gggggggggg.',
+        '.ggg....ggg.',
+        '..g......g..',
+        '............',
+        '............',
+      ],
+    },
+  };
+  const a = art[kind];
+  const t = canvasTexture(192, 192, (g, w) => {
+    g.fillStyle = a.bg;
+    g.fillRect(0, 0, w, w);
+    const s = w / 12;
+    a.rows.forEach((row, y) =>
+      [...row].forEach((ch, x) => {
+        if (ch === '.') return;
+        g.fillStyle = a.colors[ch];
+        g.fillRect(x * s, y * s, s, s);
+      }),
+    );
+  });
+  t.magFilter = THREE.NearestFilter;
+  return t;
+}
+
+/** TV : jeu rétro en pixel art (original) lancé depuis la console. */
+export function retroGameTexture(): THREE.CanvasTexture {
+  const t = canvasTexture(256, 150, (g, w, h) => {
+    const sky = g.createLinearGradient(0, 0, 0, h);
+    sky.addColorStop(0, '#2b2058');
+    sky.addColorStop(1, '#6b4fa8');
+    g.fillStyle = sky;
+    g.fillRect(0, 0, w, h);
+    g.fillStyle = '#fff6c8';
+    for (let i = 0; i < 18; i++) g.fillRect((i * 53) % w, (i * 29) % 70, 2, 2);
+    g.fillStyle = '#3e8a69';
+    g.fillRect(0, 118, w, 32);
+    g.fillStyle = '#7cc9a6';
+    for (let x = 0; x < w; x += 16) g.fillRect(x, 118, 8, 4);
+    // plateformes et pièces
+    g.fillStyle = '#c9a07a';
+    g.fillRect(150, 86, 48, 8);
+    g.fillRect(40, 70, 40, 8);
+    g.fillStyle = '#ffe08a';
+    [160, 172, 184, 50, 62].forEach((x, i) => g.fillRect(x, i < 3 ? 74 : 58, 6, 6));
+    // héroïne méduse
+    g.fillStyle = '#f2b8c6';
+    g.fillRect(96, 92, 18, 10);
+    g.fillRect(98, 88, 14, 4);
+    g.fillStyle = '#ffffff';
+    g.fillRect(101, 94, 3, 3);
+    g.fillStyle = '#c8b4ef';
+    [98, 103, 108, 112].forEach((x) => g.fillRect(x, 102, 2, 10));
+    g.fillStyle = '#ffffff';
+    g.font = 'bold 12px monospace';
+    g.fillText('SCORE 004200', 8, 16);
+    g.fillText('PRESS START', 86, 40);
+  });
+  t.magFilter = THREE.NearestFilter;
+  return t;
+}

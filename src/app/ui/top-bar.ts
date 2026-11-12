@@ -60,6 +60,15 @@ import { githubProfileUrl, PROFILE } from '../data/profile';
             <button
               type="button"
               class="chip"
+              [attr.aria-pressed]="state.viewFromAbove()"
+              (click)="state.viewFromAbove.set(!state.viewFromAbove())"
+            >
+              <span aria-hidden="true">{{ state.viewFromAbove() ? '🏠' : '🔭' }}</span>
+              {{ state.viewFromAbove() ? 'Vue de la pièce' : "Vue d'en haut" }}
+            </button>
+            <button
+              type="button"
+              class="chip"
               [attr.aria-pressed]="state.soundOn()"
               (click)="state.soundOn.set(!state.soundOn())"
               [attr.aria-label]="state.soundOn() ? 'Son activé (couper)' : 'Son coupé (activer)'"

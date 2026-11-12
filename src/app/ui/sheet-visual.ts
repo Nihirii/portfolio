@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { SheetVisual as Visual } from '../data/types';
+import { Avatar } from './avatar';
 
 /** Illustrations originales des fiches, dessinées en HTML/CSS (visuels fictifs). */
 @Component({
   selector: 'app-sheet-visual',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [Avatar],
   template: `
     <figure class="v" [class]="'v v--' + visual()" aria-hidden="true">
       @switch (visual()) {
@@ -66,6 +68,13 @@ import { SheetVisual as Visual } from '../data/types';
             </div>
           </div>
           <div class="tokens"><i></i><i></i><i></i><i></i><i></i></div>
+        }
+        @case ('about') {
+          <span class="bubble b1">🎮</span>
+          <span class="bubble b2">🪼</span>
+          <app-avatar [size]="124" />
+          <span class="bubble b3">👾</span>
+          <span class="bubble b4">🐱</span>
         }
         @default {
           <div class="hello">👋</div>

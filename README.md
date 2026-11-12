@@ -47,6 +47,8 @@ et pdf.js (≈ 110 ko gzip) seulement à l’ouverture du CV.
 | Noms exacts des dépôts | `src/app/data/sheets.ts` → `repoUrl('…')` |
 | Résumés marqués « À relire » (League of Stone, Tamagotchi, Ganeshka, Web services) | `src/app/data/sheets.ts` |
 | Textes des easter eggs | `src/app/data/interactive-objects.ts` → `EASTER_EGGS` |
+| Avatar (« À propos » et version 2D) | déposer l'image dans `public/me/lena-avatar.png` |
+| Ce que j'aime | `src/app/data/profile.ts` → `likes` |
 
 Tant que le pseudo GitHub ou le CV manquent, l’interface reste propre : le bouton GitHub est masqué en
 production (une pastille « à configurer » apparaît seulement en développement) et la fenêtre du CV indique
@@ -74,8 +76,9 @@ passage, ses liaisons et ses endroits de sieste (le canapé est privilégié la 
 
 ## Fonctionnement
 
-- **Vue d’ensemble** en trois-quarts ; on peut orienter légèrement la caméra (glisser) et zoomer un peu.
-  Les murs côté caméra disparaissent, comme dans un diorama.
+- **Vue de la pièce** (par défaut) : à hauteur d’yeux, au milieu du salon ; glisser pour regarder autour de soi.
+- **Vue d’en haut** (bouton dans la barre) : diorama en trois-quarts, on peut orienter légèrement la caméra
+  et zoomer un peu. Les murs côté caméra disparaissent.
 - **Survol / focus clavier** : contour rose et nom de l’objet. Les easter eggs restent discrets.
 - **Sélection** : la caméra se rapproche, la fiche s’ouvre à droite (en bas sur mobile) ; fermer la fiche
   (bouton, Échap ou clic à côté) ramène à la vue précédente et rend le focus à l’objet.
@@ -89,6 +92,12 @@ passage, ses liaisons et ses endroits de sieste (le canapé est privilégié la 
   de la caméra jusqu’au relâchement. Ronronnement synthétisé, coupé par défaut (bouton **Son**).
 - **CV** : feuille « CV — Léna Simonin » près du clavier, distincte du carnet « Mon travail ». La fenêtre
   affiche le PDF (rendu avec pdf.js, lisible aussi sur mobile, en plein écran), avec **Télécharger le PDF**.
+- **Easter eggs** : guitare (survol = petit air original synthétisé si le son est activé ; un clic
+  active le son), aquarium à méduses dans une colonne BESTÅ, console rétro branchée sur la TV
+  (la TV lance un jeu en pixel art), console en cours de démontage sur la table basse, canard de
+  débogage, gamelle (Hiki accourt), étoiles phosphorescentes visibles la nuit, tournesols, mini-veste
+  violette, manette, peluche Cinnamoroll, pixel arts (méduse, Hiki, manette) au-dessus du bureau.
+  Le KALLAX garde ses cases éclairées et vides pour de futures figurines.
 - **Liens directs** : `#about`, `#hubtv`, `#azura`, `#league-of-stone`, `#tamagotchi`, `#ganeshka`,
   `#web-services`, `#work`, `#cv`, `#projets`.
 

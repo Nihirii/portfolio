@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, isDevMode } from '@angular/core';
 import { PortfolioState } from '../core/portfolio-state';
+import { PROFILE } from '../data/profile';
 import { Panel } from './panel';
 import { SheetVisual } from './sheet-visual';
 import { WorkGallery } from './work-gallery';
@@ -28,6 +29,17 @@ import { WorkGallery } from './work-gallery';
             <ul class="list">
               @for (item of section.items; track item) {
                 <li>{{ item }}</li>
+              }
+            </ul>
+          }
+
+          @if (s.kind === 'about') {
+            <h3>Ce que j'aime</h3>
+            <ul class="likes">
+              @for (like of likes; track like.label) {
+                <li>
+                  <span aria-hidden="true">{{ like.icon }}</span> {{ like.label }}
+                </li>
               }
             </ul>
           }
@@ -123,6 +135,22 @@ import { WorkGallery } from './work-gallery';
       gap: var(--space-2);
       margin-top: var(--space-5);
     }
+    .likes {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      li {
+        padding: 8px 12px;
+        border-radius: var(--radius-m);
+        background: var(--c-surface-2);
+        border: 2px solid var(--c-line);
+        font-weight: 800;
+        font-size: 14px;
+      }
+    }
     .private {
       margin: 0;
       font-size: 14px;
@@ -140,6 +168,7 @@ export class SheetDialog {
   protected readonly state = inject(PortfolioState);
   protected readonly sheet = this.state.sheet;
   protected readonly dev = isDevMode();
+  protected readonly likes = PROFILE.likes;
   protected readonly eyebrow = computed(() => {
     const s = this.sheet();
     if (!s) return '';

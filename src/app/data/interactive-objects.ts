@@ -99,6 +99,62 @@ export const INTERACTIVE_OBJECTS: readonly InteractiveObject[] = [
     primary: false,
     focus: null,
   },
+  {
+    id: 'egg-guitar',
+    label: 'Guitare — jouer un air',
+    action: { type: 'easter-egg', eggId: 'guitar' },
+    primary: true,
+    focus: null,
+  },
+  {
+    id: 'egg-aquarium',
+    label: 'Aquarium à méduses',
+    action: { type: 'easter-egg', eggId: 'aquarium' },
+    primary: false,
+    focus: null,
+  },
+  {
+    id: 'egg-sunflowers',
+    label: 'Tournesols',
+    action: { type: 'easter-egg', eggId: 'sunflowers' },
+    primary: false,
+    focus: null,
+  },
+  {
+    id: 'egg-stars',
+    label: 'Étoiles au mur',
+    action: { type: 'easter-egg', eggId: 'stars' },
+    primary: false,
+    focus: null,
+  },
+  {
+    id: 'egg-bowl',
+    label: 'Gamelle de Hiki',
+    action: { type: 'easter-egg', eggId: 'bowl' },
+    primary: false,
+    focus: null,
+  },
+  {
+    id: 'egg-retro',
+    label: 'Console rétro',
+    action: { type: 'easter-egg', eggId: 'retro' },
+    primary: false,
+    focus: null,
+  },
+  {
+    id: 'egg-teardown',
+    label: 'Console en cours de démontage',
+    action: { type: 'easter-egg', eggId: 'teardown' },
+    primary: false,
+    focus: null,
+  },
+  {
+    id: 'egg-duck',
+    label: 'Canard de débogage',
+    action: { type: 'easter-egg', eggId: 'duck' },
+    primary: false,
+    focus: null,
+  },
 ];
 
 /** Messages des easter eggs (à personnaliser). */
@@ -118,6 +174,48 @@ export const EASTER_EGGS: readonly EasterEgg[] = [
     id: 'plush',
     title: 'Cinnamoroll',
     message: 'Mon petit chien nuage veille sur le salon depuis l’étagère.',
+  },
+  {
+    id: 'guitar',
+    title: 'Guitare',
+    message: 'Un petit air composé pour le salon. Le son se coupe avec le bouton « Son ».',
+  },
+  {
+    id: 'aquarium',
+    title: 'Méduses',
+    message: 'Les méduses, mon petit emblème. Elles brillent un peu plus la nuit.',
+  },
+  {
+    id: 'sunflowers',
+    title: 'Tournesols',
+    message: 'Des tournesols, pour garder un peu de soleil dans le salon toute l’année.',
+  },
+  {
+    id: 'stars',
+    title: 'Étoiles phosphorescentes',
+    message: 'On les remarque à peine le jour. Passez en mode nuit pour les voir briller.',
+  },
+  {
+    id: 'bowl',
+    title: 'La gamelle de Hiki',
+    message: 'Il suffit de toucher sa gamelle pour que Hiki arrive.',
+  },
+  {
+    id: 'retro',
+    title: 'Console rétro',
+    message:
+      'Une cartouche, un bouton, et la TV repart dans les années 90. Je collectionne les consoles rétro.',
+  },
+  {
+    id: 'teardown',
+    title: 'Atelier démontage',
+    message:
+      "J'adore ouvrir les consoles pour voir comment elles marchent, les nettoyer et les remonter.",
+  },
+  {
+    id: 'duck',
+    title: 'Canard de débogage',
+    message: 'Quand un bug résiste, je l’explique à ce canard. Ça marche presque toujours.',
   },
 ];
 

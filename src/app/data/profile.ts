@@ -9,6 +9,16 @@ export const PROFILE: Profile = {
   // Déposer la version publique du CV à cet emplacement : public/cv/lena-simonin-cv.pdf
   cvPdfPath: 'cv/lena-simonin-cv.pdf',
   cvDownloadName: 'CV-Lena-Simonin.pdf',
+  // Déposer l'avatar ici : public/me/lena-avatar.png
+  avatarPath: 'me/lena-avatar.png',
+  likes: [
+    { icon: '🎮', label: 'Jeux vidéo' },
+    { icon: '🪛', label: 'Démonter des consoles' },
+    { icon: '👾', label: 'Consoles rétro' },
+    { icon: '🐱', label: 'Hiki, ma chatte' },
+    { icon: '💻', label: 'Le dev' },
+    { icon: '🪼', label: 'Les méduses' },
+  ],
 };
 
 export function githubProfileUrl(profile: Profile = PROFILE): string | null {

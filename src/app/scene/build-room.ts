@@ -17,7 +17,7 @@ import {
   BALCONY_DOOR,
   CHAIRS,
   COFFEE_TABLE,
-  COSY_CORNER,
+  CAT_TREE,
   DESK,
   DESK_ITEMS,
   KALLAX,
@@ -29,6 +29,7 @@ import {
   TV,
   WINDOW,
 } from './room-layout';
+import { buildDuck, buildExtras, buildTeardown } from './build-extras';
 import {
   artTexture,
   azuraMonitorTexture,
@@ -39,6 +40,8 @@ import {
   hubtvTvTexture,
   jellyfishTexture,
   notebookTexture,
+  pixelArtTexture,
+  retroGameTexture,
   posterTexture,
 } from './textures';
 
@@ -65,9 +68,12 @@ export interface RoomBuild {
     light: THREE.PointLight;
     jellyfish: THREE.Texture;
     hubtv: THREE.Texture;
+    retro: THREE.Texture;
   };
-  /** Petites animations permanentes (LED du serveur, etc.). */
+  /** Petites animations permanentes (LED du serveur, méduses…). */
   tickers: ((t: number) => void)[];
+  /** Effets propres à certains easter eggs (méduses qui brillent, étoiles qui scintillent). */
+  eggEffects: Map<InteractiveObjectId, () => void>;
 }
 
 const { width: W, depth: D, height: H, wallThickness: WT, doorRecessDepth: RD } = ROOM;
@@ -81,6 +87,7 @@ export function buildRoom(): RoomBuild {
   const interactives = new Map<InteractiveObjectId, THREE.Object3D>();
   const dimmables: Dimmable[] = [];
   const tickers: ((t: number) => void)[] = [];
+  const eggEffects = new Map<InteractiveObjectId, () => void>();
 
   const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
   const dimLight = (l: THREE.Light, day: number, night: number) =>
@@ -178,7 +185,17 @@ export function buildRoom(): RoomBuild {
       gDesk,
       w - 0.05,
       h - 0.05,
-      new THREE.MeshStandardMaterial({ map: artTexture(i), roughness: 0.9 }),
+      new THREE.MeshStandardMaterial({
+        map:
+          i === 0
+            ? pixelArtTexture('jelly')
+            : i === 2
+              ? pixelArtTexture('cat')
+              : i === 3
+                ? pixelArtTexture('pad')
+                : artTexture(i),
+        roughness: 0.9,
+      }),
       x,
       y,
       0.027,
@@ -253,6 +270,11 @@ export function buildRoom(): RoomBuild {
     cyl(gg, 0.04, 0.04, 0.09, '#2a1a10', 0, 0.27, 0).rotation.x = Math.PI / 2;
     box(gg, 0.05, 0.55, 0.03, '#3a2a20', 0, 0.55, 0, 0.005);
     box(gg, 0.08, 0.12, 0.03, '#3a2a20', 0, 1.1, 0, 0.01);
+    // cordes
+    for (let k = 0; k < 4; k++)
+      box(gg, 0.003, 0.8, 0.002, '#e8e2d6', -0.015 + k * 0.01, 0.12, 0.046, 0);
+    addHitBox(gg, 0.4, 1.25, 0.15, 0, 0.6, 0);
+    register('egg-guitar', gg);
   }
 
   // ---------- mur de la fenêtre (x = W) ----------
@@ -454,6 +476,8 @@ export function buildRoom(): RoomBuild {
       ).rotation.y = a;
     }
   }
+  buildDuck(root, register, 3.12, deskTop, 0.68);
+
   // panier fermé + ampli sous le bureau
   cyl(root, 0.18, 0.16, 0.4, '#d5b48a', 1.6, 0, 0.35, 24);
   cyl(root, 0.19, 0.19, 0.04, '#c9a57a', 1.6, 0.4, 0.35, 24);
@@ -626,7 +650,7 @@ export function buildRoom(): RoomBuild {
     const LH = 0.85;
     box(root, W - 3.15, LH, 0.2, '#f1ebe3', 3.15 + (W - 3.15) / 2, 0, 0.1, 0.01);
     box(root, W - 3.15, 0.025, 0.21, '#e9e1d6', 3.15 + (W - 3.15) / 2, LH, 0.105, 0.005);
-    cyl(root, 0.035, 0.035, 0.08, mat('#1f1f24', { roughness: 0.3 }), 3.75, LH + 0.025, 0.1);
+    cyl(root, 0.035, 0.035, 0.08, mat('#1f1f24', { roughness: 0.3 }), 3.4, LH + 0.025, 0.1);
     const x = 5.78;
     const z = 0.11;
     const y0 = LH + 0.025;
@@ -681,6 +705,7 @@ export function buildRoom(): RoomBuild {
     sph(pad, 0.012, '#8f7ae6', -0.05, 0.035, -0.01);
     addHitBox(pad, 0.28, 0.1, 0.2, 0, 0.02, 0.01);
     register('egg-controller', pad);
+    buildTeardown(root, register, x + 0.16, z + 0.08);
   }
 
   // ---------- meuble TV IKEA blanc + TV TCL ----------
@@ -747,7 +772,29 @@ export function buildRoom(): RoomBuild {
     register('tv', g);
   }
   // console, lampe champignon, plante, peluche
-  box(root, 0.3, 0.08, 0.18, '#3b3a40', TX - 0.55, 0.51, D - 0.2, 0.01);
+  // peluche Cinnamoroll sur le meuble TV (easter egg)
+  {
+    const plush = group(root, 'plush');
+    plush.position.set(TX + 0.56, TV.cabinetHeight + 0.03, D - 0.2);
+    plush.rotation.y = Math.PI; // regarde vers la pièce
+    buildPlush(plush);
+    addHitBox(plush, 0.3, 0.3, 0.25, 0, 0.13, 0);
+    register('egg-plush', plush);
+  }
+
+  // console rétro branchée sur la TV, cartouche insérée (easter egg)
+  {
+    const g = group(root, 'retro-console');
+    g.position.set(TX - 0.52, 0.51, D - 0.22);
+    box(g, 0.26, 0.06, 0.18, '#d9d6e3', 0, 0, 0, 0.012);
+    box(g, 0.26, 0.012, 0.18, '#8f7ae6', 0, 0.06, 0, 0.004);
+    box(g, 0.1, 0.05, 0.02, '#3b3b46', 0.02, 0.06, 0.02, 0.004); // cartouche
+    box(g, 0.085, 0.03, 0.022, '#f2b8c6', 0.02, 0.085, 0.02, 0.003); // étiquette
+    sph(g, 0.008, '#e38aa3', -0.09, 0.035, -0.091);
+    box(g, 0.03, 0.012, 0.004, '#6b6b78', -0.05, 0.03, -0.091, 0.002);
+    addHitBox(g, 0.32, 0.16, 0.24, 0, 0.06, 0);
+    register('egg-retro', g);
+  }
   {
     cyl(root, 0.03, 0.05, 0.18, '#fff6ea', TX - 0.82, 0.51, D - 0.2, 16);
     const capMat = glow('#ffe4b8', 1.2);
@@ -781,8 +828,7 @@ export function buildRoom(): RoomBuild {
 
   // ---------- arbre à chat ----------
   {
-    const x = 1.0;
-    const z = D - 0.3;
+    const { x, z } = CAT_TREE;
     box(root, 0.5, 0.08, 0.45, '#d9cfc0', x, 0, z, 0.02);
     cyl(root, 0.06, 0.06, 0.9, '#cfae7e', x + 0.1, 0.08, z, 12);
     cyl(root, 0.05, 0.05, 0.5, '#cfae7e', x - 0.15, 0.08, z + 0.05, 12);
@@ -792,24 +838,8 @@ export function buildRoom(): RoomBuild {
     box(root, 0.4, 0.05, 0.36, '#e6ddd0', x + 0.05, 1.42, z, 0.03);
   }
 
-  // ---------- coin cosy ----------
-  {
-    const { x: cx, z: cz } = COSY_CORNER;
-    const rug = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.62, 0.015, 40), mat('#f6dfe6'));
-    rug.position.set(cx, 0.008, cz);
-    rug.receiveShadow = true;
-    root.add(rug);
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.012, 6, 48), mat('#ffffff'));
-    ring.rotation.x = Math.PI / 2;
-    ring.position.set(cx, 0.018, cz);
-    root.add(ring);
-    sph(root, 0.24, '#e9e1f7', cx - 0.15, 0.17, cz + 0.18, 1, 0.7, 1);
-    sph(root, 0.22, '#fdf3e6', cx + 0.25, 0.15, cz - 0.12, 1, 0.65, 1);
-    cyl(root, 0.15, 0.12, 0.04, '#c9a47c', cx - 0.3, 0.36, cz - 0.3, 24);
-    cyl(root, 0.02, 0.02, 0.34, '#c9a47c', cx - 0.3, 0.02, cz - 0.3);
-    cyl(root, 0.03, 0.03, 0.08, '#ffffff', cx - 0.3, 0.4, cz - 0.3);
-    sph(root, 0.03, '#f2b8c6', cx - 0.32, 0.5, cz - 0.3);
-  }
+  // ---------- aquarium, tournesols, gamelle, étoiles ----------
+  buildExtras({ root, gEnd, gTV, register, dimLight, dimEmissive, tickers, eggEffects });
 
   // ---------- KALLAX 5 × 5 ----------
   buildKallax(root, register, dimLight, dimEmissive, tickers);
@@ -846,8 +876,15 @@ export function buildRoom(): RoomBuild {
     dimmables,
     sun,
     hemi,
-    tv: { screen: tvScreen, light: tvLight, jellyfish: tvJelly, hubtv: tvHub },
+    tv: {
+      screen: tvScreen,
+      light: tvLight,
+      jellyfish: tvJelly,
+      hubtv: tvHub,
+      retro: retroGameTexture(),
+    },
     tickers,
+    eggEffects,
   };
 }
 
@@ -871,8 +908,8 @@ export function addHitBox(
   return m;
 }
 
-type DimLight = (l: THREE.Light, day: number, night: number) => void;
-type DimEmissive = (m: THREE.MeshStandardMaterial, day: number, night: number) => void;
+export type DimLight = (l: THREE.Light, day: number, night: number) => void;
+export type DimEmissive = (m: THREE.MeshStandardMaterial, day: number, night: number) => void;
 
 function buildMediaColumns(g: THREE.Group, dimLight: DimLight, dimEmissive: DimEmissive) {
   const ledMat = glow('#fff1d6', 2.2);
@@ -951,7 +988,7 @@ function buildMediaColumns(g: THREE.Group, dimLight: DimLight, dimEmissive: DimE
       box(c, 0.15, 0.05, 0.09, '#f2f2f2', 0, y + 0.07, 0, 0.02).rotation.x = -0.6;
       box(c, 0.13, 0.05, 0.09, '#2b2b33', 0.15, y + 0.06, 0, 0.02).rotation.x = -0.6;
     } else if (k === 4) {
-      sph(c, 0.12, '#f5df7a', 0, y + 0.12, 0, 1, 0.9, 0.9);
+      // étagère de l'aquarium à méduses (voir build-extras.ts)
     } else {
       for (let q = 0; q < 3; q++) {
         cyl(c, 0.025, 0.03, 0.12 + q * 0.03, palette[(k + q) % 6], -0.15 + q * 0.15, y, 0, 12);
@@ -1023,84 +1060,10 @@ function buildKallax(
         register(projectId as InteractiveObjectId, prop);
         continue;
       }
-      // une case = un thème (collection)
-      box(gK, cell - 0.08, 0.03, 0.18, '#ffffff', X, Y, 0.02, 0.008);
-      const kind = (i + j * N) % 5;
-      if (kind === 0) {
-        cyl(gK, 0.03, 0.035, 0.16, '#c8b4ef', X - 0.06, Y + 0.03, 0, 12);
-        sph(gK, 0.04, '#f6d6e2', X - 0.06, Y + 0.22, 0);
-        cyl(gK, 0.025, 0.03, 0.11, '#9fc3f0', X + 0.07, Y + 0.03, 0, 12);
-        sph(gK, 0.03, '#ffffff', X + 0.07, Y + 0.17, 0);
-      } else if (kind === 1) {
-        sph(
-          gK,
-          0.08,
-          new THREE.MeshStandardMaterial({
-            color: '#dff3ff',
-            transparent: true,
-            opacity: 0.35,
-            roughness: 0.05,
-          }),
-          X,
-          Y + 0.11,
-          0,
-        );
-        sph(gK, 0.06, '#7fb069', X, Y + 0.07, 0, 1, 0.5, 1);
-      } else if (kind === 2) {
-        box(gK, 0.14, 0.05, 0.09, '#f2f2f2', X, Y + 0.09, 0, 0.02).rotation.x = -0.6;
-      } else if (kind === 3) {
-        const t2 = new THREE.Mesh(
-          new THREE.TorusGeometry(0.07, 0.012, 8, 20, Math.PI),
-          mat('#e8e6ea'),
-        );
-        t2.position.set(X, Y + 0.08, 0);
-        gK.add(t2);
-      } else {
-        const figs = ['#f6d6e2', '#c8b4ef', '#ffe08a', '#9fc3f0', '#2e2a35', '#f2b8c6', '#bfe8d6'];
-        for (let b = 0; b < 5; b++)
-          box(
-            gK,
-            0.025,
-            0.17 + rnd() * 0.05,
-            0.15,
-            figs[(b + 2) % figs.length],
-            X - 0.06 + b * 0.03,
-            Y + 0.03,
-            0,
-            0.004,
-          );
-        sph(gK, 0.035, '#ffe08a', X + 0.1, Y + 0.065, 0);
-      }
+      // case vide : prête pour de futures figurines
     }
-  // dessus : boîtes, plante
-  box(gK, 0.3, 0.2, 0.25, '#2b2a30', 0.1, h, 0, 0.01);
-  box(gK, 0.22, 0.18, 0.2, '#f2f2f2', 0.5, h, 0, 0.01);
-  cyl(gK, 0.09, 0.07, 0.14, '#ffffff', -0.35, h, 0, 16);
-  for (let k = 0; k < 16; k++) {
-    const a = (k / 16) * Math.PI * 2;
-    const L = 0.25 + rnd() * 0.3;
-    const lf = box(
-      gK,
-      0.02,
-      0.006,
-      L,
-      '#8bc47a',
-      -0.35 + Math.cos(a) * L * 0.35,
-      h + 0.12 - L * 0.15,
-      Math.sin(a) * L * 0.35,
-      0,
-    );
-    lf.rotation.set(0.6, -a + Math.PI / 2, 0);
-  }
+  // dessus du KALLAX laissé vide
   dimLight(pointLight(gK, 0xffd29a, 1.4, 2.8, 0, 1.45, -0.75), 0.1, 2.4);
-
-  // peluche Cinnamoroll sur le KALLAX (easter egg)
-  const plush = group(gK);
-  plush.position.set(-0.72, h, -0.02);
-  plush.rotation.y = Math.PI; // regarde vers la pièce
-  buildPlush(plush);
-  addHitBox(plush, 0.3, 0.3, 0.25, 0, 0.13, 0);
-  register('egg-plush', plush);
 }
 
 /** Les objets-projets rangés dans le KALLAX. */

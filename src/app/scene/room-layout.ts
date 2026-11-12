@@ -95,8 +95,16 @@ export const MEDIA_WALL = {
   ledgeY: 1.465,
 };
 
-/** Coin cosy dans l'espace libre devant le KALLAX. */
-export const COSY_CORNER = { x: 1.05, z: 2.25 };
+/** Arbre à chat, un peu écarté du KALLAX pour ne plus masquer ses cases du bas. */
+export const CAT_TREE = { x: 1.25, z: 2.95 };
+
+/** Aquarium à méduses, sur l'étagère du milieu de la colonne BESTÅ droite. */
+export const AQUARIUM = { x: 5.7, z: 3.2, shelfY: 0.988, width: 0.42, height: 0.32 };
+
+/** Easter eggs : vase de tournesols, gamelle de Hiki, étoiles phosphorescentes. */
+export const SUNFLOWERS = { x: 5.8, z: 1.27 };
+export const BOWL = { x: 0.72, z: 1.05 };
+export const STARS = { y: 2.25, z0: 1.6, z1: 3.25 };
 
 /** Fenêtre du mur x = largeur (lumière du jour), avec le hamac à chat sur le radiateur. */
 export const WINDOW = { z: 2.0, width: 1.2, height: 1.2, sill: 0.95 };
@@ -116,7 +124,9 @@ export const HIKI = {
   spots: {
     rug: { x: 3.05, y: 0, z: 2.45 },
     middle: { x: 2.15, y: 0, z: 2.3 },
-    cosy: { x: 1.6, y: 0, z: 2.75 },
+    cosy: { x: 1.75, y: 0, z: 2.6 },
+    catTree: { x: 1.3, y: 1.47, z: 2.95 },
+    bowl: { x: 0.97, y: 0, z: 1.05 },
     desk: { x: 1.9, y: 0, z: 1.05 },
     tvFront: { x: 3.9, y: 0, z: 2.62 },
     corridor: { x: 4.9, y: 0, z: 2.55 },
@@ -129,6 +139,8 @@ export const HIKI = {
   links: [
     ['rug', 'middle'],
     ['middle', 'cosy'],
+    ['cosy', 'catTree'],
+    ['desk', 'bowl'],
     ['middle', 'desk'],
     ['rug', 'tvFront'],
     ['tvFront', 'corridor'],
@@ -139,7 +151,7 @@ export const HIKI = {
     ['sofaFoot', 'sofa'],
   ] as [string, string][],
   /** Endroits où elle peut dormir ; la nuit, elle reste près du canapé. */
-  sleepSpots: { day: ['hammock', 'rug', 'sofa', 'cosy'], night: ['sofa', 'sofaFoot'] },
+  sleepSpots: { day: ['hammock', 'rug', 'sofa', 'catTree'], night: ['sofa', 'sofaFoot'] },
 };
 
 /** Vue d'ensemble (repère de la pièce). */
@@ -149,4 +161,14 @@ export const OVERVIEW = {
   direction: [0.66, 0.7, 0.3] as [number, number, number],
   distance: 9.6,
   fov: 34,
+};
+
+/** Vue intérieure (par défaut) : à hauteur d'yeux, au milieu de la pièce. */
+export const INSIDE = {
+  position: [3.45, 1.6, 2.35] as [number, number, number],
+  /** Point regardé au départ : le coin bureau / KALLAX. */
+  lookAt: [1.1, 0.78, 0.95] as [number, number, number],
+  fov: 64,
+  /** Champ de vision en portrait (téléphone). */
+  fovPortrait: 82,
 };
