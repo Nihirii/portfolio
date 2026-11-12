@@ -60,6 +60,8 @@ export class RoomScene {
   private tvFlashTimer = 0;
   private tvFlashKind: 'hubtv' | 'retro' = 'hubtv';
   private reducedMotion = false;
+  /** Lampe à lave : null = automatique (allumée le soir), sinon choix de l'utilisatrice. */
+  private lavaOverride: boolean | null = null;
   private inset = { right: 0, bottom: 0 };
   private insetTarget = { right: 0, bottom: 0 };
 
@@ -168,6 +170,7 @@ export class RoomScene {
 
   /** `immediate` : pas de transition (premier affichage). */
   setNight(night: boolean, immediate = false) {
+    if ((night ? 1 : 0) !== this.nightTarget) this.lavaOverride = null; // retour au mode automatique
     this.nightTarget = night ? 1 : 0;
     if (immediate) {
       this.night = this.nightTarget;
@@ -206,6 +209,13 @@ export class RoomScene {
   /** Joystick tactile : x = pas de côté, y = avancer (-1 → 1). */
   setMoveInput(x: number, y: number) {
     this.walker.stick.set(x, y);
+  }
+
+  /** Allume ou éteint la lampe à lave ; renvoie le nouvel état. */
+  toggleLava(): boolean {
+    this.lavaOverride = !this.room.lava.on;
+    this.room.lava.on = this.lavaOverride;
+    return this.lavaOverride;
   }
 
   /** Clin d'œil HubTV : la TV s'illumine brièvement en mode TV. */
@@ -394,6 +404,10 @@ export class RoomScene {
     const tvTarget = this.tvOn || flashing ? 1 : 0;
     screen.emissiveIntensity += (tvTarget - screen.emissiveIntensity) * Math.min(1, dt * 8);
     this.room.tv.light.intensity = screen.emissiveIntensity * 0.9;
+
+    // lampe à lave : allumée automatiquement le soir, sauf choix contraire
+    this.room.lava.on = this.lavaOverride ?? this.nightTarget > 0.5;
+    this.room.lava.step(dt, t, this.night, this.reducedMotion);
 
     this.stepInsets(dt);
     if (this.tween) this.stepTween(dt);

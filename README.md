@@ -105,12 +105,15 @@ passage, ses liaisons et ses endroits de sieste (le canapé est privilégié la 
   reste immobile (ni rotation ni marche) jusqu’au relâchement. Ronronnement synthétisé, coupé par défaut (bouton **Son**).
 - **CV** : feuille « CV — Léna Simonin » près du clavier, distincte du carnet « Mon travail ». La fenêtre
   affiche le PDF (rendu avec pdf.js, lisible aussi sur mobile, en plein écran), avec **Télécharger le PDF**.
-- **Easter eggs** : guitare (survol = petit air original synthétisé si le son est activé ; un clic
-  active le son), aquarium à méduses dans une colonne BESTÅ, console rétro branchée sur la TV
-  (la TV lance un jeu en pixel art), console en cours de démontage sur la table basse, canard de
-  débogage, gamelle (Hiki accourt), étoiles phosphorescentes visibles la nuit, tournesols, mini-veste
-  violette, manette, peluche Cinnamoroll, pixel arts (méduse, Hiki, manette) au-dessus du bureau.
-  Le KALLAX garde ses cases éclairées et vides pour de futures figurines.
+- **Lampe à lave** (bureau) : allumée automatiquement le soir ; un clic l’allume ou l’éteint
+  (le choix vaut jusqu’au prochain passage jour / nuit).
+- **Easter eggs** : guitare (petit air original synthétisé ; un clic active le son), figurine Evangelion
+  dans le KALLAX, aquarium à méduses dans la colonne BESTÅ gauche, consoles GameCube, Nintendo 64, PSP
+  et 3DS dans la colonne BESTÅ droite, console rétro branchée sur la TV (jeu en pixel art), console en
+  cours de démontage et manette sur la table basse, canard de débogage, gamelle (Hiki accourt),
+  étoiles phosphorescentes visibles la nuit, tournesols et peluche Cinnamoroll sur le rebord derrière
+  le canapé, mini-veste violette, pixel arts au-dessus du bureau, affiches minimalistes au-dessus de la TV.
+  Les autres cases du KALLAX restent éclairées et vides pour de futures figurines.
 - **Liens directs** : `#about`, `#hubtv`, `#azura`, `#league-of-stone`, `#tamagotchi`, `#ganeshka`,
   `#web-services`, `#work`, `#cv`, `#projets`.
 

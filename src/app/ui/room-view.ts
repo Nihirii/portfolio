@@ -281,6 +281,11 @@ export class RoomView implements AfterViewInit, OnDestroy {
         this.hotspotFor(id)?.setAttribute('aria-label', this.ariaLabel(o));
         break;
       }
+      case 'lava-toggle': {
+        const on = this.scene?.toggleLava();
+        this.state.announce(on ? 'La lampe à lave est allumée.' : 'La lampe à lave est éteinte.');
+        break;
+      }
       case 'pet':
         this.petAnnounced = false;
         this.scene?.petHiki();

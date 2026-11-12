@@ -45,14 +45,14 @@ function buildAquarium({
   const water = new THREE.MeshStandardMaterial({
     color: '#8fd0ff',
     transparent: true,
-    opacity: 0.28,
+    opacity: 0.22,
     roughness: 0.05,
     metalness: 0.1,
     emissive: '#3a8fd8',
     emissiveIntensity: 0.1,
     depthWrite: false,
   });
-  dimEmissive(water, 0.08, 0.7);
+  dimEmissive(water, 0.05, 0.3);
   const tank = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), water);
   tank.position.y = 0.025 + h / 2;
   g.add(tank);
@@ -87,8 +87,8 @@ function buildAquarium({
   const led = glow('#bfe4ff', 1.5);
   dimEmissive(led, 0.3, 2);
   box(g, w - 0.04, 0.006, 0.02, led, 0, h + 0.018, 0, 0);
-  const light = pointLight(g, 0x7fc4ff, 0, 1.4, 0, h * 0.6, -0.3);
-  dimLight(light, 0.05, 0.8);
+  const light = pointLight(g, 0x7fc4ff, 0, 0.9, 0, h + 0.05, -0.05);
+  dimLight(light, 0.02, 0.35);
 
   // méduses
   let boost = 0;
@@ -144,7 +144,7 @@ function buildAquarium({
       const m = j.bell.material as THREE.MeshStandardMaterial;
       m.opacity = 0.75 + boost * 0.25;
     });
-    light.intensity += boost * 0.08;
+    light.intensity += boost * 0.03;
   });
 
   addHitBox(g, w + 0.06, h + 0.08, d + 0.06, 0, h / 2 + 0.02, 0);
@@ -160,10 +160,11 @@ function buildAquarium({
   });
 }
 
-/** Vase de tournesols au pied du canapé, côté fenêtre. */
+/** Vase de tournesols sur le rebord derrière le canapé. */
 function buildSunflowers({ root, register }: ExtrasContext) {
   const g = group(root, 'sunflowers');
-  g.position.set(SUNFLOWERS.x, 0, SUNFLOWERS.z);
+  g.position.set(SUNFLOWERS.x, SUNFLOWERS.y, SUNFLOWERS.z);
+  g.scale.setScalar(0.72);
   cyl(g, 0.07, 0.09, 0.3, '#f6f1e8', 0, 0, 0, 20);
   cyl(g, 0.072, 0.072, 0.02, '#f2b8c6', 0, 0.24, 0, 20);
   const petal = mat('#f7c948', { roughness: 0.7 });
@@ -179,7 +180,7 @@ function buildSunflowers({ root, register }: ExtrasContext) {
     stem.rotation.z = lean * 0.3;
     const head = group(g);
     head.position.set(x, y + 0.05, z);
-    head.rotation.set(0, Math.PI / 2, 0.5 + lean); // tournée vers la pièce
+    head.rotation.set(-0.35, lean * 0.6, 0); // tournée vers la pièce
     for (let k = 0; k < 12; k++) {
       const a = (k / 12) * Math.PI * 2;
       const p = sph(head, 0.025, petal, Math.cos(a) * 0.05, Math.sin(a) * 0.05, 0, 1.4, 0.55, 0.25);

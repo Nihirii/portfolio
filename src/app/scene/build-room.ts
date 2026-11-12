@@ -30,6 +30,7 @@ import {
   WINDOW,
 } from './room-layout';
 import { buildDuck, buildExtras, buildTeardown } from './build-extras';
+import { buildConsoles, buildEvaFigure, buildLavaLamp, LavaLamp } from './build-collection';
 import {
   artTexture,
   azuraMonitorTexture,
@@ -42,7 +43,7 @@ import {
   notebookTexture,
   pixelArtTexture,
   retroGameTexture,
-  posterTexture,
+  minimalPosterTexture,
 } from './textures';
 
 /** Une valeur qui varie entre le jour (0) et la nuit (1). */
@@ -74,6 +75,8 @@ export interface RoomBuild {
   tickers: ((t: number) => void)[];
   /** Effets propres à certains easter eggs (méduses qui brillent, étoiles qui scintillent). */
   eggEffects: Map<InteractiveObjectId, () => void>;
+  /** Lampe à lave : `step` l'anime et suit l'état allumé. */
+  lava: LavaLamp;
 }
 
 const { width: W, depth: D, height: H, wallThickness: WT, doorRecessDepth: RD } = ROOM;
@@ -322,7 +325,7 @@ export function buildRoom(): RoomBuild {
   // affiches encadrées sur l'étagère, entre les colonnes
   for (let i = 0; i < 6; i++) {
     const x = TV.x + (i - 2.5) * 0.29;
-    const tex = new THREE.MeshStandardMaterial({ map: posterTexture(i), roughness: 0.9 });
+    const tex = new THREE.MeshStandardMaterial({ map: minimalPosterTexture(i), roughness: 0.9 });
     box(gTV, 0.27, 0.39, 0.025, '#d8b893', x, 1.72 - 0.195, D - 0.0125, 0.004);
     plane(gTV, 0.23, 0.34, tex, x, 1.72, D - 0.027, Math.PI);
   }
@@ -441,18 +444,8 @@ export function buildRoom(): RoomBuild {
   cyl(root, 0.015, 0.02, 0.12, '#2b2b33', 2.95, 1.2, 0.25);
   sph(root, 0.03, '#7fd6d0', 2.95, 1.35, 0.25);
 
-  // lampe du bureau (lumière principale la nuit)
-  {
-    const { x, z } = DESK_ITEMS.lamp;
-    cyl(root, 0.045, 0.07, 0.12, '#bcbcc4', x, deskTop - 0.02, z);
-    const shade = glow('#ff9fc2', 1.1);
-    dimEmissive(shade, 0.15, 1.6);
-    cyl(root, 0.04, 0.06, 0.2, shade, x, deskTop + 0.1, z);
-    cyl(root, 0.02, 0.04, 0.06, '#bcbcc4', x, deskTop + 0.3, z);
-    const l = pointLight(root, 0xffc0a8, 0, 3.2, x + 0.05, deskTop + 0.35, z + 0.2);
-    l.castShadow = false;
-    dimLight(l, 0, 2.4);
-  }
+  // lampe à lave du bureau : allumée le soir, ou au clic
+  const lava = buildLavaLamp(root, register, DESK_ITEMS.lamp.x, deskTop - 0.02, DESK_ITEMS.lamp.z);
   // casque + plante sur le bureau
   {
     const t = new THREE.Mesh(new THREE.TorusGeometry(0.08, 0.015, 10, 24, Math.PI), mat('#e8e6ea'));
@@ -677,26 +670,11 @@ export function buildRoom(): RoomBuild {
   box(root, RUG.width, 0.015, RUG.depth, '#f5ecde', RUG.x, 0, RUG.z, 0.006);
   {
     const { x, z } = COFFEE_TABLE;
+    // table basse : seulement la manette et la console en cours de démontage
     box(root, 1.0, 0.36, 0.56, '#f7f5f2', x, 0, z, 0.02);
-    cyl(
-      root,
-      0.035,
-      0.03,
-      0.1,
-      mat('#cfe6f0', { transparent: true, opacity: 0.6 }),
-      x - 0.25,
-      0.36,
-      z - 0.1,
-    );
-    cyl(root, 0.11, 0.1, 0.015, '#f2d6d0', x + 0.2, 0.36, z - 0.05);
-    cyl(root, 0.05, 0.06, 0.04, '#e8d8c8', x + 0.4, 0.36, z - 0.15, 16);
-    const lampMat = glow('#ffe9c8', 1.2);
-    dimEmissive(lampMat, 0.2, 1.2);
-    sph(root, 0.07, lampMat, x + 0.4, 0.47, z - 0.15);
-    dimLight(pointLight(root, 0xffc98a, 0.2, 2, x + 0.4, 0.55, z - 0.15), 0.05, 0.9);
 
     const pad = group(root);
-    pad.position.set(x - 0.12, 0.36, z + 0.1);
+    pad.position.set(x - 0.22, 0.36, z + 0.02);
     pad.rotation.y = 0.5;
     box(pad, 0.15, 0.03, 0.09, '#f2f2f2', 0, 0, 0, 0.02);
     sph(pad, 0.035, '#f2f2f2', -0.07, 0.02, 0.02, 1, 0.6, 1.2);
@@ -705,7 +683,7 @@ export function buildRoom(): RoomBuild {
     sph(pad, 0.012, '#8f7ae6', -0.05, 0.035, -0.01);
     addHitBox(pad, 0.28, 0.1, 0.2, 0, 0.02, 0.01);
     register('egg-controller', pad);
-    buildTeardown(root, register, x + 0.16, z + 0.08);
+    buildTeardown(root, register, x + 0.16, z - 0.02);
   }
 
   // ---------- meuble TV IKEA blanc + TV TCL ----------
@@ -772,11 +750,12 @@ export function buildRoom(): RoomBuild {
     register('tv', g);
   }
   // console, lampe champignon, plante, peluche
-  // peluche Cinnamoroll sur le meuble TV (easter egg)
+  // peluche Cinnamoroll (easter egg)
   {
     const plush = group(root, 'plush');
-    plush.position.set(TX + 0.56, TV.cabinetHeight + 0.03, D - 0.2);
-    plush.rotation.y = Math.PI; // regarde vers la pièce
+    // sur le rebord derrière le canapé, à côté des tournesols
+    plush.position.set(3.68, 0.875, 0.1);
+    plush.rotation.y = 0.15; // regarde vers la pièce
     buildPlush(plush);
     addHitBox(plush, 0.3, 0.3, 0.25, 0, 0.13, 0);
     register('egg-plush', plush);
@@ -824,7 +803,7 @@ export function buildRoom(): RoomBuild {
   }
 
   // colonnes BESTÅ vitrées + étagère à affiches (masquées avec le mur en vue d'ensemble)
-  buildMediaColumns(gTV, dimLight, dimEmissive);
+  buildMediaColumns(gTV, dimLight, dimEmissive, register);
 
   // ---------- arbre à chat ----------
   {
@@ -885,6 +864,7 @@ export function buildRoom(): RoomBuild {
     },
     tickers,
     eggEffects,
+    lava,
   };
 }
 
@@ -911,7 +891,12 @@ export function addHitBox(
 export type DimLight = (l: THREE.Light, day: number, night: number) => void;
 export type DimEmissive = (m: THREE.MeshStandardMaterial, day: number, night: number) => void;
 
-function buildMediaColumns(g: THREE.Group, dimLight: DimLight, dimEmissive: DimEmissive) {
+function buildMediaColumns(
+  g: THREE.Group,
+  dimLight: DimLight,
+  dimEmissive: DimEmissive,
+  register: (id: InteractiveObjectId, o: THREE.Object3D) => void,
+) {
   const ledMat = glow('#fff1d6', 2.2);
   dimEmissive(ledMat, 0.4, 2.2);
   const glass = new THREE.MeshStandardMaterial({
@@ -971,31 +956,8 @@ function buildMediaColumns(g: THREE.Group, dimLight: DimLight, dimEmissive: DimE
   box(g, 1.8, 0.035, 0.012, '#f8f7f4', TV.x, MEDIA_WALL.ledgeY + 0.03, D - 0.235, 0.003);
   box(g, 1.76, 0.006, 0.02, ledMat, TV.x, MEDIA_WALL.ledgeY - 0.01, D - 0.2, 0);
   dimLight(pointLight(g, 0xffd9a6, 0.5, 1.2, TV.x, 1.4, D - 0.3), 0.05, 0.5);
-  // contenu des vitrines
-  const palette = ['#c8b4ef', '#f6d6e2', '#9fc3f0', '#ffe08a', '#bfe8d6', '#f2b8c6'];
-  (
-    [
-      [0, 0.56],
-      [0, 0.99],
-      [0, 1.43],
-      [1, 0.56],
-      [1, 0.99],
-      [1, 1.43],
-    ] as const
-  ).forEach(([ci, y], k) => {
-    const c = cols[ci];
-    if (k === 1) {
-      box(c, 0.15, 0.05, 0.09, '#f2f2f2', 0, y + 0.07, 0, 0.02).rotation.x = -0.6;
-      box(c, 0.13, 0.05, 0.09, '#2b2b33', 0.15, y + 0.06, 0, 0.02).rotation.x = -0.6;
-    } else if (k === 4) {
-      // étagère de l'aquarium à méduses (voir build-extras.ts)
-    } else {
-      for (let q = 0; q < 3; q++) {
-        cyl(c, 0.025, 0.03, 0.12 + q * 0.03, palette[(k + q) % 6], -0.15 + q * 0.15, y, 0, 12);
-        sph(c, 0.032, palette[(k + q + 2) % 6], -0.15 + q * 0.15, y + 0.15 + q * 0.03 + 0.02, 0);
-      }
-    }
-  });
+  // colonne gauche : l'aquarium à méduses (build-extras.ts) ; colonne droite : les consoles
+  buildConsoles(cols[1], register);
 }
 
 function buildKallax(
@@ -1058,6 +1020,13 @@ function buildKallax(
         buildProjectProp(prop, projectId, tickers);
         addHitBox(prop, cell - 0.02, cell - 0.02, d - 0.04, 0, cell / 2, -0.02);
         register(projectId as InteractiveObjectId, prop);
+        continue;
+      }
+      if (i === KALLAX.evaFigureCell[0] && j === KALLAX.evaFigureCell[1]) {
+        const fig = group(gK);
+        fig.position.set(X, Y, -0.02);
+        fig.rotation.y = Math.PI; // face à la pièce
+        buildEvaFigure(fig, register);
         continue;
       }
       // case vide : prête pour de futures figurines

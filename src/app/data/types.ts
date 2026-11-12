@@ -73,13 +73,17 @@ export type InteractiveObjectId =
   | 'egg-bowl'
   | 'egg-retro'
   | 'egg-teardown'
-  | 'egg-duck';
+  | 'egg-duck'
+  | 'egg-consoles'
+  | 'egg-eva-figure'
+  | 'lava-lamp';
 
 /** Ce qui se passe quand on active un objet. */
 export type ObjectAction =
   | { type: 'sheet'; sheetId: SheetId }
   | { type: 'cv' }
   | { type: 'tv-toggle' }
+  | { type: 'lava-toggle' }
   | { type: 'pet' }
   | { type: 'easter-egg'; eggId: EasterEggId };
 
@@ -94,7 +98,9 @@ export type EasterEggId =
   | 'bowl'
   | 'retro'
   | 'teardown'
-  | 'duck';
+  | 'duck'
+  | 'consoles'
+  | 'eva-figure';
 
 export interface InteractiveObject {
   id: InteractiveObjectId;

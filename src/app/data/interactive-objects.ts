@@ -72,6 +72,13 @@ export const INTERACTIVE_OBJECTS: readonly InteractiveObject[] = [
     focus: null,
   },
   {
+    id: 'lava-lamp',
+    label: 'Lampe à lave — allumer / éteindre',
+    action: { type: 'lava-toggle' },
+    primary: true,
+    focus: null,
+  },
+  {
     id: 'hiki',
     label: 'Caresser Hiki',
     action: { type: 'pet' },
@@ -155,6 +162,20 @@ export const INTERACTIVE_OBJECTS: readonly InteractiveObject[] = [
     primary: false,
     focus: null,
   },
+  {
+    id: 'egg-consoles',
+    label: 'Collection de consoles',
+    action: { type: 'easter-egg', eggId: 'consoles' },
+    primary: false,
+    focus: null,
+  },
+  {
+    id: 'egg-eva-figure',
+    label: 'Figurine Evangelion',
+    action: { type: 'easter-egg', eggId: 'eva-figure' },
+    primary: false,
+    focus: null,
+  },
 ];
 
 /** Messages des easter eggs (à personnaliser). */
@@ -216,6 +237,17 @@ export const EASTER_EGGS: readonly EasterEgg[] = [
     id: 'duck',
     title: 'Canard de débogage',
     message: 'Quand un bug résiste, je l’explique à ce canard. Ça marche presque toujours.',
+  },
+  {
+    id: 'consoles',
+    title: 'Ma collection',
+    message:
+      'GameCube, Nintendo 64, PSP et 3DS : des consoles que je garde, que je répare et sur lesquelles je joue encore.',
+  },
+  {
+    id: 'eva-figure',
+    title: 'Figurine Evangelion',
+    message: 'L’Unité 01 veille sur le KALLAX, assortie à la mini-veste posée sur la chaise.',
   },
 ];
 

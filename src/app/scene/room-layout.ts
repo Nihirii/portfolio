@@ -56,6 +56,8 @@ export const KALLAX = {
     'kallax-binder': [1, 2],
     'kallax-server': [3, 2],
   } as Record<string, [number, number]>,
+  /** Case de la figurine Evangelion. */
+  evaFigureCell: [2, 3] as [number, number],
 };
 
 /** Meuble TV IKEA blanc (3 × BESTÅ) et TV TCL, contre le mur du balcon. */
@@ -98,11 +100,12 @@ export const MEDIA_WALL = {
 /** Arbre à chat, un peu écarté du KALLAX pour ne plus masquer ses cases du bas. */
 export const CAT_TREE = { x: 1.25, z: 2.95 };
 
-/** Aquarium à méduses, sur l'étagère du milieu de la colonne BESTÅ droite. */
-export const AQUARIUM = { x: 5.7, z: 3.2, shelfY: 0.988, width: 0.42, height: 0.32 };
+/** Aquarium à méduses, sur l'étagère du milieu de la colonne BESTÅ gauche. */
+export const AQUARIUM = { x: 3.3, z: 3.2, shelfY: 0.988, width: 0.42, height: 0.32 };
 
 /** Easter eggs : vase de tournesols, gamelle de Hiki, étoiles phosphorescentes. */
-export const SUNFLOWERS = { x: 5.8, z: 1.27 };
+/** Tournesols : sur le rebord derrière le canapé (hauteur du rebord : 0,875 m). */
+export const SUNFLOWERS = { x: 4.05, y: 0.875, z: 0.1 };
 export const BOWL = { x: 0.72, z: 1.05 };
 export const STARS = { y: 2.25, z0: 1.6, z1: 3.25 };
 
@@ -247,7 +250,6 @@ export function colliders(): { rects: RectCollider[]; circles: CircleCollider[] 
   ];
   const circles: CircleCollider[] = [
     { x: CHAIRS.gaming.x, z: CHAIRS.gaming.z, r: 0.33 }, // chaise gaming
-    { x: SUNFLOWERS.x, z: SUNFLOWERS.z, r: 0.1 },
   ];
   return { rects, circles };
 }
