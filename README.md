@@ -37,6 +37,8 @@ npx ng build --base-href /portfolio/
 
 Poids : environ 60 ko (gzip) au premier chargement. Three.js (≈ 135 ko gzip) n’est chargé que pour la vue 3D,
 et pdf.js (≈ 110 ko gzip) seulement à l’ouverture du CV.
+La pièce pré-calculée (`public/room/`, ≈ 4 Mo : géométrie Draco 3,3 Mo + deux atlas WebP de 350 ko)
+est chargée avec la vue 3D, pendant le message « Le salon s'installe… ».
 
 ## À compléter avant la mise en ligne
 

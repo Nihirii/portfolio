@@ -138,7 +138,8 @@ void main() {`,
       .replace(
         'reflectedLight.indirectDiffuse += lightMapTexel.rgb * lightMapIntensity * RECIPROCAL_PI;',
         `vec3 lightDay = decodeLight( lightMapTexel.rgb );
-    vec3 lightNight = decodeLight( texture2D( lightMapNight, vLightMapUv ).rgb );
+    // soir tamisé : les lampes ressortent, le reste de la pièce reste dans la pénombre
+    vec3 lightNight = decodeLight( texture2D( lightMapNight, vLightMapUv ).rgb ) * 0.42;
     reflectedLight.indirectDiffuse += mix( lightDay, lightNight, uNight ) * uExposure;`,
       );
   };
