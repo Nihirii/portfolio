@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { InteractiveObjectId } from '../data/types';
 import { addHitBox, DimEmissive, DimLight } from './build-room';
-import { box, cyl, glow, group, mat, pointLight, rnd, sph } from './helpers';
+import { box, cyl, group, mat, pointLight, rnd, sph } from './helpers';
 import { AQUARIUM, BOWL, STARS, SUNFLOWERS } from './room-layout';
 
 interface ExtrasContext {
@@ -25,7 +25,10 @@ export function buildExtras(ctx: ExtrasContext) {
   buildBowl(ctx);
 }
 
-/** Aquarium dans une colonne BESTÅ vitrée, avec trois méduses qui pulsent. */
+/**
+ * Aquarium à méduses rond (cylindre blanc, hublot éclairé en bleu),
+ * posé dans la colonne BESTÅ gauche. Le hublot fait face à la pièce (-z).
+ */
 function buildAquarium({
   gTV,
   register,
@@ -34,115 +37,136 @@ function buildAquarium({
   tickers,
   eggEffects,
 }: ExtrasContext) {
-  const w = AQUARIUM.width;
-  const h = AQUARIUM.height;
-  const d = 0.2;
+  const R = 0.17; // rayon extérieur
+  const r = 0.125; // rayon du hublot
+  const depth = 0.19;
   const g = group(gTV, 'aquarium');
   g.position.set(AQUARIUM.x, AQUARIUM.shelfY, AQUARIUM.z);
 
-  box(g, w + 0.02, 0.025, d + 0.02, '#f8f7f4', 0, 0, 0, 0.006); // socle
-  box(g, w + 0.02, 0.02, d + 0.02, '#f8f7f4', 0, h + 0.025, 0, 0.006); // couvercle
-  const water = new THREE.MeshStandardMaterial({
-    color: '#8fd0ff',
-    transparent: true,
-    opacity: 0.22,
-    roughness: 0.05,
-    metalness: 0.1,
-    emissive: '#3a8fd8',
-    emissiveIntensity: 0.1,
-    depthWrite: false,
-  });
-  dimEmissive(water, 0.05, 0.3);
-  const tank = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), water);
-  tank.position.y = 0.025 + h / 2;
-  g.add(tank);
-  box(g, w - 0.01, 0.03, d - 0.01, '#e9dccb', 0, 0.025, 0, 0.004); // sable
-  // petits galets
-  for (let k = 0; k < 6; k++)
-    sph(
-      g,
-      0.012,
-      k % 2 ? '#c8b4ef' : '#f2b8c6',
-      -0.16 + k * 0.06,
-      0.06,
-      -0.03 + (k % 3) * 0.03,
-      1,
-      0.6,
-      1,
-    );
-  const led = glow('#bfe4ff', 1.5);
-  dimEmissive(led, 0.3, 2);
-  box(g, w - 0.04, 0.006, 0.02, led, 0, h + 0.018, 0, 0);
-  const light = pointLight(g, 0x7fc4ff, 0, 0.9, 0, h + 0.05, -0.05);
-  dimLight(light, 0.02, 0.35);
+  const shell = mat('#eef0f3', { roughness: 0.35, metalness: 0.25 });
+  box(g, 0.16, 0.02, 0.12, '#dfe2e7', 0, 0, 0, 0.006); // pied
+  const drum = group(g);
+  drum.position.set(0, 0.02 + R, 0);
 
-  // méduses
-  let boost = 0;
-  const jellies: {
-    g: THREE.Group;
-    bell: THREE.Mesh;
-    tentacles: THREE.Mesh[];
-    phase: number;
-    x: number;
-  }[] = [];
-  const colors = ['#ffd6ec', '#d9ccff', '#c9ecff'];
-  colors.forEach((c, i) => {
-    const jg = new THREE.Group();
-    const bellMat = new THREE.MeshStandardMaterial({
-      color: c,
-      emissive: c,
-      emissiveIntensity: 0.6,
-      transparent: true,
-      opacity: 0.85,
-      roughness: 0.3,
-    });
-    dimEmissive(bellMat, 0.35, 1.3);
-    const bell = new THREE.Mesh(
-      new THREE.SphereGeometry(0.03, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2),
-      bellMat,
-    );
-    jg.add(bell);
-    const tentacles: THREE.Mesh[] = [];
-    for (let k = 0; k < 5; k++) {
-      const len = 0.05 + (k % 2) * 0.02;
-      const tg = new THREE.CylinderGeometry(0.0025, 0.001, len, 4);
-      tg.translate(0, -len / 2, 0);
-      const t = new THREE.Mesh(tg, bellMat);
-      const a = (k / 5) * Math.PI * 2;
-      t.position.set(Math.cos(a) * 0.015, 0, Math.sin(a) * 0.012);
-      jg.add(t);
-      tentacles.push(t);
-    }
-    const x = -0.12 + i * 0.11;
-    jg.position.set(x, 0.15 + i * 0.03, (i - 1) * 0.03);
-    g.add(jg);
-    jellies.push({ g: jg, bell, tentacles, phase: i * 2.1, x });
+  // coque : cylindre couché (axe vers la pièce)
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(R, R, depth, 64, 1, true), shell);
+  body.rotation.x = Math.PI / 2;
+  body.castShadow = true;
+  drum.add(body);
+  const back = new THREE.Mesh(new THREE.CircleGeometry(R, 64), shell);
+  back.position.z = depth / 2;
+  drum.add(back);
+  // façade : anneau blanc autour du hublot
+  const face = new THREE.Mesh(new THREE.RingGeometry(r, R, 64), shell);
+  face.position.z = -depth / 2;
+  face.rotation.y = Math.PI;
+  drum.add(face);
+
+  // intérieur lumineux : fond et paroi bleus
+  const glowBack = new THREE.MeshStandardMaterial({
+    color: '#0d1b33',
+    emissive: '#2f8fe0',
+    emissiveIntensity: 0.6,
+    roughness: 0.6,
   });
+  dimEmissive(glowBack, 0.45, 0.9);
+  const inner = new THREE.Mesh(new THREE.CylinderGeometry(r, r, depth - 0.01, 64, 1, true), glowBack);
+  inner.material.side = THREE.BackSide;
+  inner.rotation.x = Math.PI / 2;
+  drum.add(inner);
+  const bottom = new THREE.Mesh(
+    new THREE.CircleGeometry(r, 64),
+    new THREE.MeshStandardMaterial({ color: '#06101f', emissive: '#123a6b', emissiveIntensity: 0.5 }),
+  );
+  bottom.position.z = depth / 2 - 0.006;
+  bottom.rotation.y = Math.PI;
+  drum.add(bottom);
+  // vitre
+  const glass = new THREE.Mesh(
+    new THREE.CircleGeometry(r, 64),
+    new THREE.MeshPhysicalMaterial({
+      color: '#bfe6ff',
+      transparent: true,
+      opacity: 0.12,
+      roughness: 0.02,
+      clearcoat: 1,
+      depthWrite: false,
+    }),
+  );
+  glass.position.z = -depth / 2 + 0.004;
+  glass.rotation.y = Math.PI;
+  drum.add(glass);
+
+  const light = pointLight(drum, 0x6fc3ff, 0, 1.2, 0, 0, -0.3);
+  dimLight(light, 0.05, 0.45);
+
+  // méduses : petites cloches translucides qui pulsent et dérivent dans le hublot
+  let boost = 0;
+  const jellyMat = new THREE.MeshStandardMaterial({
+    color: '#e6f4ff',
+    emissive: '#bfe4ff',
+    emissiveIntensity: 0.6,
+    transparent: true,
+    opacity: 0.8,
+    roughness: 0.3,
+  });
+  dimEmissive(jellyMat, 0.5, 1.1);
+  const bellGeo = new THREE.SphereGeometry(0.014, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2);
+  const tentGeo = new THREE.CylinderGeometry(0.0012, 0.0005, 0.022, 4);
+  tentGeo.translate(0, -0.011, 0);
+  const jellies: { g: THREE.Group; bell: THREE.Mesh; tents: THREE.Mesh[]; phase: number; a: number; rad: number; z: number }[] = [];
+  for (let i = 0; i < 11; i++) {
+    const jg = new THREE.Group();
+    const bell = new THREE.Mesh(bellGeo, jellyMat);
+    jg.add(bell);
+    const tents: THREE.Mesh[] = [];
+    for (let k = 0; k < 5; k++) {
+      const t = new THREE.Mesh(tentGeo, jellyMat);
+      const ang = (k / 5) * Math.PI * 2;
+      t.position.set(Math.cos(ang) * 0.007, 0, Math.sin(ang) * 0.007);
+      jg.add(t);
+      tents.push(t);
+    }
+    const scale = 0.7 + rnd() * 0.6;
+    jg.scale.setScalar(scale);
+    drum.add(jg);
+    jellies.push({ g: jg, bell, tents, phase: rnd() * 6, a: rnd() * Math.PI * 2, rad: 0.02 + rnd() * 0.08, z: -0.05 + rnd() * 0.1 });
+  }
+  // easter egg : les méduses se rassemblent en cœur
+  let heart = 0;
+  const heartAt = (i: number) => {
+    const u = (i / jellies.length) * Math.PI * 2;
+    const k = 0.0055;
+    return [16 * Math.sin(u) ** 3 * k, (13 * Math.cos(u) - 5 * Math.cos(2 * u) - 2 * Math.cos(3 * u) - Math.cos(4 * u)) * k + 0.01];
+  };
+  const place = (t: number) =>
+    jellies.forEach((j, i) => {
+      const a = j.a + t * 0.12;
+      const fx = Math.cos(a) * j.rad;
+      const fy = Math.sin(a * 1.3 + j.phase) * j.rad;
+      const m = Math.min(1, heart) ** 2 * (3 - 2 * Math.min(1, heart));
+      const [hx, hy] = heartAt(i);
+      j.g.position.set(fx + (hx - fx) * m, fy + (hy - fy) * m, j.z + (-0.04 - j.z) * m);
+      const p = 1 + Math.sin(t * 2.6 + j.phase) * 0.14;
+      j.bell.scale.set(p, 1 / p, p);
+      j.tents.forEach((tt, k) => (tt.rotation.z = Math.sin(t * 2.6 + j.phase + k) * 0.3));
+    });
+  place(0);
   tickers.push((t) => {
     boost = Math.max(0, boost - 0.016);
-    jellies.forEach((j, i) => {
-      const p = t * 1.6 + j.phase;
-      const pulse = 1 + Math.sin(p * 2) * 0.12;
-      j.bell.scale.set(pulse, 1 / pulse, pulse);
-      j.g.position.y = 0.16 + Math.sin(t * 0.5 + j.phase) * 0.05 + i * 0.02;
-      j.g.position.x = j.x + Math.sin(t * 0.3 + j.phase) * 0.025;
-      j.tentacles.forEach((tt, k) => (tt.rotation.z = Math.sin(p * 2 + k) * 0.25));
-      const m = j.bell.material as THREE.MeshStandardMaterial;
-      m.opacity = 0.75 + boost * 0.25;
-    });
-    light.intensity += boost * 0.03;
+    heart = Math.max(0, heart - 0.006); // ~3 s en cœur, puis elles se dispersent
+    place(t);
+    jellyMat.opacity = 0.75 + boost * 0.25;
   });
 
-  addHitBox(g, w + 0.06, h + 0.08, d + 0.06, 0, h / 2 + 0.02, 0);
+  addHitBox(g, 2 * R + 0.04, 2 * R + 0.06, depth + 0.04, 0, R + 0.02, 0);
   register('egg-aquarium', g);
   eggEffects.set('egg-aquarium', () => {
     boost = 1;
-    jellies.forEach((j) => {
-      const m = j.bell.material as THREE.MeshStandardMaterial;
-      const base = m.emissiveIntensity;
-      m.emissiveIntensity = base + 1.5;
-      setTimeout(() => (m.emissiveIntensity = base), 1200);
-    });
+    heart = 1.6;
+    const base = jellyMat.emissiveIntensity;
+    jellyMat.emissiveIntensity = base + 1.2;
+    setTimeout(() => (jellyMat.emissiveIntensity = base), 1200);
   });
 }
 
@@ -252,10 +276,11 @@ function buildStars({ gEnd, register, dimEmissive, tickers, eggEffects }: Extras
   });
 }
 
-/** Gamelle de Hiki, près du miroir. */
+/** Gamelle de Hiki, contre le mur près de l'entrée. */
 function buildBowl({ root, register }: ExtrasContext) {
   const g = group(root, 'bowl');
   g.position.set(BOWL.x, 0, BOWL.z);
+  g.rotation.y = BOWL.rotY; // le long du mur
   box(g, 0.34, 0.006, 0.24, '#f6c9d3', 0, 0, 0, 0.003); // tapis
   cyl(g, 0.07, 0.055, 0.045, '#ffffff', -0.07, 0.006, 0, 20);
   cyl(g, 0.065, 0.065, 0.005, '#c9a07a', -0.07, 0.045, 0, 20); // croquettes

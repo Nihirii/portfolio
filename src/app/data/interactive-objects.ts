@@ -86,13 +86,6 @@ export const INTERACTIVE_OBJECTS: readonly InteractiveObject[] = [
     focus: null,
   },
   {
-    id: 'egg-eva-jacket',
-    label: 'Mini-veste sur la chaise',
-    action: { type: 'easter-egg', eggId: 'eva-jacket' },
-    primary: false,
-    focus: null,
-  },
-  {
     id: 'egg-controller',
     label: 'Manette près du canapé',
     action: { type: 'easter-egg', eggId: 'controller' },
@@ -181,12 +174,6 @@ export const INTERACTIVE_OBJECTS: readonly InteractiveObject[] = [
 /** Messages des easter eggs (à personnaliser). */
 export const EASTER_EGGS: readonly EasterEgg[] = [
   {
-    id: 'eva-jacket',
-    title: 'Mini-veste violette',
-    message:
-      "Une petite veste aux couleurs de l'Unité 01. Evangelion fait partie de mes séries préférées.",
-  },
-  {
     id: 'controller',
     title: 'Manette',
     message: "C'est elle qui déclenche HubTV : un raccourci, et le PC passe du bureau à la TV.",
@@ -204,7 +191,7 @@ export const EASTER_EGGS: readonly EasterEgg[] = [
   {
     id: 'aquarium',
     title: 'Méduses',
-    message: 'Les méduses, mon petit emblème. Elles brillent un peu plus la nuit.',
+    message: 'Les méduses t’envoient un cœur… et Hiki accourt pour les regarder.'
   },
   {
     id: 'sunflowers',
@@ -247,7 +234,7 @@ export const EASTER_EGGS: readonly EasterEgg[] = [
   {
     id: 'eva-figure',
     title: 'Figurine Evangelion',
-    message: 'L’Unité 01 veille sur le KALLAX, assortie à la mini-veste posée sur la chaise.',
+    message: 'L’Unité 01 veille sur le KALLAX. Evangelion fait partie de mes séries préférées.',
   },
 ];
 

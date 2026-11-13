@@ -39,7 +39,8 @@ export const DESK_ITEMS = {
 };
 
 export const CHAIRS = {
-  gaming: { x: 2.3, z: 1.3, rotY: 0.15 },
+  /** Chaise gaming REKT : couleurs du cuir et des bandes contrastées. */
+  gaming: { x: 2.3, z: 1.3, rotY: 0.15, main: '#1c1c21', accent: '#ece9f1' },
   white: { x: 1.35, z: 1.55, rotY: -0.9 },
 };
 
@@ -100,13 +101,14 @@ export const MEDIA_WALL = {
 /** Arbre à chat, un peu écarté du KALLAX pour ne plus masquer ses cases du bas. */
 export const CAT_TREE = { x: 1.25, z: 2.95 };
 
-/** Aquarium à méduses, sur l'étagère du milieu de la colonne BESTÅ gauche. */
-export const AQUARIUM = { x: 3.3, z: 3.2, shelfY: 0.988, width: 0.42, height: 0.32 };
+/** Aquarium à méduses rond, sur l'étagère du milieu de la colonne BESTÅ droite. */
+export const AQUARIUM = { x: 5.7, z: 3.2, shelfY: 0.988 };
 
 /** Easter eggs : vase de tournesols, gamelle de Hiki, étoiles phosphorescentes. */
 /** Tournesols : sur le rebord derrière le canapé (hauteur du rebord : 0,875 m). */
 export const SUNFLOWERS = { x: 4.05, y: 0.875, z: 0.1 };
-export const BOWL = { x: 0.72, z: 1.05 };
+/** Gamelle de Hiki : contre le mur, dans le coin près de l'entrée. */
+export const BOWL = { x: 0.2, z: 0.5, rotY: Math.PI / 2 };
 export const STARS = { y: 2.25, z0: 1.6, z1: 3.25 };
 
 /** Fenêtre du mur x = largeur (lumière du jour), avec le hamac à chat sur le radiateur. */
@@ -129,11 +131,13 @@ export const HIKI = {
     middle: { x: 2.15, y: 0, z: 2.3 },
     cosy: { x: 1.75, y: 0, z: 2.6 },
     catTree: { x: 1.3, y: 1.47, z: 2.95 },
-    bowl: { x: 0.97, y: 0, z: 1.05 },
+    bowl: { x: 0.5, y: 0, z: 0.5 },
+    entry: { x: 0.75, y: 0, z: 1.15 },
     desk: { x: 1.9, y: 0, z: 1.05 },
     tvFront: { x: 3.9, y: 0, z: 2.62 },
     corridor: { x: 4.9, y: 0, z: 2.55 },
     window: { x: 5.55, y: 0, z: 2.55 },
+    aquarium: { x: 5.65, y: 0, z: 2.72 },
     hammock: { x: 5.66, y: 0.76, z: 2.0 },
     sofaFoot: { x: 4.05, y: 0, z: 2.22 },
     sofa: { x: 4.0, y: 0.49, z: 1.45 },
@@ -143,12 +147,14 @@ export const HIKI = {
     ['rug', 'middle'],
     ['middle', 'cosy'],
     ['cosy', 'catTree'],
-    ['desk', 'bowl'],
+    ['desk', 'entry'],
+    ['entry', 'bowl'],
     ['middle', 'desk'],
     ['rug', 'tvFront'],
     ['tvFront', 'corridor'],
     ['corridor', 'window'],
     ['window', 'hammock'],
+    ['window', 'aquarium'],
     ['rug', 'sofaFoot'],
     ['tvFront', 'sofaFoot'],
     ['sofaFoot', 'sofa'],

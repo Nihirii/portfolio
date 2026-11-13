@@ -4,6 +4,8 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { GTAOPass } from 'three/examples/jsm/postprocessing/GTAOPass.js';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { INTERACTIVE_OBJECTS, objectById } from '../data/interactive-objects';
 import { InteractiveObjectId } from '../data/types';
 import { buildRoom, RoomBuild } from './build-room';
@@ -52,6 +54,9 @@ export class RoomScene {
   private raycaster = new THREE.Raycaster();
   private timer = new THREE.Timer();
   private frameId = 0;
+  private aoPass: GTAOPass | null = null;
+  /** Mesure des premières images : coupe l'occlusion ambiante si la machine peine. */
+  private perf = { frames: 0, time: 0 };
   private resizeObserver: ResizeObserver;
 
   private night = 0;
@@ -126,8 +131,25 @@ export class RoomScene {
     this.controls.rotateSpeed = 0.5;
     this.controls.zoomSpeed = 0.6;
 
-    this.composer = new EffectComposer(this.renderer);
+    // Éclairage d'ambiance doux (reflets, cuir, plastiques) à partir d'une pièce virtuelle
+    const pmrem = new THREE.PMREMGenerator(this.renderer);
+    this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    pmrem.dispose();
+
+    // Rendu en multi-échantillonnage : sans ça, la chaîne de post-traitement perd l'anticrénelage
+    const target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 });
+    this.composer = new EffectComposer(this.renderer, target);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
+    // Occlusion ambiante (ombres de contact) sur ordinateur ; coupée sur mobile pour la fluidité
+    const coarse = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches;
+    if (!coarse) {
+      const ao = new GTAOPass(this.scene, this.camera, 1, 1);
+      ao.output = GTAOPass.OUTPUT.Default;
+      ao.blendIntensity = 0.75;
+      ao.updateGtaoMaterial({ radius: 0.35, distanceExponent: 1.5, thickness: 1, scale: 1 });
+      this.composer.addPass(ao);
+      this.aoPass = ao;
+    }
     this.outline = new OutlinePass(new THREE.Vector2(256, 256), this.scene, this.camera);
     this.outline.edgeStrength = 3.2;
     this.outline.edgeGlow = 0.2;
@@ -345,6 +367,7 @@ export class RoomScene {
     });
     if (id === 'egg-controller') this.flashTv();
     if (id === 'egg-bowl') this.hiki.goTo('bowl');
+    if (id === 'egg-aquarium') this.hiki.goTo('aquarium');
     if (id === 'egg-retro') this.flashTv('retro');
     this.room.eggEffects.get(id)?.();
   }
@@ -382,6 +405,7 @@ export class RoomScene {
     this.timer.update();
     const dt = Math.min(this.timer.getDelta(), 0.1);
     const t = this.timer.getElapsed();
+    this.checkPerformance(this.timer.getDelta());
 
     // jour / nuit progressif
     if (this.night !== this.nightTarget) {
@@ -436,6 +460,16 @@ export class RoomScene {
     this.composer.render();
     this.cb.frame();
   };
+
+  private checkPerformance(raw: number) {
+    if (!this.aoPass?.enabled || this.perf.frames > 90) return;
+    this.perf.frames++;
+    if (this.perf.frames <= 10) return; // ignorer le démarrage
+    this.perf.time += raw;
+    if (this.perf.frames === 90 && this.perf.time / 80 > 1 / 35) {
+      this.aoPass.enabled = false; // moins de 35 images/s : on privilégie la fluidité
+    }
+  }
 
   // ---------- caméra ----------
 
@@ -563,6 +597,7 @@ export class RoomScene {
     const e = n * n * (3 - 2 * n);
     this.room.dimmables.forEach((d) => d.apply(e));
     this.renderer.toneMappingExposure = 1.0 + e * 0.25;
+    this.scene.environmentIntensity = 0.45 - e * 0.37;
   }
 
   // ---------- murs façon diorama ----------
@@ -797,7 +832,7 @@ export class RoomScene {
         a.kind === 'egg-retro'
       ) {
         a.obj.position.y = a.basePos.y + Math.abs(Math.sin(a.t * 10)) * 0.015 * fade;
-      } else if (a.kind === 'egg-eva-jacket') {
+      } else if (a.kind === 'egg-eva-figure') {
         a.obj.rotation.z = a.base.z + Math.sin(a.t * 14) * 0.12 * fade;
       }
       if (k >= 1) {

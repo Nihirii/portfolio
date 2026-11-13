@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { mat, sph } from './helpers';
+import { canvasTexture, mat, sph } from './helpers';
 import { HIKI } from './room-layout';
 
 export type SpotName = keyof typeof HIKI.spots;
@@ -335,6 +335,7 @@ export class Hiki {
         this.behaviour = 'sit';
         this.timer = 6;
         if (spot === 'bowl') this.heading = this.root.rotation.y = Math.PI;
+        if (spot === 'aquarium') this.heading = this.root.rotation.y = -Math.PI / 2; // regarde l'aquarium
         return;
       }
       this.behaviour = 'idle';
@@ -345,54 +346,83 @@ export class Hiki {
   // ---------- modèle ----------
 
   private build() {
-    const coat = mat(HIKI.coat, { roughness: 0.95 });
-    const coatLight = mat(HIKI.coatLight, { roughness: 0.95 });
-    const belly = mat(HIKI.belly, { roughness: 0.95 });
+    // pelage tigré : texture dessinée (rayures sur le dos, ventre plus clair) + reflet velouté
+    const coatTex = tabbyTexture(HIKI.coat, HIKI.belly, 0.38);
+    const headTex = tabbyTexture(HIKI.coat, HIKI.belly, 0.5);
+    const fur = (map: THREE.Texture) =>
+      new THREE.MeshPhysicalMaterial({
+        map,
+        roughness: 0.85,
+        sheen: 0.8,
+        sheenRoughness: 0.6,
+        sheenColor: new THREE.Color('#e9d2bd'),
+      });
+    const coat = fur(coatTex);
+    const coatPlain = new THREE.MeshPhysicalMaterial({
+      color: HIKI.coat,
+      roughness: 0.85,
+      sheen: 0.8,
+      sheenRoughness: 0.6,
+      sheenColor: new THREE.Color('#e9d2bd'),
+    });
+    const light = mat(HIKI.belly, { roughness: 0.9 });
+    const pink = mat('#e7a3a6', { roughness: 0.6 });
     this.root.name = 'hiki';
     this.root.add(this.body);
 
     this.torso = sph(this.body, 0.1, coat, 0, 0, 0, 1.85, 0.95, 1.0);
-    sph(this.body, 0.075, belly, 0.08, -0.03, 0, 1.2, 0.9, 0.85);
-    // rayures discrètes sur le dos
-    for (let i = 0; i < 4; i++) {
-      const s = sph(this.body, 0.03, coatLight, -0.1 + i * 0.06, 0.085, 0, 0.6, 0.25, 2.3);
-      s.castShadow = false;
-    }
+    sph(this.body, 0.07, light, 0.1, -0.025, 0, 1.0, 1.0, 0.9); // poitrail clair
 
-    // tête
+    // tête : joues rondes, museau clair, grands yeux brillants
     this.head.position.set(0.18, 0.08, 0);
     this.body.add(this.head);
-    sph(this.head, 0.075, coat, 0, 0, 0, 1.0, 0.9, 1.05);
-    sph(this.head, 0.036, belly, 0.055, -0.025, 0, 0.9, 0.75, 1.2);
-    sph(this.head, 0.011, mat(HIKI.nose), 0.088, -0.012, 0);
+    const skull = sph(this.head, 0.074, fur(headTex), 0, 0.004, 0, 1.0, 0.92, 1.08);
+    skull.rotation.z = Math.PI / 2; // rayures sur le front
+    [-1, 1].forEach((s) => sph(this.head, 0.04, coatPlain, 0.035, -0.022, s * 0.032, 1, 0.85, 1));
+    sph(this.head, 0.03, light, 0.064, -0.028, 0, 0.8, 0.7, 1.35); // museau
+    sph(this.head, 0.009, pink, 0.091, -0.012, 0, 0.7, 0.6, 1.1); // nez
+    const eyeMat = new THREE.MeshPhysicalMaterial({
+      color: HIKI.eyes,
+      roughness: 0.15,
+      clearcoat: 1,
+      clearcoatRoughness: 0.05,
+    });
     [-1, 1].forEach((s) => {
-      const eye = sph(
-        this.head,
-        0.0135,
-        mat(HIKI.eyes, { roughness: 0.3 }),
-        0.058,
-        0.014,
-        s * 0.034,
-      );
-      sph(eye, 0.0095, mat('#1b1612'), 0.007, 0, 0, 0.45, 1, 0.55);
+      const eye = sph(this.head, 0.017, eyeMat, 0.055, 0.014, s * 0.032, 0.75, 1, 1);
+      sph(eye, 0.011, mat('#15110e'), 0.01, 0, 0, 0.5, 1.05, 0.42); // pupille
+      sph(eye, 0.0038, mat('#ffffff', { roughness: 0.2 }), 0.016, 0.006, -s * 0.004); // reflet
       this.eyes.push(eye);
+
       const ear = new THREE.Group();
-      ear.position.set(-0.005, 0.055, s * 0.042);
-      ear.rotation.x = s * 0.35;
-      const cone = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.06, 4), coat);
-      cone.position.y = 0.025;
+      ear.position.set(-0.012, 0.052, s * 0.04);
+      ear.rotation.x = s * 0.32;
+      const cone = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.062, 24), coatPlain);
+      cone.scale.set(1, 1, 0.55);
+      cone.position.y = 0.026;
       cone.castShadow = true;
       ear.add(cone);
-      const innerEar = new THREE.Mesh(new THREE.ConeGeometry(0.017, 0.035, 4), mat('#d9a8a2'));
-      innerEar.position.set(0.008, 0.02, 0);
+      const innerEar = new THREE.Mesh(new THREE.ConeGeometry(0.019, 0.042, 20), pink);
+      innerEar.scale.set(0.45, 1, 0.5);
+      innerEar.position.set(0.011, 0.022, 0);
       ear.add(innerEar);
       this.head.add(ear);
       this.ears.push(ear);
+
+      // moustaches
+      const whiskerMat = mat('#f4efe8', { roughness: 0.4 });
+      [-0.25, 0, 0.25].forEach((tilt, k) => {
+        const w = new THREE.Mesh(new THREE.CylinderGeometry(0.0007, 0.0004, 0.075, 4), whiskerMat);
+        w.position.set(0.07, -0.026 + k * 0.004, s * 0.05);
+        w.rotation.set(Math.PI / 2 + s * 0.15, 0, tilt * s);
+        w.rotation.order = 'XZY';
+        w.rotation.y = s * 0.35;
+        this.head.add(w);
+      });
     });
 
-    // pattes
-    const legGeo = new THREE.CylinderGeometry(0.022, 0.018, 0.16, 8);
-    legGeo.translate(0, -0.08, 0);
+    // pattes (capsules) et coussinets clairs
+    const legGeo = new THREE.CapsuleGeometry(0.02, 0.12, 8, 16);
+    legGeo.translate(0, -0.075, 0);
     (
       [
         [0.12, 0.05, true],
@@ -403,23 +433,25 @@ export class Hiki {
     ).forEach(([x, z, front]) => {
       const pivot = new THREE.Group();
       pivot.position.set(x, -0.03, z);
-      const leg = new THREE.Mesh(legGeo, coat);
+      const leg = new THREE.Mesh(legGeo, coatPlain);
       leg.castShadow = true;
       pivot.add(leg);
-      sph(pivot, 0.024, belly, 0.008, -0.16, 0, 1.2, 0.7, 1);
+      sph(pivot, 0.024, light, 0.008, -0.158, 0, 1.25, 0.65, 1.05);
       this.body.add(pivot);
       this.legs.push({ pivot, front });
     });
 
-    // queue articulée
+    // queue articulée, effilée, bout plus foncé
     let parent: THREE.Object3D = this.body;
-    const segGeo = new THREE.CylinderGeometry(0.016, 0.02, 0.05, 8);
-    segGeo.rotateZ(Math.PI / 2);
-    segGeo.translate(-0.025, 0, 0);
-    for (let i = 0; i < 7; i++) {
+    const segments = 9;
+    for (let i = 0; i < segments; i++) {
+      const r = 0.019 - (i / segments) * 0.007;
+      const g = new THREE.CapsuleGeometry(r, 0.03, 6, 14);
+      g.rotateZ(Math.PI / 2);
+      g.translate(-0.019, 0, 0);
       const seg = new THREE.Group();
-      seg.position.set(i === 0 ? -0.175 : -0.045, i === 0 ? 0.03 : 0, 0);
-      const m = new THREE.Mesh(segGeo, i === 6 ? coatLight : coat);
+      seg.position.set(i === 0 ? -0.175 : -0.038, i === 0 ? 0.03 : 0, 0);
+      const m = new THREE.Mesh(g, i >= segments - 2 ? mat('#4e3d33', { roughness: 0.9 }) : i % 2 ? coatPlain : mat(HIKI.coatLight, { roughness: 0.9 }));
       m.castShadow = true;
       seg.add(m);
       parent.add(seg);
@@ -488,4 +520,32 @@ function angleDiff(a: number, b: number): number {
 function turnTowards(a: number, b: number, step: number): number {
   const d = angleDiff(a, b);
   return a + Math.sign(d) * Math.min(Math.abs(d), step);
+}
+
+/** Pelage tigré : base brune, ventre clair en bas, rayures sombres irrégulières sur le dessus. */
+function tabbyTexture(base: string, belly: string, bellyFrom: number): THREE.CanvasTexture {
+  return canvasTexture(512, 256, (g, w, h) => {
+    const grad = g.createLinearGradient(0, 0, 0, h);
+    grad.addColorStop(0, '#5e4a3d');
+    grad.addColorStop(0.25, base);
+    grad.addColorStop(1 - bellyFrom, base);
+    grad.addColorStop(1, belly);
+    g.fillStyle = grad;
+    g.fillRect(0, 0, w, h);
+    g.strokeStyle = 'rgba(58,42,32,0.55)';
+    g.lineCap = 'round';
+    for (let i = 0; i < 22; i++) {
+      const x = (i / 22) * w + Math.sin(i * 7.3) * 6;
+      g.lineWidth = 5 + (i % 3) * 3;
+      g.beginPath();
+      g.moveTo(x, 0);
+      g.bezierCurveTo(x + 10, h * 0.2, x - 8, h * 0.35, x + 4, h * (0.55 - (i % 4) * 0.04));
+      g.stroke();
+    }
+    // léger grain de poil
+    for (let i = 0; i < 2500; i++) {
+      g.fillStyle = i % 2 ? 'rgba(255,240,225,0.06)' : 'rgba(40,28,20,0.08)';
+      g.fillRect(Math.random() * w, Math.random() * h, 1, 3);
+    }
+  });
 }

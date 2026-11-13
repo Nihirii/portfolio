@@ -40,6 +40,17 @@ export function glow(color: string, intensity = 1.5): THREE.MeshStandardMaterial
 
 const toMat = (m: MatLike) => (typeof m === 'string' ? mat(m) : m);
 
+/** Géométries partagées : des formes plus lisses sans multiplier la mémoire. */
+const geoCache = new Map<string, THREE.BufferGeometry>();
+function cached<T extends THREE.BufferGeometry>(key: string, make: () => T): T {
+  let g = geoCache.get(key) as T | undefined;
+  if (!g) {
+    g = make();
+    geoCache.set(key, g);
+  }
+  return g;
+}
+
 function finish<T extends THREE.Mesh>(m: T, parent: THREE.Object3D): T {
   m.castShadow = true;
   m.receiveShadow = true;
@@ -59,7 +70,10 @@ export function box(
   r = 0.015,
 ): THREE.Mesh {
   const rr = Math.min(r, w / 2 - 0.001, h / 2 - 0.001, d / 2 - 0.001);
-  const g = rr > 0.003 ? new RoundedBoxGeometry(w, h, d, 2, rr) : new THREE.BoxGeometry(w, h, d);
+  const g =
+    rr > 0.003
+      ? cached(`rb:${w}:${h}:${d}:${rr}`, () => new RoundedBoxGeometry(w, h, d, 4, rr))
+      : cached(`b:${w}:${h}:${d}`, () => new THREE.BoxGeometry(w, h, d));
   const m = new THREE.Mesh(g, toMat(material));
   m.position.set(x, y + h / 2, z);
   return finish(m, parent);
@@ -76,7 +90,11 @@ export function cyl(
   z: number,
   seg = 20,
 ): THREE.Mesh {
-  const m = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg), toMat(material));
+  const segments = Math.min(64, Math.max(16, Math.round(seg * 1.8)));
+  const m = new THREE.Mesh(
+    cached(`c:${rt}:${rb}:${h}:${segments}`, () => new THREE.CylinderGeometry(rt, rb, h, segments)),
+    toMat(material),
+  );
   m.position.set(x, y + h / 2, z);
   return finish(m, parent);
 }
@@ -92,7 +110,10 @@ export function sph(
   sy = 1,
   sz = 1,
 ): THREE.Mesh {
-  const m = new THREE.Mesh(new THREE.SphereGeometry(r, 20, 14), toMat(material));
+  const m = new THREE.Mesh(
+    cached(`s:${r}`, () => new THREE.SphereGeometry(r, 40, 28)),
+    toMat(material),
+  );
   m.position.set(x, y, z);
   m.scale.set(sx, sy, sz);
   return finish(m, parent);
@@ -150,4 +171,35 @@ export function canvasTexture(
   t.colorSpace = THREE.SRGBColorSpace;
   t.anisotropy = 4;
   return t;
+}
+
+const loader = new THREE.TextureLoader();
+
+/**
+ * Remplace l'image d'un matériau par un fichier (si `path` est donné), recadrée pour couvrir
+ * un cadre de proportions `w` × `h`. En cas d'erreur, l'illustration existante reste.
+ */
+export function loadFrameImage(material: THREE.MeshStandardMaterial, path: string | null, w: number, h: number) {
+  if (!path) return;
+  loader.load(
+    path,
+    (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy = 8;
+      const img = tex.image as { width: number; height: number };
+      const frame = w / h;
+      const image = img.width / img.height;
+      if (image > frame) {
+        tex.repeat.set(frame / image, 1);
+        tex.offset.set((1 - frame / image) / 2, 0);
+      } else {
+        tex.repeat.set(1, image / frame);
+        tex.offset.set(0, (1 - image / frame) / 2);
+      }
+      material.map = tex;
+      material.needsUpdate = true;
+    },
+    undefined,
+    () => console.warn(`Image de cadre introuvable : ${path}`),
+  );
 }

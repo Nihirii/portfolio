@@ -1,11 +1,13 @@
 import * as THREE from 'three';
 import { InteractiveObjectId } from '../data/types';
+import { FRAME_IMAGES } from '../data/frames';
 import {
   box,
   canvasTexture,
   cyl,
   glow,
   group,
+  loadFrameImage,
   mat,
   plane,
   pointLight,
@@ -184,25 +186,19 @@ export function buildRoom(): RoomBuild {
     ] as const
   ).forEach(([x, y, w, h], i) => {
     box(gDesk, w, h, 0.025, '#1f1b22', x, y - h / 2, 0.0125, 0.004);
-    plane(
-      gDesk,
-      w - 0.05,
-      h - 0.05,
-      new THREE.MeshStandardMaterial({
-        map:
-          i === 0
-            ? pixelArtTexture('jelly')
-            : i === 2
-              ? pixelArtTexture('cat')
-              : i === 3
-                ? pixelArtTexture('pad')
-                : artTexture(i),
-        roughness: 0.9,
-      }),
-      x,
-      y,
-      0.027,
-    );
+    const art = new THREE.MeshStandardMaterial({
+      map:
+        i === 0
+          ? pixelArtTexture('jelly')
+          : i === 2
+            ? pixelArtTexture('cat')
+            : i === 3
+              ? pixelArtTexture('pad')
+              : artTexture(i),
+      roughness: 0.9,
+    });
+    plane(gDesk, w - 0.05, h - 0.05, art, x, y, 0.027);
+    loadFrameImage(art, FRAME_IMAGES.desk[i] ?? null, w - 0.05, h - 0.05); // vraie image si fournie
   });
   // passe-plat vers la cuisine au-dessus du canapé
   const PX = 4.9;
@@ -326,6 +322,7 @@ export function buildRoom(): RoomBuild {
   for (let i = 0; i < 6; i++) {
     const x = TV.x + (i - 2.5) * 0.29;
     const tex = new THREE.MeshStandardMaterial({ map: minimalPosterTexture(i), roughness: 0.9 });
+    loadFrameImage(tex, FRAME_IMAGES.tv[i] ?? null, 0.23, 0.34); // vraie affiche si fournie
     box(gTV, 0.27, 0.39, 0.025, '#d8b893', x, 1.72 - 0.195, D - 0.0125, 0.004);
     plane(gTV, 0.23, 0.34, tex, x, 1.72, D - 0.027, Math.PI);
   }
@@ -420,20 +417,9 @@ export function buildRoom(): RoomBuild {
   dimEmissive(pcGlow, 0.6, 1.3);
   box(root, 0.26, 0.38, 0.005, pcGlow, DESK.drawerX, deskTop + 0.01, 0.523, 0);
   dimLight(pointLight(root, 0xa98bff, 0.6, 1.4, DESK.drawerX, 0.95, 0.65), 0.1, 0.6);
-  cyl(root, 0.06, 0.06, 0.03, '#ffffff', 2.95, 1.17, 0.25);
-  cyl(root, 0.015, 0.02, 0.12, '#2b2b33', 2.95, 1.2, 0.25);
-  sph(root, 0.03, '#7fd6d0', 2.95, 1.35, 0.25);
 
   // lampe à lave du bureau : allumée le soir, ou au clic
   const lava = buildLavaLamp(root, register, DESK_ITEMS.lamp.x, deskTop - 0.02, DESK_ITEMS.lamp.z);
-  // casque sur le bureau
-  {
-    const t = new THREE.Mesh(new THREE.TorusGeometry(0.08, 0.015, 10, 24, Math.PI), mat('#e8e6ea'));
-    t.position.set(1.3, deskTop + 0.01, 0.62);
-    t.rotation.x = -Math.PI / 2;
-    t.castShadow = true;
-    root.add(t);
-  }
   buildDuck(root, register, 3.12, deskTop, 0.68);
 
   // panier fermé + ampli sous le bureau
@@ -483,48 +469,58 @@ export function buildRoom(): RoomBuild {
     register('cv-sheet', g);
   }
 
-  // ---------- chaise gaming + mini-veste Evangelion ----------
+  // ---------- chaise gaming REKT (siège baquet) ----------
   {
-    const g = group(root);
+    const g = group(root, 'gaming-chair');
     g.position.set(CHAIRS.gaming.x, 0, CHAIRS.gaming.z);
     g.rotation.y = CHAIRS.gaming.rotY;
-    cyl(g, 0.03, 0.03, 0.38, '#2c2c33', 0, 0.05, 0);
+    const leather = new THREE.MeshPhysicalMaterial({
+      color: CHAIRS.gaming.main,
+      roughness: 0.45,
+      clearcoat: 0.35,
+      clearcoatRoughness: 0.5,
+    });
+    const accent = mat(CHAIRS.gaming.accent, { roughness: 0.5 });
+    const plastic = mat('#18181c', { roughness: 0.5 });
+    const chrome = mat('#c9ccd3', { metalness: 0.9, roughness: 0.25 });
+
+    // piétement 5 branches et roulettes
+    cyl(g, 0.028, 0.032, 0.3, chrome, 0, 0.08, 0, 24);
+    cyl(g, 0.06, 0.06, 0.05, plastic, 0, 0.36, 0, 24);
     for (let k = 0; k < 5; k++) {
       const a = (k / 5) * Math.PI * 2;
-      box(
-        g,
-        0.3,
-        0.03,
-        0.04,
-        '#2c2c33',
-        Math.cos(a) * 0.14,
-        0.04,
-        Math.sin(a) * 0.14,
-        0.005,
-      ).rotation.y = -a;
+      const arm = box(g, 0.3, 0.035, 0.05, plastic, Math.cos(a) * 0.15, 0.06, Math.sin(a) * 0.15, 0.015);
+      arm.rotation.y = -a;
+      arm.rotation.z = 0;
+      sph(g, 0.028, plastic, Math.cos(a) * 0.3, 0.028, Math.sin(a) * 0.3, 1, 1, 0.8);
     }
-    box(g, 0.56, 0.11, 0.55, '#4d5d7a', 0, 0.42, 0, 0.04);
-    box(g, 0.54, 0.85, 0.13, '#4d5d7a', 0, 0.5, 0.27, 0.05).rotation.x = 0.12;
-    box(g, 0.06, 0.04, 0.32, '#2c2c33', -0.3, 0.65, 0.02, 0.01);
-    box(g, 0.06, 0.04, 0.32, '#2c2c33', 0.3, 0.65, 0.02, 0.01);
-    box(g, 0.5, 0.05, 0.5, '#d8c3b7', 0, 0.53, 0.02, 0.03);
-
-    // mini-veste violette et verte posée sur le dossier
-    const jacket = group(g);
-    jacket.position.set(0.02, 1.2, 0.36);
-    jacket.rotation.x = 0.12;
-    const purple = mat('#6b3fa0', { roughness: 0.7 });
-    const green = mat('#7ccf4a', { roughness: 0.6 });
-    box(jacket, 0.36, 0.26, 0.05, purple, 0, -0.26, 0.03, 0.02);
-    box(jacket, 0.36, 0.2, 0.05, purple, 0, -0.18, -0.06, 0.02);
-    box(jacket, 0.04, 0.26, 0.052, green, 0, -0.26, 0.031, 0.006);
-    box(jacket, 0.2, 0.025, 0.06, mat('#f08a24'), 0, -0.04, -0.01, 0.008);
-    [-0.2, 0.2].forEach((x) => {
-      const sl = box(jacket, 0.07, 0.28, 0.06, purple, x, -0.34, 0.04, 0.025);
-      sl.rotation.z = x > 0 ? -0.15 : 0.15;
+    // assise baquet : coussin central + bourrelets latéraux
+    box(g, 0.4, 0.09, 0.5, leather, 0, 0.4, 0, 0.04);
+    [-1, 1].forEach((s) => {
+      box(g, 0.08, 0.13, 0.5, leather, s * 0.24, 0.39, 0, 0.04);
+      box(g, 0.012, 0.012, 0.46, accent, s * 0.2, 0.488, 0, 0.004); // surpiqûre
     });
-    addHitBox(jacket, 0.5, 0.35, 0.2, 0, -0.32, 0);
-    register('egg-eva-jacket', jacket);
+    // dossier inclinable
+    const back = group(g);
+    back.position.set(0, 0.47, 0.25);
+    back.rotation.x = 0.14;
+    box(back, 0.4, 0.86, 0.1, leather, 0, 0, 0, 0.05);
+    [-1, 1].forEach((s) => {
+      const wing = box(back, 0.08, 0.66, 0.15, leather, s * 0.235, 0.02, -0.02, 0.04);
+      wing.rotation.y = -s * 0.28;
+      const shoulder = box(back, 0.1, 0.16, 0.12, leather, s * 0.2, 0.66, -0.005, 0.04);
+      shoulder.rotation.z = s * 0.12;
+      box(back, 0.04, 0.09, 0.012, '#0b0b0e', s * 0.08, 0.7, -0.051, 0.004); // passages de harnais
+      box(back, 0.012, 0.62, 0.012, accent, s * 0.16, 0.1, -0.052, 0.004); // bandes contrastées
+    });
+    box(back, 0.3, 0.012, 0.012, accent, 0, 0.6, -0.052, 0.004);
+    box(back, 0.26, 0.11, 0.08, accent, 0, 0.72, -0.08, 0.04); // coussin de tête
+    box(back, 0.3, 0.13, 0.08, accent, 0, 0.12, -0.08, 0.05); // coussin lombaire
+    // accoudoirs
+    [-1, 1].forEach((s) => {
+      box(g, 0.035, 0.2, 0.05, plastic, s * 0.3, 0.42, 0.08, 0.01);
+      box(g, 0.08, 0.03, 0.26, plastic, s * 0.3, 0.62, 0.04, 0.014);
+    });
   }
 
   // ---------- canapé YULIN, bouclette beige ----------
@@ -776,7 +772,8 @@ export function buildRoom(): RoomBuild {
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
   Object.assign(sun.shadow.camera, { left: -5, right: 5, top: 5, bottom: -5, near: 0.5, far: 20 });
-  sun.shadow.bias = -0.0005;
+  sun.shadow.bias = -0.0003;
+  sun.shadow.normalBias = 0.02;
   root.add(sun);
   const sunTarget = new THREE.Object3D();
   sunTarget.position.set(W / 2, 0, D / 2);
@@ -788,7 +785,7 @@ export function buildRoom(): RoomBuild {
     apply: (n) => {
       sun.intensity = lerp(2.4, 0, n);
       sun.visible = n < 0.999;
-      hemi.intensity = lerp(1.4, 0.32, n);
+      hemi.intensity = lerp(1.0, 0.28, n);
       hemi.color.lerpColors(hemiDay, hemiNight, n);
     },
   });
@@ -882,8 +879,8 @@ function buildMediaColumns(
   box(g, 1.8, 0.035, 0.012, '#f8f7f4', TV.x, MEDIA_WALL.ledgeY + 0.03, D - 0.235, 0.003);
   box(g, 1.76, 0.006, 0.02, ledMat, TV.x, MEDIA_WALL.ledgeY - 0.01, D - 0.2, 0);
   dimLight(pointLight(g, 0xffd9a6, 0.5, 1.2, TV.x, 1.4, D - 0.3), 0.05, 0.5);
-  // colonne gauche : l'aquarium à méduses (build-extras.ts) ; colonne droite : les consoles
-  buildConsoles(cols[1], register);
+  // colonne gauche : les consoles ; colonne droite : l'aquarium à méduses (build-extras.ts)
+  buildConsoles(cols[0], register);
 }
 
 function buildKallax(
@@ -1034,18 +1031,52 @@ function buildProjectProp(g: THREE.Group, id: string, tickers: ((t: number) => v
   }
 }
 
-/** Peluche chien-nuage blanche aux longues oreilles (easter egg). */
+/** Peluche Cinnamoroll : grosse tête ronde, longues oreilles tombantes, queue en roulé. Face à +z. */
 function buildPlush(g: THREE.Group) {
-  const white = mat('#ffffff', { roughness: 0.95 });
-  const inner = group(g, 'plush-inner');
-  sph(inner, 0.07, white, 0, 0.07, 0, 1, 0.9, 0.9);
-  sph(inner, 0.08, white, 0, 0.17, 0.0, 1.15, 0.95, 1);
-  [-1, 1].forEach((s) => {
-    const ear = group(inner, s < 0 ? 'ear-l' : 'ear-r');
-    ear.position.set(s * 0.07, 0.2, 0);
-    sph(ear, 0.05, white, s * 0.06, -0.02, 0, 1.6, 0.35, 0.8);
-    sph(inner, 0.014, '#5a8fd8', s * 0.03, 0.17, 0.075);
-    sph(inner, 0.012, '#f6b6c8', s * 0.055, 0.145, 0.07, 1, 0.6, 0.5);
+  const plush = new THREE.MeshPhysicalMaterial({
+    color: '#fbfcff',
+    roughness: 0.9,
+    sheen: 1,
+    sheenRoughness: 0.5,
+    sheenColor: new THREE.Color('#dfe9ff'),
   });
-  sph(inner, 0.025, white, 0, 0.1, -0.07);
+  const inner = group(g, 'plush-inner');
+  // corps et petits pieds
+  sph(inner, 0.05, plush, 0, 0.055, 0, 1, 1.05, 0.95);
+  [-1, 1].forEach((s) => {
+    sph(inner, 0.02, plush, s * 0.026, 0.014, 0.03, 1, 0.7, 1.2);
+    sph(inner, 0.016, plush, s * 0.05, 0.075, 0.02, 0.8, 1.2, 0.9); // bras
+  });
+  // tête large
+  const head = group(inner);
+  head.position.set(0, 0.155, 0.005);
+  sph(head, 0.075, plush, 0, 0, 0, 1.2, 0.9, 1.0);
+  // yeux bleus ovales avec reflets
+  const eye = new THREE.MeshPhysicalMaterial({ color: '#3e6fc4', roughness: 0.15, clearcoat: 1 });
+  [-1, 1].forEach((s) => {
+    sph(head, 0.012, eye, s * 0.032, 0.002, 0.066, 0.7, 1, 0.45);
+    sph(head, 0.0035, mat('#ffffff', { roughness: 0.2 }), s * 0.03, 0.007, 0.071);
+    sph(head, 0.012, mat('#f7b8c9', { roughness: 0.8 }), s * 0.055, -0.02, 0.058, 1.2, 0.7, 0.35); // joues
+  });
+  // petite bouche
+  const mouth = new THREE.Mesh(new THREE.TorusGeometry(0.007, 0.0015, 8, 20, Math.PI), mat('#3a3150'));
+  mouth.position.set(0, -0.016, 0.071);
+  mouth.rotation.z = Math.PI;
+  head.add(mouth);
+  // longues oreilles tombantes
+  [-1, 1].forEach((s) => {
+    const ear = group(head, s < 0 ? 'ear-l' : 'ear-r');
+    ear.position.set(s * 0.07, 0.035, 0);
+    ear.rotation.z = s * -0.55;
+    sph(ear, 0.055, plush, s * 0.06, -0.01, 0, 1.55, 0.38, 0.85);
+  });
+  // queue en roulé à la cannelle
+  const pts: THREE.Vector3[] = [];
+  for (let k = 0; k <= 40; k++) {
+    const t = (k / 40) * Math.PI * 3.2;
+    const r = 0.024 * (1 - k / 52);
+    pts.push(new THREE.Vector3(Math.cos(t) * r, 0.065 + Math.sin(t) * r, -0.05 - k * 0.0004));
+  }
+  const tail = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 60, 0.0075, 10), plush);
+  inner.add(tail);
 }

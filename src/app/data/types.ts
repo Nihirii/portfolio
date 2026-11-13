@@ -63,7 +63,6 @@ export type InteractiveObjectId =
   | 'cv-sheet'
   | 'tv'
   | 'hiki'
-  | 'egg-eva-jacket'
   | 'egg-controller'
   | 'egg-plush'
   | 'egg-guitar'
@@ -88,7 +87,6 @@ export type ObjectAction =
   | { type: 'easter-egg'; eggId: EasterEggId };
 
 export type EasterEggId =
-  | 'eva-jacket'
   | 'controller'
   | 'plush'
   | 'guitar'
