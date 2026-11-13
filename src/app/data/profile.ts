@@ -5,7 +5,7 @@ export const PROFILE: Profile = {
   role: 'Développeuse front-end',
   city: 'Lyon',
   // Renseigner le pseudo GitHub pour afficher le bouton « GitHub » et les liens de dépôts.
-  githubUsername: '',
+  githubUsername: 'Nihirii',
   // Déposer la version publique du CV à cet emplacement : public/cv/lena-simonin-cv.pdf
   cvPdfPath: 'cv/lena-simonin-cv.pdf',
   cvDownloadName: 'CV-Lena-Simonin.pdf',
