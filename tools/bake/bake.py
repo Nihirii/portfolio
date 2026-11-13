@@ -426,6 +426,7 @@ def denoise():
 
 
 def save_encoded(path, px):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     px = px[::-1, :, :3]
     px = np.clip(px, 0, None)
     enc = (px / (1 + px)) ** (1 / 2.2)
