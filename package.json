@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "bake:export": "node tools/bake/export.cjs",
+    "bake": "node tools/bake/export.cjs && python tools/bake/bake.py"
   },
   "private": true,
   "packageManager": "npm@10.9.9",

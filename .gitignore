@@ -42,3 +42,9 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Pré-calcul de la lumière (fichiers intermédiaires, régénérés par npm run bake)
+/tools/bake/room.json
+/tools/bake/room.blend
+/tools/bake/room.blend1
+/tools/bake/_denoised.exr

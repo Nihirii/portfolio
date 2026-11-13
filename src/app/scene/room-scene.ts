@@ -8,6 +8,7 @@ import { GTAOPass } from 'three/examples/jsm/postprocessing/GTAOPass.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { INTERACTIVE_OBJECTS, objectById } from '../data/interactive-objects';
 import { InteractiveObjectId } from '../data/types';
+import { applyBake, BakeAssets, BakeControls } from './bake/apply-bake';
 import { buildRoom, RoomBuild } from './build-room';
 import { Hiki, PetReaction } from './hiki';
 import { INSIDE, OVERVIEW } from './room-layout';
@@ -35,6 +36,8 @@ interface View {
 /** `inside` : marche à la première personne ; `top` : diorama vu d'en haut. */
 export type ViewMode = 'inside' | 'top';
 
+export { loadBake } from './bake/apply-bake';
+
 export class RoomScene {
   private renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
@@ -55,6 +58,8 @@ export class RoomScene {
   private timer = new THREE.Timer();
   private frameId = 0;
   private aoPass: GTAOPass | null = null;
+  /** @internal lumière pré-calculée (null = rendu temps réel) ; exposé pour les tests en mode dev */
+  readonly bake: BakeControls | null;
   /** Mesure des premières images : coupe l'occlusion ambiante si la machine peine. */
   private perf = { frames: 0, time: 0 };
   private resizeObserver: ResizeObserver;
@@ -102,6 +107,7 @@ export class RoomScene {
     private host: HTMLElement,
     private canvas: HTMLCanvasElement,
     private cb: RoomSceneCallbacks,
+    bakeAssets: BakeAssets | null = null,
   ) {
     this.renderer = new THREE.WebGLRenderer({
       canvas,
@@ -119,6 +125,12 @@ export class RoomScene {
 
     this.camera = new THREE.PerspectiveCamera(OVERVIEW.fov, 1, 0.05, 60);
     this.room = buildRoom();
+    // lumière pré-calculée (Blender) : ombres et occlusion déjà dans les atlas
+    this.bake = bakeAssets ? applyBake(this.room.root, bakeAssets) : null;
+    if (this.bake) {
+      this.renderer.shadowMap.enabled = false;
+      this.hiki.setContactShadow(this.scene, true);
+    }
     this.scene.add(this.room.root);
     this.scene.add(this.hiki.root);
     this.hiki.root.userData['interactiveId'] = 'hiki';
@@ -142,7 +154,7 @@ export class RoomScene {
     this.composer.addPass(new RenderPass(this.scene, this.camera));
     // Occlusion ambiante (ombres de contact) sur ordinateur ; coupée sur mobile pour la fluidité
     const coarse = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches;
-    if (!coarse) {
+    if (!coarse && !this.bake) {
       const ao = new GTAOPass(this.scene, this.camera, 1, 1);
       ao.output = GTAOPass.OUTPUT.Default;
       ao.blendIntensity = 0.75;
@@ -597,6 +609,7 @@ export class RoomScene {
     const e = n * n * (3 - 2 * n);
     this.room.dimmables.forEach((d) => d.apply(e));
     this.renderer.toneMappingExposure = 1.0 + e * 0.25;
+    if (this.bake) this.bake.night.value = e;
     this.scene.environmentIntensity = 0.45 - e * 0.37;
   }
 

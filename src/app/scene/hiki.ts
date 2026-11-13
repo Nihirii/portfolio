@@ -99,6 +99,7 @@ export class Hiki {
   private lookYaw = 0;
   private reducedMotion = false;
   private night = 0;
+  private contactShadow: THREE.Mesh | null = null;
 
   constructor() {
     this.build();
@@ -110,6 +111,48 @@ export class Hiki {
 
   setReducedMotion(v: boolean) {
     this.reducedMotion = v;
+  }
+
+  /**
+   * Ombre de contact douce sous Hiki : remplace l'ombre portée quand la pièce utilise
+   * la lumière pré-calculée (ombres temps réel coupées).
+   */
+  setContactShadow(scene: THREE.Object3D, on: boolean) {
+    if (!on) {
+      this.contactShadow?.removeFromParent();
+      return;
+    }
+    if (!this.contactShadow) {
+      const c = document.createElement('canvas');
+      c.width = c.height = 64;
+      const ctx = c.getContext('2d')!;
+      const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      grad.addColorStop(0, 'rgba(40,28,22,0.55)');
+      grad.addColorStop(0.55, 'rgba(40,28,22,0.25)');
+      grad.addColorStop(1, 'rgba(40,28,22,0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 64, 64);
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      const m = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.6, 0.34),
+        new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }),
+      );
+      m.geometry.rotateX(-Math.PI / 2);
+      m.renderOrder = 1;
+      m.raycast = () => {}; // ni clic ni survol : ce n'est qu'une ombre
+      this.contactShadow = m;
+    }
+    // objet à part (pas un enfant) : le contour de survol de Hiki ne l'entoure pas
+    scene.add(this.contactShadow);
+  }
+
+  private followShadow() {
+    const m = this.contactShadow;
+    if (!m?.parent) return;
+    m.position.set(this.root.position.x, this.root.position.y + 0.004, this.root.position.z);
+    m.rotation.y = this.root.rotation.y;
+    m.scale.setScalar(this.root.scale.x);
   }
 
   isAsleep(): boolean {
@@ -185,6 +228,7 @@ export class Hiki {
   }
 
   update(dt: number, t: number, night: number) {
+    this.followShadow();
     this.night = night;
     dt = Math.min(dt, 0.1);
     if (this.petTimer > 0) this.petTimer -= dt;

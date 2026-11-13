@@ -27,7 +27,7 @@ export function buildExtras(ctx: ExtrasContext) {
 
 /**
  * Aquarium à méduses rond (cylindre blanc, hublot éclairé en bleu),
- * posé dans la colonne BESTÅ gauche. Le hublot fait face à la pièce (-z).
+ * posé dans la colonne BESTÅ à droite de la TV. Le hublot fait face à la pièce (-z).
  */
 function buildAquarium({
   gTV,

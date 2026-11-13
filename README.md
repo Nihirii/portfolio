@@ -108,14 +108,54 @@ passage, ses liaisons et ses endroits de sieste (le canapé est privilégié la 
 - **Lampe à lave** (bureau) : allumée automatiquement le soir ; un clic l’allume ou l’éteint
   (le choix vaut jusqu’au prochain passage jour / nuit).
 - **Easter eggs** : guitare (petit air original synthétisé ; un clic active le son), figurine Evangelion
-  dans le KALLAX, aquarium à méduses dans la colonne BESTÅ gauche, consoles GameCube, Nintendo 64, PSP
-  et 3DS dans la colonne BESTÅ droite, console rétro branchée sur la TV (jeu en pixel art), console en
+  dans le KALLAX, aquarium à méduses dans la colonne BESTÅ à droite de la TV, consoles GameCube, Nintendo 64, PSP
+  et 3DS dans celle de gauche, console rétro branchée sur la TV (jeu en pixel art), console en
   cours de démontage et manette sur la table basse, canard de débogage, gamelle (Hiki accourt),
   étoiles phosphorescentes visibles la nuit, tournesols et peluche Cinnamoroll sur le rebord derrière
   le canapé, mini-veste violette, pixel arts au-dessus du bureau, affiches minimalistes au-dessus de la TV.
   Les autres cases du KALLAX restent éclairées et vides pour de futures figurines.
 - **Liens directs** : `#about`, `#hubtv`, `#azura`, `#league-of-stone`, `#tamagotchi`, `#ganeshka`,
   `#web-services`, `#work`, `#cv`, `#projets`.
+
+## Lumière pré-calculée (Blender)
+
+Comme les scènes 3D « baked » (pièce modélisée, éclairage calculé à l'avance), la lumière du salon est
+pré-calculée dans **Blender (Cycles)** puis chargée par le site :
+
+- `public/room/room.glb` : la pièce reconstruite dans Blender (arêtes biseautées) avec un second jeu de
+  coordonnées de texture pour l'atlas de lumière (compression Draco) ;
+- `public/room/light-day.webp` et `light-night.webp` : l'éclairage du jour (soleil par la fenêtre, ciel par
+  les vitres) et du soir (lampes, LED, écrans), avec rebonds, ombres douces et occlusion. Le site passe de
+  l'un à l'autre en douceur au changement jour / nuit.
+
+Les objets pré-calculés passent en matériau sans éclairage temps réel (couleur × lumière de l'atlas) :
+rendu doux, et beaucoup moins de calcul pour le téléphone (plus d'ombres temps réel ni d'occlusion
+ambiante). Les objets lumineux, transparents ou animés par leur matériau (écrans, TV, LED, vitres, lampe
+à lave, aquarium, étoiles) et Hiki gardent leur rendu temps réel. Si les fichiers manquent, la pièce
+s'affiche comme avant, en temps réel.
+
+**Après une modification de la pièce** (cotes, objets, couleurs), il faut refaire le pré-calcul ; sinon les
+objets modifiés gardent leur rendu temps réel (un avertissement s'affiche dans la console en développement).
+
+Prérequis : Python 3.13 avec le module de Blender (`pip install bpy pillow numpy`), Playwright avec
+Chromium (`npx playwright install chromium`), et sous Linux sans écran les bibliothèques EGL
+(`libegl1 libegl-mesa0`) pour le débruitage.
+
+```bash
+npm start
+```
+
+Puis, dans un autre terminal :
+
+```bash
+npm run bake
+```
+
+`npm run bake` exporte la description de la pièce depuis le serveur de développement
+(`tools/bake/export.cjs` → `tools/bake/room.json`), puis lance `tools/bake/bake.py` (environ 1 h sur un
+processeur 4 cœurs). Options utiles : `python tools/bake/bake.py --preview` (rapide, pour régler la
+lumière), `--only day`, `--save-blend` (ouvre ensuite `tools/bake/room.blend` dans Blender).
+Les intensités se règlent dans `LIGHT`, en haut de `bake.py`.
 
 ## Accessibilité
 
@@ -140,5 +180,5 @@ src/app/
 
 ## Visuels
 
-Tous les visuels sont originaux et dessinés en code : écrans, TV, affiches, maquettes Figma **fictives**
+Tous les visuels sont originaux et dessinés en code (la lumière est calculée dans Blender) : écrans, TV, affiches, maquettes Figma **fictives**
 de « Mon travail » (aucun vrai produit n’est reproduit), illustrations des fiches.

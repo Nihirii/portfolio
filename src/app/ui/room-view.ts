@@ -172,7 +172,8 @@ export class RoomView implements AfterViewInit, OnDestroy {
   }
 
   async ngAfterViewInit() {
-    const { RoomScene } = await import('../scene/room-scene');
+    const { RoomScene, loadBake } = await import('../scene/room-scene');
+    const bake = await loadBake();
     this.zone.runOutsideAngular(() => {
       this.scene = new RoomScene(this.host().nativeElement, this.canvas().nativeElement, {
         hover: (id) => this.onHover(id),
@@ -183,9 +184,14 @@ export class RoomView implements AfterViewInit, OnDestroy {
           if (active) this.petAnnounced = false;
         },
         frame: () => this.placeOverlays(),
-      });
+      }, bake);
     });
-    if (isDevMode()) (window as unknown as { __salon?: RoomScene }).__salon = this.scene!; // tests manuels
+    if (isDevMode()) {
+      const w = window as unknown as { __salon?: RoomScene; __salonExport?: () => Promise<string> };
+      w.__salon = this.scene!; // tests manuels
+      // pré-calcul de la lumière (tools/bake) : description de la pièce pour Blender
+      w.__salonExport = () => import('../scene/bake/export-room').then((m) => m.exportRoom());
+    }
     this.scene!.setNight(this.state.night(), true);
     this.scene!.setReducedMotion(this.state.reducedMotion());
     this.scene!.setTvOn(this.state.tvOn());

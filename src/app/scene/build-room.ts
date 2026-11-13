@@ -164,6 +164,7 @@ export function buildRoom(): RoomBuild {
     emissive: '#d8eeff',
     emissiveIntensity: 0.9,
   });
+  glassMat.userData['window'] = true; // vitre : source de lumière du ciel pour le pré-calcul
   dimmables.push({
     apply: (n) => {
       glassMat.color.lerpColors(new THREE.Color('#cfe8ff'), new THREE.Color('#1d2547'), n);
@@ -879,8 +880,9 @@ function buildMediaColumns(
   box(g, 1.8, 0.035, 0.012, '#f8f7f4', TV.x, MEDIA_WALL.ledgeY + 0.03, D - 0.235, 0.003);
   box(g, 1.76, 0.006, 0.02, ledMat, TV.x, MEDIA_WALL.ledgeY - 0.01, D - 0.2, 0);
   dimLight(pointLight(g, 0xffd9a6, 0.5, 1.2, TV.x, 1.4, D - 0.3), 0.05, 0.5);
-  // colonne gauche : les consoles ; colonne droite : l'aquarium à méduses (build-extras.ts)
-  buildConsoles(cols[0], register);
+  // vue depuis la pièce : consoles dans la colonne à gauche de la TV (x = 5,7),
+  // aquarium à méduses dans celle de droite (x = 3,3, voir build-extras.ts)
+  buildConsoles(cols[1], register);
 }
 
 function buildKallax(

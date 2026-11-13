@@ -76,6 +76,7 @@ export function box(
       : cached(`b:${w}:${h}:${d}`, () => new THREE.BoxGeometry(w, h, d));
   const m = new THREE.Mesh(g, toMat(material));
   m.position.set(x, y + h / 2, z);
+  m.userData['shape'] = { t: 'box', w, h, d, r: Math.max(rr, 0) };
   return finish(m, parent);
 }
 
@@ -96,6 +97,7 @@ export function cyl(
     toMat(material),
   );
   m.position.set(x, y + h / 2, z);
+  m.userData['shape'] = { t: 'cyl', rt, rb, h, seg: segments };
   return finish(m, parent);
 }
 
@@ -116,6 +118,7 @@ export function sph(
   );
   m.position.set(x, y, z);
   m.scale.set(sx, sy, sz);
+  m.userData['shape'] = { t: 'sph', r };
   return finish(m, parent);
 }
 
@@ -198,6 +201,12 @@ export function loadFrameImage(material: THREE.MeshStandardMaterial, path: strin
       }
       material.map = tex;
       material.needsUpdate = true;
+      // version « lumière pré-calculée » du même matériau (bake/apply-bake.ts)
+      const twin = material.userData['bakedTwin'] as THREE.MeshBasicMaterial | undefined;
+      if (twin) {
+        twin.map = tex;
+        twin.needsUpdate = true;
+      }
     },
     undefined,
     () => console.warn(`Image de cadre introuvable : ${path}`),

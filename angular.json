@@ -54,6 +54,11 @@
                 "glob": "pdf.worker.min.mjs",
                 "input": "node_modules/pdfjs-dist/build",
                 "output": "pdfjs"
+              },
+              {
+                "glob": "draco_*",
+                "input": "node_modules/three/examples/jsm/libs/draco/gltf",
+                "output": "draco"
               }
             ],
             "styles": [

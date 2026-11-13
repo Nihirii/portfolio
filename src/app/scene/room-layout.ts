@@ -101,8 +101,11 @@ export const MEDIA_WALL = {
 /** Arbre à chat, un peu écarté du KALLAX pour ne plus masquer ses cases du bas. */
 export const CAT_TREE = { x: 1.25, z: 2.95 };
 
-/** Aquarium à méduses rond, sur l'étagère du milieu de la colonne BESTÅ droite. */
-export const AQUARIUM = { x: 5.7, z: 3.2, shelfY: 0.988 };
+/**
+ * Aquarium à méduses rond, sur l'étagère du milieu de la colonne BESTÅ à droite de la TV
+ * (vue depuis la pièce, c'est la colonne côté bureau, x = 3,3).
+ */
+export const AQUARIUM = { x: 3.3, z: 3.2, shelfY: 0.988 };
 
 /** Easter eggs : vase de tournesols, gamelle de Hiki, étoiles phosphorescentes. */
 /** Tournesols : sur le rebord derrière le canapé (hauteur du rebord : 0,875 m). */
@@ -137,7 +140,7 @@ export const HIKI = {
     tvFront: { x: 3.9, y: 0, z: 2.62 },
     corridor: { x: 4.9, y: 0, z: 2.55 },
     window: { x: 5.55, y: 0, z: 2.55 },
-    aquarium: { x: 5.65, y: 0, z: 2.72 },
+    aquarium: { x: 3.35, y: 0, z: 2.75 },
     hammock: { x: 5.66, y: 0.76, z: 2.0 },
     sofaFoot: { x: 4.05, y: 0, z: 2.22 },
     sofa: { x: 4.0, y: 0.49, z: 1.45 },
@@ -154,7 +157,7 @@ export const HIKI = {
     ['tvFront', 'corridor'],
     ['corridor', 'window'],
     ['window', 'hammock'],
-    ['window', 'aquarium'],
+    ['tvFront', 'aquarium'],
     ['rug', 'sofaFoot'],
     ['tvFront', 'sofaFoot'],
     ['sofaFoot', 'sofa'],

@@ -73,7 +73,7 @@ export function buildLavaLamp(
   return lamp;
 }
 
-/** Collection de consoles dans la colonne BESTÅ droite : GameCube, Nintendo 64, PSP, 3DS. */
+/** Collection de consoles dans la colonne BESTÅ à gauche de la TV : GameCube, Nintendo 64, PSP, 3DS. */
 export function buildConsoles(column: THREE.Group, register: Register) {
   const g = group(column, 'consoles');
   const shelf = (y: number) => y + 0.009;
