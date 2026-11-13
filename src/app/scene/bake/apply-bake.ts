@@ -33,7 +33,7 @@ export async function loadBake(): Promise<BakeAssets | null> {
     const gltf = new GLTFLoader().setDRACOLoader(draco);
     const tex = new THREE.TextureLoader();
     const [scene, day, night] = await Promise.all([
-      gltf.loadAsync(BASE + 'room.glb').then((g) => g.scene),
+      fetchRoomGlb().then((buf) => gltf.parseAsync(buf, BASE).then((g) => g.scene)),
       tex.loadAsync(BASE + 'light-day.webp'),
       tex.loadAsync(BASE + 'light-night.webp'),
     ]);
@@ -61,6 +61,21 @@ export async function loadBake(): Promise<BakeAssets | null> {
     console.warn('Lumière pré-calculée indisponible, rendu temps réel.', e);
     return null;
   }
+}
+
+/**
+ * `room.glb`, ou à défaut `room.glb.json` (même fichier en base64) pour les hébergements qui ne
+ * servent pas le format .glb (aperçu en artifact).
+ */
+async function fetchRoomGlb(): Promise<ArrayBuffer> {
+  const res = await fetch(BASE + 'room.glb');
+  if (res.ok) {
+    const buf = await res.arrayBuffer();
+    // « glTF » en tête : sinon c'est une page de repli de l'hébergeur
+    if (new TextDecoder().decode(new Uint8Array(buf, 0, 4)) === 'glTF') return buf;
+  }
+  const { data } = (await (await fetch(BASE + 'room.glb.json')).json()) as { data: string };
+  return Uint8Array.from(atob(data), (c) => c.charCodeAt(0)).buffer;
 }
 
 /** Remplace géométrie et matériau des objets pré-calculés. À appeler juste après `buildRoom()`. */
