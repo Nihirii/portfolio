@@ -254,6 +254,41 @@ export const SHEETS: readonly Sheet[] = [
     objectId: 'kallax-salon',
   },
   {
+    id: 'jellyfish',
+    kind: 'project',
+    title: 'Jellyfish',
+    tagline: "Un petit jeu d'arcade : une méduse, du plancton lumineux et des tortues à éviter",
+    summary:
+      "Un jeu d'arcade dans le navigateur : on guide une méduse dans les profondeurs, on mange du " +
+      'plancton lumineux et on évite les tortues de mer qui traversent l’écran.',
+    sections: [
+      {
+        heading: 'Règles',
+        items: [
+          'Chaque plancton mangé rapporte 1 point',
+          'Une tortue qui touche la méduse termine la partie',
+          'Plus la partie dure, plus les tortues sont rapides et nombreuses',
+          'Le meilleur score est gardé dans le navigateur (localStorage)',
+        ],
+      },
+      {
+        heading: 'Choix technique',
+        items: [
+          'HTML, CSS et JavaScript vanilla avec <canvas> : pas de dépendance, pas de build',
+          'Commandes à la souris, au doigt ou aux flèches du clavier',
+        ],
+      },
+    ],
+    stack: ['JavaScript', 'Canvas', 'HTML', 'CSS'],
+    repos: [{ label: 'Voir sur GitHub', url: repoUrl('jellyfish'), isPublic: true }],
+    visual: 'pet',
+    cover: {
+      src: 'projects/jellyfish.webp',
+      alt: 'Capture du jeu Jellyfish : une méduse lumineuse et des tortues dans les profondeurs',
+    },
+    objectId: 'egg-aquarium',
+  },
+  {
     id: 'routine-carte',
     kind: 'project',
     title: 'Routine&Carte',

@@ -338,6 +338,7 @@ export class RoomView implements AfterViewInit, OnDestroy {
     switch (o.action.type) {
       case 'sheet':
         this.state.openSheet(o.action.sheetId);
+        if (id === 'egg-aquarium') this.scene?.playEgg(id); // cœur de méduses, Hiki vient voir
         break;
       case 'cv':
         this.state.openCv();

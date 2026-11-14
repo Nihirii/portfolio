@@ -183,7 +183,7 @@ export function buildRoom(): RoomBuild {
       [2.0, 1.58, 0.38, 0.5],
       [2.45, 1.52, 0.36, 0.48],
       [2.85, 1.6, 0.26, 0.36],
-      [1.55, 2.02, 0.3, 0.24],
+      [1.55, 2.08, 0.24, 0.32], // petit cadre du haut, vertical comme l'affiche
     ] as const
   ).forEach(([x, y, w, h], i) => {
     box(gDesk, w, h, 0.025, '#1f1b22', x, y - h / 2, 0.0125, 0.004);

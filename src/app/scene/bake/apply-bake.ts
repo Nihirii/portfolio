@@ -105,6 +105,12 @@ export function applyBake(root: THREE.Object3D, bake: BakeAssets): BakeControls 
     }
     const g = src.geometry.clone();
     g.applyMatrix4(inv.copy(mesh.matrixWorld).invert());
+    // dimensions changées depuis le pré-calcul : on garde le rendu temps réel
+    if (!sameSize(g, mesh.geometry)) {
+      g.dispose();
+      stale.push(id);
+      return;
+    }
     // atlas de lumière : toujours sur le canal 1
     if (!g.attributes['uv1']) {
       g.setAttribute('uv1', g.attributes['uv']);
@@ -130,6 +136,17 @@ export function applyBake(root: THREE.Object3D, bake: BakeAssets): BakeControls 
     );
   }
   return controls;
+}
+
+const sizeA = new THREE.Vector3();
+const sizeB = new THREE.Vector3();
+/** Même encombrement (à 2 cm près), dans le repère de l'objet, que la géométrie pré-calculée. */
+function sameSize(baked: THREE.BufferGeometry, current: THREE.BufferGeometry): boolean {
+  baked.computeBoundingBox();
+  if (!current.boundingBox) current.computeBoundingBox();
+  baked.boundingBox!.getSize(sizeA);
+  current.boundingBox!.getSize(sizeB);
+  return sizeA.distanceTo(sizeB) < 0.02;
 }
 
 function bakedMaterial(

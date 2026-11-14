@@ -98,6 +98,9 @@ import { WorkGallery } from './work-gallery';
       display: block;
       width: 100%;
       height: auto;
+      max-height: 60vh;
+      object-fit: cover;
+      object-position: top;
       border-radius: var(--radius-m);
       border: 1px solid var(--c-line);
     }

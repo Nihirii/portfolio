@@ -18,6 +18,7 @@ export type SheetId =
   | 'moniteur-virtuel'
   | 'salon'
   | 'routine-carte'
+  | 'jellyfish'
   | 'iut-blagnac';
 
 /** Illustrations originales disponibles pour les fiches (dessinées en CSS/SVG). */

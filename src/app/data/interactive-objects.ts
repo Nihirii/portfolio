@@ -143,10 +143,11 @@ export const INTERACTIVE_OBJECTS: readonly InteractiveObject[] = [
   },
   {
     id: 'egg-aquarium',
-    label: 'Aquarium à méduses',
-    action: { type: 'easter-egg', eggId: 'aquarium' },
-    primary: false,
-    focus: null,
+    label: 'Aquarium à méduses — Jellyfish',
+    // ouvre la fiche du jeu ; les méduses forment toujours leur cœur (room-view.ts)
+    action: { type: 'sheet', sheetId: 'jellyfish' },
+    primary: true,
+    focus: { offset: [0.15, 0.1, -0.9] },
   },
   {
     id: 'egg-sunflowers',

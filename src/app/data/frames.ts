@@ -5,10 +5,16 @@
  */
 export const FRAME_IMAGES = {
   /** Cinq cadres au-dessus du bureau, de gauche à droite (le 5ᵉ est le petit en haut). */
-  desk: [null, null, null, null, null] as (string | null)[],
+  desk: [
+    'cadres/bureau-1.webp',
+    'cadres/bureau-2.webp',
+    'cadres/bureau-3.webp',
+    'cadres/bureau-4.webp',
+    'cadres/bureau-5.webp',
+  ] as (string | null)[],
   /**
    * Six affiches au-dessus de la TV, de gauche à droite vues depuis la pièce
-   * (affiches Ghibli minimalistes de Sylvan Design, format 2:3).
+   * (affiches Ghibli minimalistes de Sylvan Design, format 2:3, recadrées au ras du dessin).
    */
   tv: [
     'cadres/tv-1-mononoke.webp',
@@ -16,6 +22,6 @@ export const FRAME_IMAGES = {
     'cadres/tv-3-chihiro.webp',
     'cadres/tv-4-howl.webp',
     'cadres/tv-5-totoro.webp',
-    null, // 6ᵉ affiche à venir : cadres/tv-6-….webp
+    'cadres/tv-6-ponyo.webp',
   ] as (string | null)[],
 };

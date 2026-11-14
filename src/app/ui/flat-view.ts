@@ -203,6 +203,7 @@ import { SheetVisual } from './sheet-visual';
       width: 100%;
       aspect-ratio: 16 / 10;
       object-fit: cover;
+      object-position: center 20%;
       border-radius: var(--radius-m);
     }
     .also {
