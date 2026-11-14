@@ -429,6 +429,11 @@ def save_encoded(path, px):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     px = px[::-1, :, :3]
     px = np.clip(px, 0, None)
+    # zones vides de l'atlas remplies par la couleur des îlots voisins (sinon traces noires aux bords)
+    sys.path.insert(0, HERE)
+    from fill import push_pull
+
+    px = push_pull(px, px.max(2) > 1e-5)
     enc = (px / (1 + px)) ** (1 / 2.2)
     enc8 = np.clip(enc * 255 + 0.5, 0, 255).astype(np.uint8)
     if Image is None:

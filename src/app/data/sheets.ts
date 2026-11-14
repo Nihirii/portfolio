@@ -72,7 +72,7 @@ export const SHEETS: readonly Sheet[] = [
     // Dépôt privé : le lien reste masqué tant que `isPublic` vaut false.
     repos: [{ label: 'Dépôt HubTV', url: repoUrl('hubtv'), isPublic: false }],
     visual: 'hubtv',
-    objectId: 'monitor-left',
+    objectId: 'kallax-hubtv',
   },
   {
     id: 'azura',
@@ -109,7 +109,7 @@ export const SHEETS: readonly Sheet[] = [
     // Dépôt privé : le lien reste masqué tant que `isPublic` vaut false.
     repos: [{ label: 'Dépôt Azura', url: repoUrl('azura'), isPublic: false }],
     visual: 'azura',
-    objectId: 'monitor-right',
+    objectId: 'kallax-azura',
   },
   {
     id: 'league-of-stone',
@@ -252,6 +252,19 @@ export const SHEETS: readonly Sheet[] = [
       alt: "Le salon de Léna en 3D, vu d'en haut, à la lumière du jour",
     },
     objectId: 'kallax-salon',
+  },
+  {
+    id: 'routine-carte',
+    kind: 'project',
+    title: 'Routine&Carte',
+    tagline: 'Projet perso',
+    // À compléter : description, stack et dépôt (aucune information fournie pour l'instant).
+    summary: 'Un projet perso rangé dans le KALLAX. Sa présentation détaillée arrive bientôt.',
+    sections: [],
+    stack: [],
+    repos: [],
+    visual: 'pet',
+    objectId: 'kallax-routine',
   },
   {
     id: 'iut-blagnac',

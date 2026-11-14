@@ -65,6 +65,27 @@ export const INTERACTIVE_OBJECTS: readonly InteractiveObject[] = [
     focus: { offset: [1.25, 0.1, -0.15] },
   },
   {
+    id: 'kallax-hubtv',
+    label: 'Mini-TV et manette — HubTV',
+    action: { type: 'sheet', sheetId: 'hubtv' },
+    primary: true,
+    focus: { offset: [1.25, -0.1, 0.1] },
+  },
+  {
+    id: 'kallax-azura',
+    label: 'Téléphone — Azura',
+    action: { type: 'sheet', sheetId: 'azura' },
+    primary: true,
+    focus: { offset: [1.25, -0.1, -0.1] },
+  },
+  {
+    id: 'kallax-routine',
+    label: 'Carnet et cartes — Routine&Carte',
+    action: { type: 'sheet', sheetId: 'routine-carte' },
+    primary: true,
+    focus: { offset: [1.25, 0.25, 0.1] },
+  },
+  {
     id: 'kallax-salon',
     label: 'Mini-salon — Le salon de Léna',
     action: { type: 'sheet', sheetId: 'salon' },

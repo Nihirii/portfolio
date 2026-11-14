@@ -42,9 +42,10 @@ export async function loadBake(): Promise<BakeAssets | null> {
       t.flipY = false; // convention glTF
       t.colorSpace = THREE.NoColorSpace; // encodage maison, décodé dans le shader
       t.channel = 1;
-      // pas de mipmaps : elles mêleraient le fond noir de l'atlas aux bords des îlots
-      t.generateMipmaps = false;
-      t.minFilter = THREE.LinearFilter;
+      // les zones vides de l'atlas sont remplies (tools/bake/fill.py) : mipmaps sans traces noires
+      t.generateMipmaps = true;
+      t.minFilter = THREE.LinearMipmapLinearFilter;
+      t.anisotropy = 4;
     }
     const meshes = new Map<string, THREE.Mesh>();
     scene.updateMatrixWorld(true);

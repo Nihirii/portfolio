@@ -9,7 +9,11 @@ const path = require('node:path');
 const url = process.argv[2] ?? 'http://localhost:4200/';
 const browser = await chromium.launch();
 const page = await browser.newPage();
-await page.addInitScript(() => localStorage.setItem('salon-aide-commandes', '1'));
+// la 3D n'est chargée qu'en mode « salon » (la 2D est la vue par défaut)
+await page.addInitScript(() => {
+  localStorage.setItem('salon-aide-commandes', '1');
+  localStorage.setItem('salon-mode', '3d');
+});
 await page.goto(url);
 await page.waitForFunction(() => window.__salonExport, null, { timeout: 120000 });
 const json = await page.evaluate(() => window.__salonExport());

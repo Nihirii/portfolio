@@ -57,8 +57,14 @@ export const KALLAX = {
     'kallax-binder': [1, 2],
     'kallax-server': [3, 2],
   } as Record<string, [number, number]>,
-  /** Cases ajoutées : « Le salon de Léna » et « Portfolio IUT de Blagnac ». */
-  extraCells: { salon: [2, 2] as [number, number], iut: [2, 4] as [number, number] },
+  /** Cases ajoutées : Le salon de Léna, Portfolio IUT, HubTV, Azura, Routine&Carte. */
+  extraCells: {
+    salon: [2, 2] as [number, number],
+    iut: [2, 4] as [number, number],
+    hubtv: [1, 4] as [number, number],
+    azura: [3, 4] as [number, number],
+    routine: [2, 1] as [number, number],
+  },
   /** Case de la figurine Evangelion. */
   evaFigureCell: [2, 3] as [number, number],
 };

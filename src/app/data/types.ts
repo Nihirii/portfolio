@@ -17,6 +17,7 @@ export type SheetId =
   | 'icare-portal'
   | 'moniteur-virtuel'
   | 'salon'
+  | 'routine-carte'
   | 'iut-blagnac';
 
 /** Illustrations originales disponibles pour les fiches (dessinées en CSS/SVG). */
@@ -73,6 +74,9 @@ export type InteractiveObjectId =
   | 'kallax-server'
   | 'kallax-salon'
   | 'kallax-iut'
+  | 'kallax-hubtv'
+  | 'kallax-azura'
+  | 'kallax-routine'
   | 'notebook'
   | 'cv-sheet'
   | 'tv'

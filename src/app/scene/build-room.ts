@@ -323,9 +323,14 @@ export function buildRoom(): RoomBuild {
   for (let i = 0; i < 6; i++) {
     const x = TV.x + (i - 2.5) * 0.29;
     const tex = new THREE.MeshStandardMaterial({ map: minimalPosterTexture(i), roughness: 0.9 });
-    loadFrameImage(tex, FRAME_IMAGES.tv[i] ?? null, 0.23, 0.34); // vraie affiche si fournie
+    // vu depuis la pièce, x diminue vers la droite : FRAME_IMAGES.tv est rangé de gauche à droite
+    const img = FRAME_IMAGES.tv[5 - i] ?? null;
+    // format 2:3 des affiches (481 × 720 px, recadrées au ras du dessin) : le cadre garde les proportions de l'image
+    const pw = 0.23;
+    const ph = 0.3443;
+    loadFrameImage(tex, img, pw, ph); // vraie affiche si fournie
     box(gTV, 0.27, 0.39, 0.025, '#d8b893', x, 1.72 - 0.195, D - 0.0125, 0.004);
-    plane(gTV, 0.23, 0.34, tex, x, 1.72, D - 0.027, Math.PI);
+    plane(gTV, pw, ph, tex, x, 1.72, D - 0.027, Math.PI);
   }
   // halo bleu derrière la TV (éclairage du meuble TV)
   {
@@ -716,7 +721,6 @@ export function buildRoom(): RoomBuild {
     box(g, 0.05, 0.008, 0.002, '#77777f', TX, 0.585, D - 0.277, 0);
     register('tv', g);
   }
-  // lampe champignon
   // peluche Cinnamoroll (easter egg)
   {
     const plush = group(root, 'plush');
@@ -741,17 +745,19 @@ export function buildRoom(): RoomBuild {
     addHitBox(g, 0.32, 0.16, 0.24, 0, 0.06, 0);
     register('egg-retro', g);
   }
+  // lampe champignon, entre la TV et la colonne BESTÅ (chapeau dans l'espace libre de 3,6 à 3,9 m)
   {
-    cyl(root, 0.03, 0.05, 0.18, '#fff6ea', TX - 0.82, 0.51, D - 0.2, 16);
+    const LX = TX - 0.75;
+    cyl(root, 0.025, 0.04, 0.18, '#fff6ea', LX, 0.51, D - 0.2, 16);
     const capMat = glow('#ffe4b8', 1.2);
     dimEmissive(capMat, 0.15, 1.3);
     const cap = new THREE.Mesh(
-      new THREE.SphereGeometry(0.12, 24, 12, 0, 6.3, 0, Math.PI / 2),
+      new THREE.SphereGeometry(0.1, 24, 12, 0, 6.3, 0, Math.PI / 2),
       capMat,
     );
-    cap.position.set(TX - 0.82, 0.69, D - 0.2);
+    cap.position.set(LX, 0.69, D - 0.2);
     root.add(cap);
-    dimLight(pointLight(root, 0xffc98a, 0.25, 2.5, TX - 0.82, 0.72, D - 0.35), 0.05, 1.3);
+    dimLight(pointLight(root, 0xffc98a, 0.25, 2.5, LX, 0.72, D - 0.35), 0.05, 1.3);
   }
 
   // colonnes BESTÅ vitrées + étagère à affiches (masquées avec le mur en vue d'ensemble)
@@ -1141,6 +1147,54 @@ function buildKallaxExtras(
     box(g, 0.02, 0.028, 0.02, CHAIRS.gaming.main, -0.07, 0.012, 0.03, 0.004); // chaise bleue
     sph(g, 0.012, HIKI.coat, 0.0, 0.024, -0.04, 1.4, 0.9, 1); // Hiki
     sph(g, 0.008, HIKI.coat, 0.016, 0.034, -0.04);
+  }
+
+  // HubTV : mini-TV allumée en mode jeu, manette devant
+  {
+    const g = place('kallax-hubtv', KALLAX.extraCells.hubtv);
+    box(g, 0.2, 0.012, 0.06, '#e9e6ef', 0, 0, 0.04, 0.003); // socle
+    box(g, 0.22, 0.13, 0.014, '#16151b', 0, 0.02, 0.05, 0.005); // TV
+    box(g, 0.2, 0.11, 0.002, '#4b3f8f', 0, 0.03, 0.042, 0); // écran
+    box(g, 0.05, 0.035, 0.001, '#f2b8c6', -0.055, 0.06, 0.0405, 0);
+    box(g, 0.05, 0.035, 0.001, '#cbbcf6', 0.0, 0.06, 0.0405, 0);
+    box(g, 0.05, 0.035, 0.001, '#9fc3f0', 0.055, 0.06, 0.0405, 0);
+    const pad = group(g);
+    pad.position.set(0.02, 0, -0.07);
+    pad.rotation.y = 0.3;
+    box(pad, 0.09, 0.022, 0.05, '#3a3a44', 0, 0, 0, 0.012);
+    sph(pad, 0.012, '#3a3a44', -0.04, 0.012, 0.01);
+    sph(pad, 0.012, '#3a3a44', 0.04, 0.012, 0.01);
+  }
+
+  // Azura : téléphone debout sur un support, écran d'humeur
+  {
+    const g = place('kallax-azura', KALLAX.extraCells.azura);
+    box(g, 0.08, 0.012, 0.07, '#efe4d3', 0, 0, 0, 0.004); // support
+    const ph = group(g);
+    ph.position.set(0, 0.012, 0.01);
+    ph.rotation.x = 0.18;
+    box(ph, 0.075, 0.15, 0.009, '#2a2638', 0, 0, 0, 0.008);
+    box(ph, 0.066, 0.135, 0.001, '#f7f2fb', 0, 0.0075, -0.005, 0);
+    ['#f2b8c6', '#ffe08a', '#bfe8d6', '#9fc3f0', '#cbbcf6'].forEach((c, k) =>
+      sph(ph, 0.0055, c, -0.024 + k * 0.012, 0.11, -0.006),
+    );
+    box(ph, 0.05, 0.004, 0.001, '#c8b4ef', 0, 0.085, -0.0058, 0);
+    box(ph, 0.04, 0.004, 0.001, '#c8b4ef', 0, 0.075, -0.0058, 0);
+  }
+
+  // Routine&Carte : carnet ouvert et pile de cartes
+  {
+    const g = place('kallax-routine', KALLAX.extraCells.routine);
+    box(g, 0.14, 0.012, 0.1, '#fffaf2', -0.03, 0, 0.0, 0.003); // carnet ouvert
+    box(g, 0.004, 0.013, 0.1, '#cbbcf6', -0.03, 0, 0.0, 0);
+    [0, 1, 2].forEach((k) =>
+      box(g, 0.05, 0.002, 0.004, '#b8a596', -0.065, 0.012, -0.03 + k * 0.02, 0),
+    );
+    [0, 1, 2].forEach((k) =>
+      box(g, 0.05, 0.002, 0.004, '#b8a596', 0.005, 0.012, -0.03 + k * 0.02, 0),
+    );
+    for (let k = 0; k < 5; k++)
+      box(g, 0.06, 0.004, 0.085, k % 2 ? '#f2b8c6' : '#9fc3f0', 0.08, k * 0.004, 0.0, 0.003);
   }
 
   // boîte d'archives avec étiquette
