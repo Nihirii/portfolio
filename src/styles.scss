@@ -1,14 +1,14 @@
-/* Design tokens du portfolio — palette reprise du salon : crème, rose poudré, lavande. */
+/* Design tokens du portfolio — éditorial : crème le jour, prune la nuit, accent rose. */
 :root {
-  --c-bg: #f6efe8;
-  --c-surface: #fffdfa;
-  --c-surface-2: #fbf5ef;
-  --c-line: #f0e3d8;
-  --c-text: #4a3a4f;
-  --c-text-soft: #6f5f73;
-  --c-muted: #8a7a88;
+  --c-bg: #f7f1e7;
+  --c-surface: #fffcf6;
+  --c-surface-2: #f2ebdf;
+  --c-line: #e6dccd;
+  --c-text: #3d2f3f;
+  --c-text-soft: #5f5061;
+  --c-muted: #7f6f7d;
   --c-rose: #f2b8c6;
-  --c-rose-strong: #c25579;
+  --c-rose-strong: #b8476e;
   --c-lav: #cbbcf6;
   --c-lav-strong: #6b54d6;
   --c-mint: #bfe8d6;
@@ -34,13 +34,13 @@
 }
 
 :root[data-theme='night'] {
-  --c-bg: #251f33;
-  --c-surface: #2f2840;
-  --c-surface-2: #382f4c;
-  --c-line: #4a3f60;
-  --c-text: #f6eef7;
-  --c-text-soft: #ddd0e4;
-  --c-muted: #b9aac3;
+  --c-bg: #2a1b29;
+  --c-surface: #342333;
+  --c-surface-2: #3e2b3c;
+  --c-line: #523a4f;
+  --c-text: #f7eef3;
+  --c-text-soft: #e2d2dc;
+  --c-muted: #bba6b5;
   --c-rose-strong: #ff9fbd;
   --c-lav-strong: #c3b4ff;
   --c-focus: #c3b4ff;
@@ -112,7 +112,7 @@ button {
   gap: 6px;
   min-height: 40px;
   padding: 8px 14px;
-  border: 2px solid var(--c-line);
+  border: 1px solid var(--c-line);
   border-radius: 999px;
   background: var(--c-surface);
   color: var(--c-text);
@@ -120,25 +120,26 @@ button {
   font-size: 14px;
   text-decoration: none;
   cursor: pointer;
-  box-shadow: 0 3px 0 var(--c-line);
   transition:
-    transform 0.12s ease,
-    background-color 0.3s ease;
+    background-color 0.2s ease,
+    border-color 0.2s ease;
   white-space: nowrap;
 
   &:hover {
-    transform: translateY(-1px);
+    background: var(--c-surface-2);
   }
-  &:active {
-    transform: translateY(1px);
-    box-shadow: 0 1px 0 var(--c-line);
+  /* état actif d'un réglage : neutre, le rose est réservé aux actions principales */
+  &[aria-pressed='true'] {
+    background: var(--c-surface-2);
+    border-color: var(--c-muted);
   }
-  &[aria-pressed='true'],
   &.chip--primary {
     background: var(--c-rose);
-    border-color: var(--c-rose-strong);
+    border-color: var(--c-rose);
     color: #3b2533;
-    box-shadow: 0 3px 0 var(--c-rose-strong);
+    &:hover {
+      background: color-mix(in srgb, var(--c-rose) 85%, var(--c-rose-strong));
+    }
   }
 }
 

@@ -52,7 +52,7 @@ import {
       height: auto;
       max-height: none;
       padding: 0;
-      border: 2px solid var(--c-line);
+      border: 1px solid var(--c-line);
       border-radius: var(--radius-l);
       background: var(--c-surface);
       color: var(--c-text);
@@ -85,7 +85,7 @@ import {
       height: 40px;
       margin: -8px -8px 0 8px;
       border-radius: 50%;
-      border: 2px solid var(--c-line);
+      border: 1px solid var(--c-line);
       background: var(--c-surface);
       cursor: pointer;
       font-size: 16px;

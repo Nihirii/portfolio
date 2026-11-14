@@ -37,7 +37,7 @@ h3 {
   aspect-ratio: 16 / 10;
   border-radius: 10px;
   background: #1d2236;
-  border: 2px solid var(--c-line);
+  border: 1px solid var(--c-line);
   padding: 6px;
   display: flex;
   flex-direction: column;
@@ -181,7 +181,7 @@ tr:nth-child(n + 5) .sw {
   padding: 14px;
   border-radius: var(--k-radius);
   background: #fffdfa;
-  border: 2px solid var(--c-line);
+  border: 1px solid var(--c-line);
   color: #2c2433;
 }
 .k-btn {
@@ -253,4 +253,34 @@ tr:nth-child(n + 5) .sw {
 .note {
   font-size: 13px;
   color: var(--c-muted);
+}
+
+/* Exemple « Figma → token → composant Angular » */
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin: 20px 0 0;
+  font-weight: 800;
+  span:not([aria-hidden]) {
+    padding: 3px 10px;
+    border: 1px solid var(--c-line);
+    border-radius: 999px;
+    background: var(--c-surface-2);
+  }
+  span[aria-hidden] {
+    color: var(--c-muted);
+  }
+}
+.step {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-right: 4px;
+  border-radius: 50%;
+  border: 1px solid var(--c-line);
+  font-size: 12px;
+  vertical-align: 2px;
 }

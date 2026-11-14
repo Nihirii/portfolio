@@ -14,8 +14,14 @@ interface Mockup {
   selector: 'app-work-gallery',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+    <p class="flow" aria-label="Exemple : de Figma au composant Angular">
+      <span>Figma</span><span aria-hidden="true">→</span><span>token</span
+      ><span aria-hidden="true">→</span><span>composant Angular</span>
+    </p>
     <section aria-labelledby="work-mockups">
-      <h3 id="work-mockups">Maquettes Figma <small>(visuels fictifs)</small></h3>
+      <h3 id="work-mockups">
+        <span class="step">1</span> Figma : la maquette <small>(visuels fictifs)</small>
+      </h3>
       <ul class="mockups">
         @for (m of mockups; track m.name) {
           <li class="mock">
@@ -55,7 +61,7 @@ interface Mockup {
     </section>
 
     <section aria-labelledby="work-tokens">
-      <h3 id="work-tokens">Design tokens</h3>
+      <h3 id="work-tokens"><span class="step">2</span> Token : la décision de design</h3>
       <table class="tokens">
         <caption class="sr-only">
           Exemples de tokens fictifs
@@ -77,7 +83,7 @@ interface Mockup {
     </section>
 
     <section aria-labelledby="work-kit">
-      <h3 id="work-kit">Extrait du UI kit</h3>
+      <h3 id="work-kit"><span class="step">3</span> Composant Angular : le UI kit</h3>
       <div class="kit">
         <button type="button" class="k-btn">Exporter</button>
         <button type="button" class="k-btn k-btn--ghost">Annuler</button>
@@ -89,7 +95,8 @@ interface Mockup {
         </label>
       </div>
       <p class="note">
-        Ces composants sont de vrais éléments HTML stylés avec les tokens ci-dessus.
+        Ces composants sont de vrais éléments HTML stylés avec les tokens ci-dessus : une couleur
+        changée dans Figma devient un token, et tous les composants qui l'utilisent suivent.
       </p>
     </section>
   `,

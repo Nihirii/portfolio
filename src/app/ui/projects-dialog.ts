@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { PortfolioState } from '../core/portfolio-state';
 import { objectForSheet } from '../data/interactive-objects';
-import { SHEETS } from '../data/sheets';
+import { EXPERIMENT_SHEETS, FEATURED_SHEETS } from '../data/sheets';
+import { Sheet } from '../data/types';
 import { Panel } from './panel';
 
 @Component({
@@ -16,19 +17,22 @@ import { Panel } from './panel';
     >
       <h2 id="projects-title" tabindex="-1" data-autofocus>Projets</h2>
       <p class="intro">Chaque projet est aussi un objet du salon.</p>
-      <ul class="list">
-        @for (item of items; track item.sheet.id) {
-          <li>
-            <button type="button" class="item" (click)="state.openSheet(item.sheet.id)">
-              <span class="item__title">{{ item.sheet.title }}</span>
-              <span class="item__tag">{{ item.sheet.tagline }}</span>
-              @if (item.where) {
-                <span class="item__where">{{ item.where }}</span>
-              }
-            </button>
-          </li>
-        }
-      </ul>
+      @for (group of groups; track group.title) {
+        <h3>{{ group.title }}</h3>
+        <ul class="list">
+          @for (item of group.items; track item.sheet.id) {
+            <li>
+              <button type="button" class="item" (click)="state.openSheet(item.sheet.id)">
+                <span class="item__title">{{ item.sheet.title }}</span>
+                <span class="item__tag">{{ item.sheet.tagline }}</span>
+                @if (item.where) {
+                  <span class="item__where">{{ item.where }}</span>
+                }
+              </button>
+            </li>
+          }
+        </ul>
+      }
     </app-panel>
   `,
   styles: `
@@ -36,6 +40,15 @@ import { Panel } from './panel';
       margin: 0;
       font-size: 28px;
       outline: none;
+    }
+    h3 {
+      margin: 20px 0 8px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--c-muted);
+      font-family: var(--font-body);
     }
     .intro {
       color: var(--c-muted);
@@ -56,14 +69,12 @@ import { Panel } from './panel';
       gap: 2px;
       padding: 12px 14px;
       border-radius: var(--radius-m);
-      border: 2px solid var(--c-line);
+      border: 1px solid var(--c-line);
       background: var(--c-surface);
-      box-shadow: 0 4px 0 var(--c-line);
       cursor: pointer;
-      transition: transform 0.12s;
+      transition: border-color 0.2s;
       &:hover {
-        transform: translateY(-2px);
-        border-color: var(--c-rose);
+        border-color: var(--c-muted);
       }
     }
     .item__title {
@@ -78,17 +89,22 @@ import { Panel } from './panel';
     .item__where {
       font-size: 12px;
       font-weight: 800;
-      color: var(--c-rose-strong);
+      color: var(--c-muted);
     }
   `,
 })
 export class ProjectsDialog {
   protected readonly state = inject(PortfolioState);
-  protected readonly items = SHEETS.filter((s) => s.kind !== 'about').map((sheet) => {
-    const obj = objectForSheet(sheet.id);
-    return {
-      sheet,
-      where: obj ? `Dans le salon : ${obj.label.split(' — ')[0].toLowerCase()}` : '',
-    };
-  });
+  protected readonly groups = [
+    { title: 'Réalisations', items: FEATURED_SHEETS.map(withPlace) },
+    { title: 'Expérimentations', items: EXPERIMENT_SHEETS.map(withPlace) },
+  ];
+}
+
+function withPlace(sheet: Sheet) {
+  const obj = objectForSheet(sheet.id);
+  return {
+    sheet,
+    where: obj ? `Dans le salon : ${obj.label.split(' — ')[0].toLowerCase()}` : '',
+  };
 }

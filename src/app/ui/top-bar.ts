@@ -22,8 +22,8 @@ import { githubProfileUrl, PROFILE } from '../data/profile';
 
       <div class="actions">
         <nav class="nav" aria-label="Accès directs">
-          <button type="button" class="chip" (click)="state.openSheet('about')">À propos</button>
           <button type="button" class="chip" (click)="state.projectsOpen.set(true)">Projets</button>
+          <button type="button" class="chip" (click)="state.openSheet('about')">À propos</button>
           <button type="button" class="chip" (click)="state.openCv()">CV</button>
           @if (github) {
             <a class="chip" [href]="github" target="_blank" rel="noopener"
@@ -47,16 +47,11 @@ import { githubProfileUrl, PROFILE } from '../data/profile';
             <span aria-hidden="true">{{ state.night() ? '🌙' : '☀️' }}</span>
             <span class="tools__label">{{ state.night() ? 'Nuit' : 'Jour' }}</span>
           </button>
-          @if (state.webglAvailable()) {
-            <button
-              type="button"
-              class="chip"
-              (click)="state.setMode(state.mode() === '3d' ? '2d' : '3d')"
-            >
-              {{ state.mode() === '3d' ? 'Version 2D' : 'Salon 3D' }}
-            </button>
-          }
           @if (state.mode() === '3d') {
+            <!-- en 2D, le salon 3D s'ouvre depuis l'accueil (« Visiter le salon en 3D ») -->
+            <button type="button" class="chip" (click)="state.setMode('2d')">
+              Retour au portfolio
+            </button>
             <button
               type="button"
               class="chip"
@@ -105,7 +100,7 @@ import { githubProfileUrl, PROFILE } from '../data/profile';
       padding-top: max(10px, env(safe-area-inset-top));
       background: color-mix(in srgb, var(--c-surface) 88%, transparent);
       backdrop-filter: blur(10px);
-      border-bottom: 2px solid var(--c-line);
+      border-bottom: 1px solid var(--c-line);
       transition: background-color 0.6s ease;
     }
     .brand {
@@ -139,7 +134,7 @@ import { githubProfileUrl, PROFILE } from '../data/profile';
     }
     .tools {
       padding-left: var(--space-3);
-      border-left: 2px dashed var(--c-line);
+      border-left: 1px solid var(--c-line);
     }
     .chip--todo {
       border-style: dashed;
@@ -192,7 +187,7 @@ import { githubProfileUrl, PROFILE } from '../data/profile';
         gap: 6px;
       }
       .tools {
-        border-left: 2px dashed var(--c-line);
+        border-left: 1px solid var(--c-line);
         padding-left: 6px;
       }
       .tools .tools__label {
@@ -206,7 +201,6 @@ import { githubProfileUrl, PROFILE } from '../data/profile';
         min-height: 36px;
         padding: 5px 11px;
         font-size: 13px;
-        box-shadow: 0 2px 0 var(--c-line);
       }
     }
   `,

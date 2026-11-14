@@ -146,7 +146,7 @@ import { WorkGallery } from './work-gallery';
         padding: 8px 12px;
         border-radius: var(--radius-m);
         background: var(--c-surface-2);
-        border: 2px solid var(--c-line);
+        border: 1px solid var(--c-line);
         font-weight: 800;
         font-size: 14px;
       }

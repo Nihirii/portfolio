@@ -152,8 +152,8 @@ export const SHEETS: readonly Sheet[] = [
   {
     id: 'work',
     kind: 'work',
-    title: 'Mon travail',
-    tagline: 'Maquettes, front Angular/Electron et design system',
+    title: 'UI kit Angular partagé',
+    tagline: 'Figma → token → composant Angular, pour trois produits de vidéoprotection',
     summary:
       'Je conçois dans Figma les maquettes de trois produits de vidéoprotection, je les développe ' +
       'en Angular et Electron, et je maintiens le UI kit Angular partagé par ces produits, avec ses design tokens.',
@@ -192,3 +192,11 @@ export function sheetById(id: SheetId): Sheet {
 }
 
 export const PROJECT_SHEETS = SHEETS.filter((s) => s.kind === 'project');
+
+/** Réalisations mises en avant, dans cet ordre. */
+export const FEATURED_SHEETS = (['work', 'hubtv', 'azura'] as const).map(sheetById);
+
+/** Les autres projets, regroupés sous « Expérimentations ». */
+export const EXPERIMENT_SHEETS = PROJECT_SHEETS.filter(
+  (s) => !FEATURED_SHEETS.some((f) => f.id === s.id),
+);

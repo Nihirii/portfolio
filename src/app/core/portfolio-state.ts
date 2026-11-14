@@ -137,14 +137,15 @@ export class PortfolioState {
     }
   }
 
+  /** Le portfolio 2D est la vue par défaut ; le salon 3D se visite à la demande. */
   private initialMode(): ViewMode {
     try {
       const saved = this.win?.localStorage.getItem('salon-mode');
-      if (saved === '2d') return '2d';
+      if (saved === '3d' && detectWebGL(this.doc)) return '3d';
     } catch {
       /* ignore */
     }
-    return detectWebGL(this.doc) ? '3d' : '2d';
+    return '2d';
   }
 
   setMode(mode: ViewMode) {

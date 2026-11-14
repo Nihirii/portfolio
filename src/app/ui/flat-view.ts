@@ -1,62 +1,72 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { PortfolioState } from '../core/portfolio-state';
 import { EASTER_EGGS } from '../data/interactive-objects';
-import { githubProfileUrl, PROFILE } from '../data/profile';
-import { PROJECT_SHEETS, sheetById } from '../data/sheets';
-import { Avatar } from './avatar';
+import { PROFILE } from '../data/profile';
+import { EXPERIMENT_SHEETS, FEATURED_SHEETS } from '../data/sheets';
+import { DeskPreview } from './desk-preview';
 import { SheetVisual } from './sheet-visual';
 
-/** Version 2D : même contenu, sans WebGL, entièrement navigable au clavier. */
+/**
+ * Portfolio 2D (vue par défaut) : accueil, réalisations, expérimentations.
+ * Même contenu et mêmes fiches que le salon 3D, sans WebGL, navigable au clavier.
+ */
 @Component({
   selector: 'app-flat-view',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SheetVisual, Avatar],
+  imports: [SheetVisual, DeskPreview],
   template: `
-    <div class="flat">
-      @if (!state.webglAvailable()) {
-        <p class="notice">Votre navigateur n'affiche pas la 3D : voici la version 2D du salon.</p>
-      }
+    <div class="page">
       <section class="hero" aria-labelledby="hero-title">
-        <app-avatar [size]="132" />
-        <h1 id="hero-title">{{ profile.name }}</h1>
-        <p class="hero__role">{{ profile.role }} à {{ profile.city }}</p>
-        <p class="hero__text">{{ about.summary }}</p>
-        <ul class="likes" aria-label="Ce que j'aime">
-          @for (like of profile.likes; track like.label) {
+        <div class="hero__text">
+          <h1 id="hero-title">{{ profile.name }}</h1>
+          <p class="hero__role">Développeuse front-end · Angular, Electron et design systems</p>
+          <p class="hero__lead">
+            Je dessine des interfaces dans Figma et je les construis en Angular, avec un UI kit
+            partagé et ses design tokens, pour trois produits de vidéoprotection.
+          </p>
+          <button type="button" class="chip chip--primary hero__cta" (click)="goToWork()">
+            Voir mes réalisations
+          </button>
+        </div>
+        <figure class="hero__visual">
+          <app-desk-preview />
+          @if (state.webglAvailable()) {
+            <figcaption>
+              <button type="button" class="link-btn" (click)="state.setMode('3d')">
+                Visiter le salon en 3D <span aria-hidden="true">→</span>
+              </button>
+            </figcaption>
+          }
+        </figure>
+      </section>
+
+      <section id="realisations" tabindex="-1" aria-labelledby="work-title">
+        <h2 id="work-title">Réalisations</h2>
+        <ul class="featured">
+          @for (s of featured; track s.id) {
             <li>
-              <span aria-hidden="true">{{ like.icon }}</span> {{ like.label }}
+              <button type="button" class="card" (click)="state.openSheet(s.id)">
+                <app-sheet-visual [visual]="s.visual" />
+                <span class="card__body">
+                  <span class="card__title">{{ s.title }}</span>
+                  <span class="card__text">{{ s.tagline }}</span>
+                  <span class="card__more">Lire la fiche <span aria-hidden="true">→</span></span>
+                </span>
+              </button>
             </li>
           }
         </ul>
-        <div class="hero__actions">
-          <button type="button" class="chip chip--primary" (click)="state.openCv()">CV</button>
-          <button type="button" class="chip" (click)="state.openSheet('about')">À propos</button>
-          @if (github) {
-            <a class="chip" [href]="github" target="_blank" rel="noopener"
-              >GitHub<span class="sr-only"> (nouvel onglet)</span></a
-            >
-          }
-        </div>
       </section>
 
-      <section aria-labelledby="work-title">
-        <h2 id="work-title">Mon travail</h2>
-        <button type="button" class="card card--wide" (click)="state.openSheet('work')">
-          <app-sheet-visual visual="work" />
-          <span class="card__title">{{ work.title }}</span>
-          <span class="card__text">{{ work.tagline }}</span>
-        </button>
-      </section>
-
-      <section aria-labelledby="projects-title-2d">
-        <h2 id="projects-title-2d">Projets</h2>
-        <ul class="grid">
-          @for (p of projects; track p.id) {
+      <section aria-labelledby="exp-title">
+        <h2 id="exp-title">Expérimentations</h2>
+        <ul class="experiments">
+          @for (s of experiments; track s.id) {
             <li>
-              <button type="button" class="card" (click)="state.openSheet(p.id)">
-                <app-sheet-visual [visual]="p.visual" />
-                <span class="card__title">{{ p.title }}</span>
-                <span class="card__text">{{ p.tagline }}</span>
+              <button type="button" class="row" (click)="state.openSheet(s.id)">
+                <span class="row__title">{{ s.title }}</span>
+                <span class="row__text">{{ s.tagline }}</span>
+                <span class="row__arrow" aria-hidden="true">→</span>
               </button>
             </li>
           }
@@ -85,94 +95,196 @@ import { SheetVisual } from './sheet-visual';
       overflow-y: auto;
       height: 100%;
     }
-    .flat {
-      max-width: 1000px;
+    .page {
+      max-width: 1080px;
       margin: 0 auto;
-      padding: 24px 16px 64px;
+      padding: 48px 16px 80px;
     }
-    .notice {
-      padding: 10px 14px;
-      border-radius: var(--radius-m);
-      background: var(--c-surface-2);
-      border: 2px dashed var(--c-line);
-      font-weight: 700;
+    /* ---------- accueil ---------- */
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 48px;
+      align-items: center;
     }
-    .hero h1 {
-      font-size: clamp(34px, 6vw, 52px);
-      margin: 12px 0 0;
+    h1 {
+      font-size: clamp(40px, 6vw, 64px);
+      margin: 0;
+      letter-spacing: -0.01em;
     }
     .hero__role {
-      margin: 0;
+      margin: 8px 0 0;
       font-weight: 800;
-      color: var(--c-rose-strong);
-    }
-    .hero__text {
-      max-width: 640px;
       font-size: 17px;
+      color: var(--c-text-soft);
     }
-    .likes {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin: 0 0 16px;
-      padding: 0;
-      list-style: none;
-      li {
-        padding: 4px 12px;
-        border-radius: 999px;
-        background: var(--c-surface);
-        border: 2px solid var(--c-line);
-        font-weight: 800;
-        font-size: 14px;
+    .hero__lead {
+      max-width: 34em;
+      margin: 20px 0 28px;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+    .hero__cta {
+      min-height: 48px;
+      padding: 10px 22px;
+      font-size: 16px;
+    }
+    .hero__visual {
+      margin: 0;
+    }
+    figcaption {
+      margin-top: 12px;
+      text-align: right;
+    }
+    .link-btn {
+      padding: 6px 2px;
+      border: 0;
+      background: none;
+      font-weight: 800;
+      color: var(--c-text);
+      text-decoration: underline;
+      text-decoration-color: var(--c-line);
+      text-underline-offset: 4px;
+      cursor: pointer;
+      &:hover {
+        text-decoration-color: currentColor;
       }
     }
-    .hero__actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+    /* ---------- sections ---------- */
+    section + section {
+      margin-top: 72px;
+      padding-top: 32px;
+      border-top: 1px solid var(--c-line);
+    }
+    #realisations {
+      outline: none;
     }
     h2 {
-      margin: 40px 0 12px;
-      font-size: 26px;
+      margin: 0 0 20px;
+      font-size: 28px;
     }
-    .grid {
+    .featured {
       list-style: none;
       margin: 0;
       padding: 0;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
     }
     .card {
       width: 100%;
       height: 100%;
       display: flex;
       flex-direction: column;
-      text-align: left;
+      gap: 12px;
       padding: 12px;
+      text-align: left;
       border-radius: var(--radius-l);
-      border: 2px solid var(--c-line);
+      border: 1px solid var(--c-line);
       background: var(--c-surface);
-      box-shadow: 0 5px 0 var(--c-line);
       cursor: pointer;
-      transition: transform 0.15s;
+      transition: border-color 0.2s;
       &:hover {
-        transform: translateY(-3px);
+        border-color: var(--c-muted);
       }
+      &:hover .card__more {
+        text-decoration-color: currentColor;
+      }
+    }
+    .card__body {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 0 4px 4px;
+      flex: 1;
     }
     .card__title {
       font-family: var(--font-display);
       font-weight: 600;
-      font-size: 19px;
+      font-size: 21px;
     }
     .card__text {
-      font-size: 14px;
+      font-size: 15px;
       color: var(--c-text-soft);
+      flex: 1;
+    }
+    .card__more {
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: 800;
+      text-decoration: underline;
+      text-decoration-color: var(--c-line);
+      text-underline-offset: 4px;
+    }
+    .experiments {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      border-top: 1px solid var(--c-line);
+    }
+    .row {
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(160px, 1fr) 2fr auto;
+      gap: 16px;
+      align-items: baseline;
+      padding: 14px 4px;
+      border: 0;
+      border-bottom: 1px solid var(--c-line);
+      background: none;
+      text-align: left;
+      cursor: pointer;
+      &:hover {
+        background: var(--c-surface-2);
+      }
+    }
+    .row__title {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 18px;
+    }
+    .row__text {
+      color: var(--c-text-soft);
+      font-size: 15px;
+    }
+    .row__arrow {
+      color: var(--c-muted);
     }
     .eggs {
       padding-left: 20px;
+      color: var(--c-text-soft);
       li {
         margin-bottom: 6px;
+      }
+      strong {
+        color: var(--c-text);
+      }
+    }
+    /* ---------- mobile : blocs empilés ---------- */
+    @media (max-width: 860px) {
+      .page {
+        padding-top: 28px;
+      }
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+      .featured {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 560px) {
+      .row {
+        grid-template-columns: 1fr auto;
+        gap: 2px 12px;
+      }
+      .row__text {
+        grid-column: 1;
+      }
+      .row__arrow {
+        grid-row: 1 / span 2;
+        grid-column: 2;
+        align-self: center;
       }
     }
   `,
@@ -180,9 +292,16 @@ import { SheetVisual } from './sheet-visual';
 export class FlatView {
   protected readonly state = inject(PortfolioState);
   protected readonly profile = PROFILE;
-  protected readonly github = githubProfileUrl();
-  protected readonly about = sheetById('about');
-  protected readonly work = sheetById('work');
-  protected readonly projects = PROJECT_SHEETS;
+  protected readonly featured = FEATURED_SHEETS;
+  protected readonly experiments = EXPERIMENT_SHEETS;
   protected readonly eggs = EASTER_EGGS;
+
+  goToWork() {
+    const el = document.getElementById('realisations');
+    el?.scrollIntoView({
+      behavior: this.state.reducedMotion() ? 'auto' : 'smooth',
+      block: 'start',
+    });
+    el?.focus({ preventScroll: true });
+  }
 }
