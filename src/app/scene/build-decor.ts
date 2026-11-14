@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { box, canvasTexture, cyl, glow, group, mat, plane, pointLight, rnd, sph } from './helpers';
+import { DecorAssets, placeModel } from './decor-assets';
 import { ROOM } from './room-layout';
 
 type DimEmissive = (m: THREE.MeshStandardMaterial, day: number, night: number) => void;
@@ -16,6 +17,7 @@ export function buildCornerShelves(
   root: THREE.Group,
   dimEmissive: DimEmissive,
   dimLight: DimLight,
+  assets: DecorAssets,
 ) {
   const g = group(root, 'corner-shelves');
   g.position.set(W, 0, 0);
@@ -47,11 +49,22 @@ export function buildCornerShelves(
     const f = group(g);
     f.position.copy(p);
     f.rotation.y = (3 * Math.PI) / 4; // face à la pièce (diagonale)
-    f.rotation.x = 0;
-    box(f, 0.2, 0.15, 0.015, OAK, 0, 0, 0, 0.003);
     const photo = new THREE.MeshStandardMaterial({ map: beachHouseTexture(), roughness: 0.7 });
-    const pl = plane(f, 0.17, 0.12, photo, 0, 0.075, -0.0085, Math.PI);
-    pl.castShadow = true;
+    // cadre à poser (modèle Poly Haven) ; sinon cadre dessiné
+    const model = placeModel(assets, 'cadre-photo', f, 0.16);
+    if (model) {
+      model.rotation.y = Math.PI / 2;
+      // photo en portrait, inclinée comme le cadre (appuyé sur son chevalet)
+      photo.map = beachHouseTexture(180, 240);
+      // pivot au pied de la face avant (mesurée dans Blender : 3,2 cm devant le centre en bas)
+      const tilt = group(f);
+      tilt.position.set(0, 0, -0.0335);
+      tilt.rotation.x = TILT;
+      plane(tilt, 0.1, 0.13, photo, 0, 0.082, 0, Math.PI).castShadow = true;
+    } else {
+      box(f, 0.2, 0.15, 0.015, OAK, 0, 0, 0, 0.003);
+      plane(f, 0.17, 0.12, photo, 0, 0.075, -0.0085, Math.PI).castShadow = true;
+    }
   }
 
   // lampe Poro : boule de poils blanche, lumineuse le soir
@@ -119,7 +132,7 @@ export function buildCornerShelves(
  * aquarium au milieu (build-extras.ts), console NES et sa manette en bas. Repère de la colonne :
  * la façade vitrée est en -z.
  */
-export function buildRightColumnDecor(c: THREE.Group) {
+export function buildRightColumnDecor(c: THREE.Group, assets: DecorAssets) {
   const shelf = (y: number) => y + 0.009;
 
   // figurine : chanteuse punk, pied de micro, socle noir
@@ -159,6 +172,13 @@ export function buildRightColumnDecor(c: THREE.Group) {
     const pad = group(c);
     pad.position.set(-0.06, shelf(0.55), -0.12);
     pad.rotation.y = 0.25;
+    // manette (modèle Poly Haven) devant la console ; sinon manette dessinée
+    const model = placeModel(assets, 'manette-nes', pad, 0.24);
+    if (model) {
+      pad.position.set(-0.02, shelf(0.55), -0.1);
+      pad.rotation.y = Math.PI + 0.2;
+      return;
+    }
     box(pad, 0.1, 0.012, 0.045, '#cfcdc9', 0, 0, 0, 0.004);
     box(pad, 0.09, 0.003, 0.035, '#1f1f24', 0, 0.012, 0, 0.002);
     [0.02, 0.035].forEach((x) => sph(pad, 0.005, '#c9302c', x, 0.016, 0));
@@ -200,8 +220,11 @@ export function buildPothos(c: THREE.Group, topY: number, side: 1 | -1) {
   });
 }
 
-function beachHouseTexture(): THREE.CanvasTexture {
-  return canvasTexture(256, 180, (g, w, h) => {
+/** Inclinaison du cadre photo (rad) : à ajuster si la photo ne colle pas au cadre. */
+const TILT = 0.2; // face avant du cadre penchée vers l'arrière (normale mesurée : 0,2)
+
+function beachHouseTexture(w = 256, h = 180): THREE.CanvasTexture {
+  return canvasTexture(w, h, (g, w, h) => {
     const sky = g.createLinearGradient(0, 0, 0, h * 0.55);
     sky.addColorStop(0, '#8ea6bd');
     sky.addColorStop(1, '#d5dde3');

@@ -495,7 +495,14 @@ export class Hiki {
       g.translate(-0.019, 0, 0);
       const seg = new THREE.Group();
       seg.position.set(i === 0 ? -0.175 : -0.038, i === 0 ? 0.03 : 0, 0);
-      const m = new THREE.Mesh(g, i >= segments - 2 ? mat('#4e3d33', { roughness: 0.9 }) : i % 2 ? coatPlain : mat(HIKI.coatLight, { roughness: 0.9 }));
+      const m = new THREE.Mesh(
+        g,
+        i >= segments - 2
+          ? mat('#4e3d33', { roughness: 0.9 })
+          : i % 2
+            ? coatPlain
+            : mat(HIKI.coatLight, { roughness: 0.9 }),
+      );
       m.castShadow = true;
       seg.add(m);
       parent.add(seg);

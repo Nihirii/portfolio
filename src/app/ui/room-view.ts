@@ -214,8 +214,8 @@ export class RoomView implements AfterViewInit, OnDestroy {
   }
 
   async ngAfterViewInit() {
-    const { RoomScene, loadBake } = await import('../scene/room-scene');
-    const bake = await loadBake();
+    const { RoomScene, loadBake, loadDecorAssets } = await import('../scene/room-scene');
+    const [bake, decor] = await Promise.all([loadBake(), loadDecorAssets()]);
     this.zone.runOutsideAngular(() => {
       this.scene = new RoomScene(
         this.host().nativeElement,
@@ -231,6 +231,7 @@ export class RoomView implements AfterViewInit, OnDestroy {
           frame: () => this.placeOverlays(),
         },
         bake,
+        decor,
       );
     });
     if (isDevMode()) {

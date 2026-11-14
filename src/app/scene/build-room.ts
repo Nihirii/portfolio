@@ -33,6 +33,7 @@ import {
   WINDOW,
 } from './room-layout';
 import { buildCornerShelves, buildPothos, buildRightColumnDecor } from './build-decor';
+import { DecorAssets } from './decor-assets';
 import { buildDuck, buildExtras, buildTeardown } from './build-extras';
 import { buildConsoles, buildEvaFigure, buildLavaLamp, LavaLamp } from './build-collection';
 import {
@@ -85,7 +86,8 @@ export interface RoomBuild {
 const { width: W, depth: D, height: H, wallThickness: WT, doorRecessDepth: RD } = ROOM;
 const WALL = '#f4ede5';
 
-export function buildRoom(): RoomBuild {
+/** `assets` : modèles 3D libres déjà chargés (decor-assets.ts) ; vide = tout dessiné en code. */
+export function buildRoom(assets: DecorAssets = new Map()): RoomBuild {
   resetRandom(7);
   const root = new THREE.Group();
   root.name = 'room';
@@ -427,7 +429,7 @@ export function buildRoom(): RoomBuild {
 
   // lampe à lave du bureau : allumée le soir, ou au clic
   const lava = buildLavaLamp(root, register, DESK_ITEMS.lamp.x, deskTop - 0.02, DESK_ITEMS.lamp.z);
-  buildDuck(root, register, 3.12, deskTop, 0.68);
+  buildDuck(root, register, 3.12, deskTop, 0.68, assets);
 
   // panier fermé + ampli sous le bureau
   cyl(root, 0.18, 0.16, 0.4, '#d5b48a', 1.6, 0, 0.35, 24);
@@ -622,7 +624,7 @@ export function buildRoom(): RoomBuild {
     box(root, W - 3.15, LH, 0.2, '#f1ebe3', 3.15 + (W - 3.15) / 2, 0, 0.1, 0.01);
     box(root, W - 3.15, 0.025, 0.21, '#e9e1d6', 3.15 + (W - 3.15) / 2, LH, 0.105, 0.005);
     cyl(root, 0.035, 0.035, 0.08, mat('#1f1f24', { roughness: 0.3 }), 3.4, LH + 0.025, 0.1);
-    buildCornerShelves(root, dimEmissive, dimLight);
+    buildCornerShelves(root, dimEmissive, dimLight, assets);
     dimLight(pointLight(root, 0xffc98a, 0.25, 2.5, 5.6, 1.75, 0.4), 0.1, 1.1);
   }
 
@@ -749,7 +751,7 @@ export function buildRoom(): RoomBuild {
   }
 
   // colonnes BESTÅ vitrées + étagère à affiches (masquées avec le mur en vue d'ensemble)
-  buildMediaColumns(gTV, dimLight, dimEmissive, register);
+  buildMediaColumns(gTV, dimLight, dimEmissive, register, assets);
 
   // ---------- arbre à chat ----------
   {
@@ -847,6 +849,7 @@ function buildMediaColumns(
   dimLight: DimLight,
   dimEmissive: DimEmissive,
   register: (id: InteractiveObjectId, o: THREE.Object3D) => void,
+  assets: DecorAssets,
 ) {
   const ledMat = glow('#fff1d6', 2.2);
   dimEmissive(ledMat, 0.4, 2.2);
@@ -889,7 +892,7 @@ function buildMediaColumns(
   box(g, 1.76, 0.006, 0.02, ledMat, TV.x, MEDIA_WALL.ledgeY - 0.01, D - 0.2, 0);
   dimLight(pointLight(g, 0xffd9a6, 0.5, 1.2, TV.x, 1.4, D - 0.3), 0.05, 0.5);
   // colonne de droite (x = 3,3) : figurine en haut, NES en bas ; pothos posé dessus
-  buildRightColumnDecor(cols[0]);
+  buildRightColumnDecor(cols[0], assets);
   buildPothos(cols[0], MEDIA_WALL.columnHeight, -1); // lianes côté fenêtre (à droite vu de la pièce)
   // vue depuis la pièce : consoles dans la colonne à gauche de la TV (x = 5,7),
   // aquarium à méduses dans celle de droite (x = 3,3, voir build-extras.ts)

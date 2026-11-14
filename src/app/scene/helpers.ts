@@ -182,7 +182,12 @@ const loader = new THREE.TextureLoader();
  * Remplace l'image d'un matériau par un fichier (si `path` est donné), recadrée pour couvrir
  * un cadre de proportions `w` × `h`. En cas d'erreur, l'illustration existante reste.
  */
-export function loadFrameImage(material: THREE.MeshStandardMaterial, path: string | null, w: number, h: number) {
+export function loadFrameImage(
+  material: THREE.MeshStandardMaterial,
+  path: string | null,
+  w: number,
+  h: number,
+) {
   if (!path) return;
   loader.load(
     path,
