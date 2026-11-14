@@ -32,6 +32,7 @@ import {
   TV,
   WINDOW,
 } from './room-layout';
+import { buildCornerShelves, buildPothos, buildRightColumnDecor } from './build-decor';
 import { buildDuck, buildExtras, buildTeardown } from './build-extras';
 import { buildConsoles, buildEvaFigure, buildLavaLamp, LavaLamp } from './build-collection';
 import {
@@ -615,26 +616,13 @@ export function buildRoom(): RoomBuild {
     box(g, 0.8, 0.035, 0.55, '#f6c9d3', (XA + XC) / 2, 0.47, ZC - 0.38, 0.015);
   }
 
-  // rebord derrière le canapé + étagère échelle
+  // rebord derrière le canapé + tablettes d'angle en chêne (build-decor.ts)
   {
     const LH = 0.85;
     box(root, W - 3.15, LH, 0.2, '#f1ebe3', 3.15 + (W - 3.15) / 2, 0, 0.1, 0.01);
     box(root, W - 3.15, 0.025, 0.21, '#e9e1d6', 3.15 + (W - 3.15) / 2, LH, 0.105, 0.005);
     cyl(root, 0.035, 0.035, 0.08, mat('#1f1f24', { roughness: 0.3 }), 3.4, LH + 0.025, 0.1);
-    const x = 5.78;
-    const z = 0.11;
-    const y0 = LH + 0.025;
-    [-0.17, 0.17].forEach((dx) =>
-      [-0.1, 0.1].forEach((dz) => cyl(root, 0.012, 0.012, 1.4, '#ffffff', x + dx, y0, z + dz, 8)),
-    );
-    [0.02, 0.42, 0.82, 1.22].forEach((y) =>
-      box(root, 0.36, 0.02, 0.24, '#ffffff', x, y0 + y, z, 0.004),
-    );
-    sph(root, 0.08, '#f3dcc0', x + 0.08, y0 + 0.52, z);
-    box(root, 0.1, 0.14, 0.06, glow('#9fd4ff', 0.6), x - 0.08, y0 + 0.44, z, 0.01);
-    const globe = glow('#fff0d8', 1.3);
-    dimEmissive(globe, 0.2, 1.4);
-    sph(root, 0.08, globe, x - 0.07, y0 + 0.92, z);
+    buildCornerShelves(root, dimEmissive, dimLight);
     dimLight(pointLight(root, 0xffc98a, 0.25, 2.5, 5.6, 1.75, 0.4), 0.1, 1.1);
   }
 
@@ -665,9 +653,9 @@ export function buildRoom(): RoomBuild {
   [TX - 0.3, TX + 0.3].forEach((x) =>
     box(root, 0.005, 0.44, 0.005, '#d8d0c6', x, 0.02, D - 0.425, 0),
   );
-  // ruban LED sous le plateau (lumière du meuble TV la nuit)
-  const cabinetLed = glow('#9fd0ff', 1.5);
-  dimEmissive(cabinetLed, 0, 2.2);
+  // ruban LED blanc chaud sous le plateau (discret le jour, lumineux le soir)
+  const cabinetLed = glow('#fff1d6', 1.5);
+  dimEmissive(cabinetLed, 0.5, 2.4);
   box(
     root,
     TV.cabinetWidth - 0.1,
@@ -900,6 +888,9 @@ function buildMediaColumns(
   box(g, 1.8, 0.035, 0.012, '#f8f7f4', TV.x, MEDIA_WALL.ledgeY + 0.03, D - 0.235, 0.003);
   box(g, 1.76, 0.006, 0.02, ledMat, TV.x, MEDIA_WALL.ledgeY - 0.01, D - 0.2, 0);
   dimLight(pointLight(g, 0xffd9a6, 0.5, 1.2, TV.x, 1.4, D - 0.3), 0.05, 0.5);
+  // colonne de droite (x = 3,3) : figurine en haut, NES en bas ; pothos posé dessus
+  buildRightColumnDecor(cols[0]);
+  buildPothos(cols[0], MEDIA_WALL.columnHeight, -1); // lianes côté fenêtre (à droite vu de la pièce)
   // vue depuis la pièce : consoles dans la colonne à gauche de la TV (x = 5,7),
   // aquarium à méduses dans celle de droite (x = 3,3, voir build-extras.ts)
   buildConsoles(cols[1], register);
