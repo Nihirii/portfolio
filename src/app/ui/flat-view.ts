@@ -186,7 +186,7 @@ import { SheetVisual } from './sheet-visual';
     .hero__visual {
       margin: 0;
       justify-self: end;
-      width: min(100%, 420px);
+      width: min(100%, 400px);
     }
     /* cadrage carré qui laisse respirer le visage */
     .portrait {
@@ -195,7 +195,7 @@ import { SheetVisual } from './sheet-visual';
       height: auto;
       aspect-ratio: 1;
       object-fit: cover;
-      border-radius: var(--radius-l);
+      border-radius: 50%;
       border: 1px solid var(--c-line);
     }
     .card__cover {
@@ -364,8 +364,8 @@ import { SheetVisual } from './sheet-visual';
         gap: 28px;
       }
       .hero__visual {
-        justify-self: stretch;
-        width: 100%;
+        justify-self: center;
+        width: min(100%, 300px);
       }
       .featured {
         grid-template-columns: 1fr;
