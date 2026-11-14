@@ -17,8 +17,9 @@
   --c-focus: #6b54d6;
   --c-shadow: rgba(90, 60, 80, 0.14);
 
-  --font-display: 'Fredoka', 'Nunito', system-ui, sans-serif;
-  --font-body: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Fraunces (serif éditoriale) pour les titres, DM Sans pour le texte */
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   --radius-s: 10px;
   --radius-m: 16px;
