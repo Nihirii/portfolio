@@ -89,7 +89,9 @@ export function applyBake(root: THREE.Object3D, bake: BakeAssets): BakeControls 
   forEachRoomMesh(root, (mesh, id) => {
     const src = bake.meshes.get(id);
     if (!src) return;
-    if (src.userData['sig'] !== meshSignature(mesh)) {
+    // seule la forme compte : une couleur changée garde sa lumière (la couleur vient du matériau)
+    const shapeOf = (sig: string) => String(sig).split(':')[0];
+    if (shapeOf(src.userData['sig']) !== shapeOf(meshSignature(mesh))) {
       stale.push(id);
       return;
     }
@@ -106,6 +108,12 @@ export function applyBake(root: THREE.Object3D, bake: BakeAssets): BakeControls 
     if (!g.attributes['uv1']) {
       g.setAttribute('uv1', g.attributes['uv']);
       g.deleteAttribute('uv');
+    } else {
+      // coordonnées des textures d'origine : glTF inverse l'axe vertical, nos textures
+      // dessinées en canvas ne le sont pas (sans ça, affiches et textes s'affichent retournés)
+      const uv = g.attributes['uv'] as THREE.BufferAttribute;
+      for (let i = 0; i < uv.count; i++) uv.setY(i, 1 - uv.getY(i));
+      uv.needsUpdate = true;
     }
     g.computeBoundingSphere();
     mesh.geometry = g;

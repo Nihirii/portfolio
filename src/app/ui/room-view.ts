@@ -55,6 +55,33 @@ import type { RoomScene } from '../scene/room-scene';
         }
       </ul>
 
+      <!-- repères du départ : les trois entrées principales -->
+      @if (ready() && showLandmarks() && !state.anyPanelOpen()) {
+        <ul class="landmarks" aria-label="Repères">
+          @for (m of landmarks; track m.anchor) {
+            <li>
+              <button
+                #mark
+                type="button"
+                class="landmark"
+                [attr.data-anchor]="m.anchor"
+                (click)="openLandmark(m.id)"
+              >
+                {{ m.label }}
+              </button>
+            </li>
+          }
+        </ul>
+      }
+
+      @if (ready() && !state.anyPanelOpen()) {
+        <nav class="places" aria-label="Se rendre à">
+          @for (p of places; track p.id) {
+            <button type="button" class="chip" (click)="travel(p.id)">{{ p.label }}</button>
+          }
+        </nav>
+      }
+
       <div class="label" #label aria-hidden="true"></div>
       <div class="hearts" #hearts aria-hidden="true"></div>
 
@@ -136,6 +163,21 @@ export class RoomView implements AfterViewInit, OnDestroy {
   private readonly label = viewChild.required<ElementRef<HTMLElement>>('label');
   private readonly hearts = viewChild.required<ElementRef<HTMLElement>>('hearts');
   private readonly hotspots = viewChildren<ElementRef<HTMLButtonElement>>('hot');
+  private readonly marks = viewChildren<ElementRef<HTMLButtonElement>>('mark');
+
+  /** Repères affichés au départ, jusqu'au premier objet ouvert ou au premier déplacement guidé. */
+  protected readonly showLandmarks = signal(true);
+  protected readonly landmarks = [
+    { id: 'work', label: 'Mon travail', anchor: 'monitor-left' },
+    { id: 'projects', label: 'Projets perso', anchor: 'kallax-binder' },
+    { id: 'cv', label: 'CV', anchor: 'cv-sheet' },
+  ] as const;
+  protected readonly places = [
+    { id: 'entree', label: 'Entrée' },
+    { id: 'bureau', label: 'Bureau' },
+    { id: 'kallax', label: 'KALLAX' },
+    { id: 'tv', label: 'TV' },
+  ] as const;
 
   private scene: RoomScene | null = null;
   private hovered: InteractiveObjectId | null = null;
@@ -175,16 +217,21 @@ export class RoomView implements AfterViewInit, OnDestroy {
     const { RoomScene, loadBake } = await import('../scene/room-scene');
     const bake = await loadBake();
     this.zone.runOutsideAngular(() => {
-      this.scene = new RoomScene(this.host().nativeElement, this.canvas().nativeElement, {
-        hover: (id) => this.onHover(id),
-        activate: (id) => this.zone.run(() => this.activate(id)),
-        petted: (r) => this.zone.run(() => this.onPetted(r)),
-        petGesture: (active) => {
-          this.host().nativeElement.classList.toggle('is-petting', active);
-          if (active) this.petAnnounced = false;
+      this.scene = new RoomScene(
+        this.host().nativeElement,
+        this.canvas().nativeElement,
+        {
+          hover: (id) => this.onHover(id),
+          activate: (id) => this.zone.run(() => this.activate(id)),
+          petted: (r) => this.zone.run(() => this.onPetted(r)),
+          petGesture: (active) => {
+            this.host().nativeElement.classList.toggle('is-petting', active);
+            if (active) this.petAnnounced = false;
+          },
+          frame: () => this.placeOverlays(),
         },
-        frame: () => this.placeOverlays(),
-      }, bake);
+        bake,
+      );
     });
     if (isDevMode()) {
       const w = window as unknown as { __salon?: RoomScene; __salonExport?: () => Promise<string> };
@@ -271,7 +318,22 @@ export class RoomView implements AfterViewInit, OnDestroy {
   }
 
   /** Clic, toucher ou Entrée sur un objet. */
+  protected openLandmark(id: 'work' | 'projects' | 'cv') {
+    this.showLandmarks.set(false);
+    if (id === 'work') this.state.openSheet('work');
+    else if (id === 'projects') this.state.projectsOpen.set(true);
+    else this.state.openCv();
+  }
+
+  /** Se rendre à un endroit du salon (clic ou toucher), depuis la pièce ou la vue d'ensemble. */
+  protected travel(place: 'entree' | 'bureau' | 'kallax' | 'tv') {
+    this.showLandmarks.set(false);
+    this.state.viewFromAbove.set(false);
+    this.scene?.travel(place);
+  }
+
   activate(id: InteractiveObjectId) {
+    this.showLandmarks.set(false);
     const o = objectById(id);
     switch (o.action.type) {
       case 'sheet':
@@ -381,6 +443,32 @@ export class RoomView implements AfterViewInit, OnDestroy {
       scene.screenPosition(id, this.pos);
       el.style.transform = `translate(${this.pos.x.toFixed(1)}px, ${(this.pos.y + 22).toFixed(1)}px)`;
       el.classList.toggle('is-offscreen', !this.pos.visible);
+    }
+    // repères : au-dessus de leur objet, ou épinglés au bord (avec une flèche) s'il est hors champ
+    const hostEl = this.host().nativeElement;
+    const W = hostEl.clientWidth;
+    const H = hostEl.clientHeight;
+    const pinned = { left: 0, right: 0 };
+    for (const ref of this.marks()) {
+      const el = ref.nativeElement;
+      const anchor = el.dataset['anchor'] as InteractiveObjectId;
+      const half = el.offsetWidth / 2 + 8;
+      let x: number;
+      let y: number;
+      let side = 0;
+      if (scene.screenPosition(anchor, this.pos)) {
+        x = this.pos.x;
+        y = this.pos.y - 8;
+      } else {
+        side = scene.sideOf(anchor);
+        x = side < 0 ? 0 : W;
+        // plusieurs repères du même côté : empilés
+        y = H * 0.5 + 48 * pinned[side < 0 ? 'left' : 'right']++;
+      }
+      x = Math.min(Math.max(x, half), W - half);
+      y = Math.min(Math.max(y, el.offsetHeight + 70), H - 90);
+      el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, -100%)`;
+      el.dataset['side'] = side < 0 ? 'left' : side > 0 ? 'right' : '';
     }
     const labelEl = this.label().nativeElement;
     const show = this.state.anyPanelOpen() ? null : (this.focusedHotspot ?? this.hovered);

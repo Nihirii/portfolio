@@ -222,3 +222,85 @@ kbd {
     top: 12px;
   }
 }
+
+/* Repères du départ */
+.landmarks {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+}
+.landmark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: auto;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--c-line);
+  background: color-mix(in srgb, var(--c-surface) 92%, transparent);
+  color: var(--c-text);
+  font-weight: 800;
+  font-size: 14px;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 6px 18px var(--c-shadow);
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    width: 8px;
+    height: 8px;
+    background: inherit;
+    border-right: 1px solid var(--c-line);
+    border-bottom: 1px solid var(--c-line);
+    transform: translateX(-50%) rotate(45deg);
+  }
+  &:hover {
+    background: var(--c-surface);
+  }
+  /* objet hors champ : flèche vers son côté, sans pointe vers le bas */
+  &[data-side='left']::before {
+    content: '← ';
+  }
+  &[data-side='right']::after {
+    content: ' →';
+    position: static;
+    width: auto;
+    height: auto;
+    background: none;
+    border: 0;
+    transform: none;
+  }
+  &[data-side='left']::after {
+    display: none;
+  }
+}
+
+/* Se rendre à : entrée, bureau, KALLAX, TV */
+.places {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--c-surface) 80%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--c-line);
+  .chip {
+    min-height: 34px;
+    padding: 4px 12px;
+    font-size: 13px;
+    border-color: transparent;
+    background: transparent;
+    &:hover {
+      background: var(--c-surface-2);
+    }
+  }
+}

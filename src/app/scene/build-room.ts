@@ -18,6 +18,7 @@ import {
 import {
   BALCONY_DOOR,
   CHAIRS,
+  HIKI,
   COFFEE_TABLE,
   CAT_TREE,
   DESK,
@@ -35,13 +36,12 @@ import { buildDuck, buildExtras, buildTeardown } from './build-extras';
 import { buildConsoles, buildEvaFigure, buildLavaLamp, LavaLamp } from './build-collection';
 import {
   artTexture,
-  azuraMonitorTexture,
   cvPaperTexture,
   floorTexture,
   haloTexture,
-  hubtvMonitorTexture,
   hubtvTvTexture,
   jellyfishTexture,
+  productMonitorTexture,
   notebookTexture,
   pixelArtTexture,
   retroGameTexture,
@@ -383,8 +383,8 @@ export function buildRoom(): RoomBuild {
   // deux écrans Acer
   (
     [
-      ['monitor-left', MONITORS.left, hubtvMonitorTexture()],
-      ['monitor-right', MONITORS.right, azuraMonitorTexture()],
+      ['monitor-left', MONITORS.left, productMonitorTexture('Icare Portal', '#f2b8c6')],
+      ['monitor-right', MONITORS.right, productMonitorTexture('Moniteur Virtuel', '#cbbcf6')],
     ] as const
   ).forEach(([id, m, tex]) => {
     const g = group(root);
@@ -490,7 +490,17 @@ export function buildRoom(): RoomBuild {
     cyl(g, 0.06, 0.06, 0.05, plastic, 0, 0.36, 0, 24);
     for (let k = 0; k < 5; k++) {
       const a = (k / 5) * Math.PI * 2;
-      const arm = box(g, 0.3, 0.035, 0.05, plastic, Math.cos(a) * 0.15, 0.06, Math.sin(a) * 0.15, 0.015);
+      const arm = box(
+        g,
+        0.3,
+        0.035,
+        0.05,
+        plastic,
+        Math.cos(a) * 0.15,
+        0.06,
+        Math.sin(a) * 0.15,
+        0.015,
+      );
       arm.rotation.y = -a;
       arm.rotation.z = 0;
       sph(g, 0.028, plastic, Math.cos(a) * 0.3, 0.028, Math.sin(a) * 0.3, 1, 1, 0.8);
@@ -791,6 +801,10 @@ export function buildRoom(): RoomBuild {
     },
   });
 
+  // ---------- cases ajoutées au KALLAX (construites en dernier : la lumière pré-calculée
+  // repère les objets par leur ordre de construction, celui des autres ne change pas) ----------
+  buildKallaxExtras(root, register);
+
   return {
     root,
     walls,
@@ -1061,7 +1075,10 @@ function buildPlush(g: THREE.Group) {
     sph(head, 0.012, mat('#f7b8c9', { roughness: 0.8 }), s * 0.055, -0.02, 0.058, 1.2, 0.7, 0.35); // joues
   });
   // petite bouche
-  const mouth = new THREE.Mesh(new THREE.TorusGeometry(0.007, 0.0015, 8, 20, Math.PI), mat('#3a3150'));
+  const mouth = new THREE.Mesh(
+    new THREE.TorusGeometry(0.007, 0.0015, 8, 20, Math.PI),
+    mat('#3a3150'),
+  );
   mouth.position.set(0, -0.016, 0.071);
   mouth.rotation.z = Math.PI;
   head.add(mouth);
@@ -1079,6 +1096,60 @@ function buildPlush(g: THREE.Group) {
     const r = 0.024 * (1 - k / 52);
     pts.push(new THREE.Vector3(Math.cos(t) * r, 0.065 + Math.sin(t) * r, -0.05 - k * 0.0004));
   }
-  const tail = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 60, 0.0075, 10), plush);
+  const tail = new THREE.Mesh(
+    new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 60, 0.0075, 10),
+    plush,
+  );
   inner.add(tail);
+}
+
+/** Cases « Le salon de Léna » et « Portfolio IUT de Blagnac » du KALLAX. */
+function buildKallaxExtras(
+  root: THREE.Group,
+  register: (id: InteractiveObjectId, o: THREE.Object3D) => void,
+) {
+  const w = KALLAX.size;
+  const d = KALLAX.depth;
+  const t = 0.035;
+  const N = KALLAX.cells;
+  const cell = (w - (N + 1) * t) / N;
+  const gK = group(root, 'kallax-extras');
+  gK.position.set(d / 2 + 0.01, 0, KALLAX.z);
+  gK.rotation.y = -Math.PI / 2;
+  const cx = (i: number) => -w / 2 + t + cell / 2 + i * (cell + t);
+  const cy = (j: number) => t + j * (cell + t);
+  const place = (id: InteractiveObjectId, [i, j]: [number, number]) => {
+    const g = group(gK);
+    g.position.set(cx(i), cy(j), 0);
+    addHitBox(g, cell - 0.02, cell - 0.02, d - 0.04, 0, cell / 2, -0.02);
+    register(id, g);
+    return g;
+  };
+
+  // mini-salon : sol en chêne, deux murs, canapé, bureau et Hiki
+  {
+    const g = place('kallax-salon', KALLAX.extraCells.salon);
+    box(g, 0.24, 0.012, 0.2, '#d6ae7b', 0, 0, 0, 0.003);
+    box(g, 0.24, 0.13, 0.012, '#f4ede5', 0, 0.012, 0.094, 0.002);
+    box(g, 0.012, 0.13, 0.2, '#f4ede5', 0.114, 0.012, 0, 0.002);
+    box(g, 0.1, 0.03, 0.045, '#efe4d3', 0.04, 0.012, 0.055, 0.006); // canapé
+    box(g, 0.1, 0.03, 0.012, '#efe4d3', 0.04, 0.03, 0.076, 0.004);
+    box(g, 0.07, 0.006, 0.035, '#d6ae7b', -0.07, 0.05, 0.068, 0.002); // bureau
+    box(g, 0.006, 0.038, 0.006, '#c39563', -0.1, 0.012, 0.055, 0);
+    box(g, 0.006, 0.038, 0.006, '#c39563', -0.04, 0.012, 0.055, 0);
+    box(g, 0.03, 0.022, 0.004, '#26222b', -0.07, 0.056, 0.08, 0.001); // écran
+    box(g, 0.02, 0.028, 0.02, CHAIRS.gaming.main, -0.07, 0.012, 0.03, 0.004); // chaise bleue
+    sph(g, 0.012, HIKI.coat, 0.0, 0.024, -0.04, 1.4, 0.9, 1); // Hiki
+    sph(g, 0.008, HIKI.coat, 0.016, 0.034, -0.04);
+  }
+
+  // boîte d'archives avec étiquette
+  {
+    const g = place('kallax-iut', KALLAX.extraCells.iut);
+    box(g, 0.22, 0.15, 0.18, '#c9a27a', 0, 0, 0.01, 0.006);
+    box(g, 0.226, 0.03, 0.186, '#b58d66', 0, 0.15, 0.01, 0.006);
+    box(g, 0.12, 0.05, 0.004, '#fffaf2', 0, 0.06, -0.081, 0.002);
+    box(g, 0.08, 0.008, 0.002, '#7a6150', 0, 0.085, -0.084, 0);
+    box(g, 0.06, 0.006, 0.002, '#b8a596', 0, 0.072, -0.084, 0);
+  }
 }

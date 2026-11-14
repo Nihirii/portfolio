@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, isDevMode } from '@angular/core';
 import { PortfolioState } from '../core/portfolio-state';
 import { PROFILE } from '../data/profile';
+import { FEATURED_SHEETS } from '../data/sheets';
 import { Panel } from './panel';
 import { SheetVisual } from './sheet-visual';
 import { WorkGallery } from './work-gallery';
@@ -21,7 +22,11 @@ import { WorkGallery } from './work-gallery';
           <p class="eyebrow">{{ eyebrow() }}</p>
           <h2 id="sheet-title" class="title" tabindex="-1" data-autofocus>{{ s.title }}</h2>
           <p class="tagline">{{ s.tagline }}</p>
-          <app-sheet-visual [visual]="s.visual" />
+          @if (s.cover) {
+            <img class="cover" [src]="s.cover.src" [alt]="s.cover.alt" />
+          } @else {
+            <app-sheet-visual [visual]="s.visual" />
+          }
           <p class="summary">{{ s.summary }}</p>
 
           @for (section of s.sections; track section.heading) {
@@ -47,6 +52,13 @@ import { WorkGallery } from './work-gallery';
           @if (s.kind === 'work') {
             <app-work-gallery />
           }
+          @if (s.kind === 'product') {
+            <p class="kit-link">
+              <button type="button" class="chip" (click)="state.openSheet('work')">
+                Voir le UI kit Angular partagé <span aria-hidden="true">→</span>
+              </button>
+            </p>
+          }
 
           @if (s.stack.length) {
             <h3 class="sr-only">Outils</h3>
@@ -57,6 +69,11 @@ import { WorkGallery } from './work-gallery';
             </ul>
           }
 
+          @if (featured(s.id)) {
+            <p class="permalink">
+              Lien direct : <a [href]="'#' + s.id">#{{ s.id }}</a>
+            </p>
+          }
           @if (s.repos.length) {
             <div class="links">
               @for (repo of s.repos; track repo.label) {
@@ -77,6 +94,25 @@ import { WorkGallery } from './work-gallery';
     </app-panel>
   `,
   styles: `
+    .cover {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius-m);
+      border: 1px solid var(--c-line);
+    }
+    .kit-link {
+      margin: var(--space-5) 0 0;
+    }
+    .permalink {
+      margin: var(--space-4) 0 0;
+      font-size: 14px;
+      color: var(--c-muted);
+      a {
+        color: inherit;
+        font-weight: 800;
+      }
+    }
     .eyebrow {
       margin: 0;
       font-size: 12px;
@@ -169,9 +205,20 @@ export class SheetDialog {
   protected readonly sheet = this.state.sheet;
   protected readonly dev = isDevMode();
   protected readonly likes = PROFILE.likes;
+  protected featured(id: string) {
+    return FEATURED_SHEETS.some((f) => f.id === id);
+  }
   protected readonly eyebrow = computed(() => {
     const s = this.sheet();
     if (!s) return '';
-    return s.kind === 'project' ? 'Projet' : s.kind === 'work' ? 'Au quotidien' : 'À propos';
+    if (s.id === 'salon') return 'Dans les coulisses';
+    const labels: Record<string, string> = {
+      project: 'Projet perso',
+      work: 'Au quotidien',
+      product: 'Au quotidien · produit',
+      archive: 'Archives',
+      about: 'À propos',
+    };
+    return labels[s.kind];
   });
 }

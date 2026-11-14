@@ -13,7 +13,11 @@ export type SheetId =
   | 'tamagotchi'
   | 'ganeshka'
   | 'web-services'
-  | 'work';
+  | 'work'
+  | 'icare-portal'
+  | 'moniteur-virtuel'
+  | 'salon'
+  | 'iut-blagnac';
 
 /** Illustrations originales disponibles pour les fiches (dessinées en CSS/SVG). */
 export type SheetVisual =
@@ -37,8 +41,11 @@ export interface SheetSection {
 
 export interface Sheet {
   id: SheetId;
-  /** `project` apparaît dans la liste « Projets ». */
-  kind: 'project' | 'work' | 'about';
+  /**
+   * `project` : projet perso (Réalisations / Expérimentations) ; `archive` : ancien projet ;
+   * `product` : produit sur lequel je travaille (écrans du bureau) ; `work` : le UI kit.
+   */
+  kind: 'project' | 'work' | 'about' | 'product' | 'archive';
   title: string;
   /** Une ligne d'accroche sous le titre. */
   tagline: string;
@@ -47,6 +54,11 @@ export interface Sheet {
   stack: string[];
   repos: RepoLink[];
   visual: SheetVisual;
+  /**
+   * Vraie capture (servie depuis `public/`), en couverture de la carte et en grand dans la fiche.
+   * Absente : l'illustration `visual` la remplace.
+   */
+  cover?: { src: string; alt: string };
   /** Objet de la scène associé (pour la caméra et la vue 2D). */
   objectId: InteractiveObjectId | null;
 }
@@ -59,6 +71,8 @@ export type InteractiveObjectId =
   | 'kallax-console'
   | 'kallax-binder'
   | 'kallax-server'
+  | 'kallax-salon'
+  | 'kallax-iut'
   | 'notebook'
   | 'cv-sheet'
   | 'tv'

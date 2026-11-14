@@ -9,8 +9,8 @@ export const PROFILE: Profile = {
   // Déposer la version publique du CV à cet emplacement : public/cv/lena-simonin-cv.pdf
   cvPdfPath: 'cv/lena-simonin-cv.pdf',
   cvDownloadName: 'CV-Lena-Simonin.pdf',
-  // Déposer l'avatar ici : public/me/lena-avatar.png
-  avatarPath: 'me/lena-avatar.png',
+  // Déposer l'avatar ici : public/me/lena-avatar.jpg
+  avatarPath: 'me/lena-avatar.jpg',
   likes: [
     { icon: '🎮', label: 'Jeux vidéo' },
     { icon: '🪛', label: 'Démonter des consoles' },

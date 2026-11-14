@@ -48,14 +48,24 @@ export const SHEETS: readonly Sheet[] = [
       'HubTV fait basculer le PC entre le bureau Windows et une session de jeu sur la télévision. ' +
       'Un raccourci manette lance la bascule, Steam Big Picture prend le relais sur la TV, ' +
       "et une télécommande Android permet de piloter l'ensemble depuis le canapé.",
+    // À relire : « Mon rôle » et « Résultat » reformulés à partir du résumé.
     sections: [
       {
-        heading: 'Fonctionnement',
+        heading: 'Le problème',
+        items: ['Passer du bureau Windows au jeu sur la TV, sans se lever du canapé'],
+      },
+      { heading: 'Mon rôle', items: ['Projet personnel : conception et développement'] },
+      {
+        heading: 'Choix techniques',
         items: [
-          'Raccourci manette pour basculer entre bureau et TV',
-          'Ouverture de Steam Big Picture sur la TV',
-          'Télécommande Android pour piloter le PC depuis le canapé',
+          'Un raccourci manette déclenche la bascule entre bureau et TV',
+          'Steam Big Picture prend le relais sur la TV',
+          'Une télécommande Android pilote le PC depuis le canapé',
         ],
+      },
+      {
+        heading: 'Résultat',
+        items: ['Le PC passe du bureau Windows au jeu sur la TV, manette en main'],
       },
     ],
     stack: ['Windows', 'Steam Big Picture', 'Android'],
@@ -72,14 +82,26 @@ export const SHEETS: readonly Sheet[] = [
     summary:
       "Azura est une application Android de suivi d'humeur. Elle réunit un journal, des routines " +
       "et l'historique de l'humeur, et elle a été conçue pour fonctionner entièrement hors ligne.",
+    // À relire : « Mon rôle » et « Résultat » reformulés à partir du résumé.
     sections: [
       {
-        heading: 'Fonctionnalités',
+        heading: 'Le problème',
+        items: ['Suivre son humeur, tenir un journal et ses routines, même sans réseau'],
+      },
+      {
+        heading: 'Mon rôle',
+        items: ["Projet personnel : conception et développement de l'application Android"],
+      },
+      {
+        heading: 'Choix technique : le hors-ligne',
         items: [
-          "Suivi de l'humeur au fil des jours",
-          'Journal personnel',
-          'Routines',
-          'Fonctionne hors ligne',
+          "L'application fonctionne entièrement hors ligne : la saisie d'humeur, le journal et les routines restent disponibles sans connexion",
+        ],
+      },
+      {
+        heading: 'Résultat',
+        items: [
+          "Suivi de l'humeur au fil des jours, journal personnel et routines réunis dans une seule application",
         ],
       },
     ],
@@ -150,6 +172,108 @@ export const SHEETS: readonly Sheet[] = [
     objectId: 'kallax-server',
   },
   {
+    id: 'icare-portal',
+    kind: 'product',
+    title: 'Icare Portal',
+    tagline: 'Produit de vidéoprotection · maquettes Figma et front Angular',
+    summary:
+      'Icare Portal fait partie des trois produits de vidéoprotection sur lesquels je travaille : ' +
+      "j'en conçois les maquettes dans Figma et je les intègre avec le UI kit Angular partagé.",
+    sections: [
+      {
+        heading: 'Mon rôle',
+        items: [
+          'Maquettes Figma : parcours, écrans et prototypes',
+          'Intégration front avec le UI kit Angular partagé',
+        ],
+      },
+    ],
+    stack: ['Figma', 'Angular', 'Design tokens'],
+    repos: [],
+    visual: 'work',
+    objectId: 'monitor-left',
+  },
+  {
+    id: 'moniteur-virtuel',
+    kind: 'product',
+    title: 'Moniteur Virtuel',
+    tagline: 'Produit de vidéoprotection · maquettes Figma et front Angular',
+    summary:
+      'Moniteur Virtuel fait partie des trois produits de vidéoprotection sur lesquels je travaille : ' +
+      "j'en conçois les maquettes dans Figma et je les intègre avec le UI kit Angular partagé.",
+    sections: [
+      {
+        heading: 'Mon rôle',
+        items: [
+          'Maquettes Figma : parcours, écrans et prototypes',
+          'Intégration front avec le UI kit Angular partagé',
+        ],
+      },
+    ],
+    stack: ['Figma', 'Angular', 'Design tokens'],
+    repos: [],
+    visual: 'work',
+    objectId: 'monitor-right',
+  },
+  {
+    id: 'salon',
+    kind: 'project',
+    title: 'Le salon de Léna',
+    tagline:
+      'Ce portfolio : une page 2D et une visite 3D de mon salon, où chaque objet ouvre une fiche',
+    summary:
+      'Ce portfolio se lit en 2D ou se visite en 3D : dans mon salon, les écrans, le KALLAX, le carnet ' +
+      'et la feuille de CV ouvrent les mêmes fiches que le menu.',
+    sections: [
+      {
+        heading: 'Choix de conception',
+        items: [
+          'La 2D par défaut, rapide et lisible ; la scène 3D se charge seulement quand on la visite',
+          'Les mêmes fiches en 2D et en 3D, ouvertes depuis le menu ou depuis les objets du salon',
+          'Lumière pré-calculée dans Blender (Cycles) : rendu doux, et léger pour le téléphone',
+          'Navigation au clavier, lecteurs d’écran et réduction des animations pris en compte',
+        ],
+      },
+      {
+        heading: 'Technique',
+        items: [
+          'Angular 22 et TypeScript',
+          'Three.js : pièce construite en code à partir des cotes de mon salon',
+          'Contenu typé : fiches et objets cliquables décrits dans des fichiers de données',
+        ],
+      },
+    ],
+    stack: ['Angular', 'TypeScript', 'Three.js', 'Blender'],
+    // Dépôt privé : le lien reste masqué tant que `isPublic` vaut false.
+    repos: [{ label: 'Dépôt du portfolio', url: repoUrl('portfolio'), isPublic: false }],
+    visual: 'work',
+    cover: {
+      src: 'projects/salon.webp',
+      alt: "Le salon de Léna en 3D, vu d'en haut, à la lumière du jour",
+    },
+    objectId: 'kallax-salon',
+  },
+  {
+    id: 'iut-blagnac',
+    kind: 'archive',
+    title: 'Portfolio IUT de Blagnac',
+    tagline: 'Mon ancien portfolio étudiant',
+    summary:
+      "Le portfolio que j'avais réalisé pendant mes études à l'IUT de Blagnac, gardé ici en archive.",
+    sections: [],
+    stack: [],
+    // Dépôt privé. Ajouter un lien « Voir la démo » seulement si une URL publique existe.
+    repos: [
+      {
+        label: 'Dépôt Portfolio_IUT_Blagnac',
+        url: repoUrl('Portfolio_IUT_Blagnac'),
+        isPublic: false,
+      },
+    ],
+    visual: 'swatches',
+    objectId: 'kallax-iut',
+  },
+  {
     id: 'work',
     kind: 'work',
     title: 'UI kit Angular partagé',
@@ -159,23 +283,29 @@ export const SHEETS: readonly Sheet[] = [
       'en Angular et Electron, et je maintiens le UI kit Angular partagé par ces produits, avec ses design tokens.',
     sections: [
       {
-        heading: 'Maquettes Figma',
+        heading: 'Le problème',
         items: [
-          'Parcours, écrans et prototypes pour trois produits',
-          'Composants Figma alignés sur le UI kit Angular',
+          'Trois produits de vidéoprotection qui partagent les mêmes composants, de Figma au code',
         ],
       },
       {
-        heading: 'Front Angular / Electron',
-        items: ['Intégration des écrans à partir des maquettes', 'Applications de bureau Electron'],
+        heading: 'Mon rôle',
+        items: [
+          'Maquettes Figma : parcours, écrans et prototypes pour les trois produits',
+          'Intégration des écrans en Angular, applications de bureau Electron',
+          'Maintenance du UI kit Angular partagé et de ses design tokens',
+        ],
       },
       {
-        heading: 'Design system',
+        heading: 'Choix technique et UI',
         items: [
-          'Maintenance du UI kit Angular partagé',
-          'Design tokens : couleurs, typographie, espacements',
-          'Cohérence entre Figma et le code',
+          'Des design tokens (couleurs, typographie, espacements) communs à Figma et au code',
+          'Des composants Figma alignés sur le UI kit Angular',
         ],
+      },
+      {
+        heading: 'Résultat',
+        items: ['Un même UI kit Angular pour les trois produits, cohérent entre Figma et le code'],
       },
     ],
     stack: ['Figma', 'Angular', 'Electron', 'TypeScript', 'SCSS', 'Design tokens'],
@@ -200,3 +330,9 @@ export const FEATURED_SHEETS = (['work', 'hubtv', 'azura'] as const).map(sheetBy
 export const EXPERIMENT_SHEETS = PROJECT_SHEETS.filter(
   (s) => !FEATURED_SHEETS.some((f) => f.id === s.id),
 );
+
+/** Anciens projets (« Archives »). */
+export const ARCHIVE_SHEETS = SHEETS.filter((s) => s.kind === 'archive');
+
+/** Produits sur lesquels je travaille (écrans du bureau), avec accès au UI kit. */
+export const PRODUCT_SHEETS = SHEETS.filter((s) => s.kind === 'product');

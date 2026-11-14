@@ -78,6 +78,15 @@ passage, ses liaisons et ses endroits de sieste (le canapé est privilégié la 
 
 ## Fonctionnement
 
+- **Portfolio 2D (par défaut)** : accueil (portrait, présentation), réalisations mises en avant (UI kit Angular
+  partagé, HubTV, Azura), « Au quotidien » (Icare Portal, Moniteur Virtuel), Expérimentations, Archives.
+  La scène 3D n’est chargée qu’au clic sur **Visiter le salon en 3D**.
+- **Dans le salon** : trois repères au départ (Mon travail, Projets perso, CV ; épinglés au bord s’ils sont
+  hors champ) et une barre **Entrée · Bureau · KALLAX · TV** pour s’y rendre d’un clic (`PLACES` dans
+  `room-layout.ts`).
+- **Captures des fiches** : champ `cover` dans `sheets.ts` (fichier dans `public/projects/`). Sans capture,
+  l’illustration dessinée reste affichée.
+
 - **Vue de la pièce** (par défaut) : à la première personne. On démarre près de l’entrée, tourné vers
   le salon, à hauteur d’yeux.
   - Ordinateur : **ZQSD**, **WASD** ou les **flèches** pour avancer, reculer et se déplacer de côté ;
@@ -90,7 +99,7 @@ passage, ses liaisons et ses endroits de sieste (le canapé est privilégié la 
   - Léger balancement de marche, coupé en mouvement réduit. Allure, hauteur des yeux et rayon du corps
     se règlent dans `INSIDE` (`room-layout.ts`).
   - Une aide discrète aux commandes s’affiche au premier lancement ; le bouton **?** la rouvre.
-- **Vue d’en haut** (bouton dans la barre) : diorama en trois-quarts, on peut orienter légèrement la caméra
+- **Vue d’ensemble** (bouton dans la barre) : diorama en trois-quarts, on peut orienter légèrement la caméra
   et zoomer un peu. Les murs côté caméra disparaissent. Au retour dans la pièce, on reprend sa dernière
   position.
 - **Survol / focus clavier** : contour rose et nom de l’objet. Les easter eggs restent discrets.

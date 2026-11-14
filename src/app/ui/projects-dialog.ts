@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { PortfolioState } from '../core/portfolio-state';
 import { objectForSheet } from '../data/interactive-objects';
-import { EXPERIMENT_SHEETS, FEATURED_SHEETS } from '../data/sheets';
+import { ARCHIVE_SHEETS, EXPERIMENT_SHEETS, FEATURED_SHEETS, PRODUCT_SHEETS } from '../data/sheets';
 import { Sheet } from '../data/types';
 import { Panel } from './panel';
 
@@ -97,7 +97,9 @@ export class ProjectsDialog {
   protected readonly state = inject(PortfolioState);
   protected readonly groups = [
     { title: 'Réalisations', items: FEATURED_SHEETS.map(withPlace) },
+    { title: 'Au quotidien', items: PRODUCT_SHEETS.map(withPlace) },
     { title: 'Expérimentations', items: EXPERIMENT_SHEETS.map(withPlace) },
+    { title: 'Archives', items: ARCHIVE_SHEETS.map(withPlace) },
   ];
 }
 

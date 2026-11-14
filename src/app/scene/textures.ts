@@ -204,6 +204,48 @@ export function hubtvMonitorTexture(): THREE.CanvasTexture {
   });
 }
 
+/**
+ * Écrans du bureau : reconstitution générique d'un produit de vidéoprotection
+ * (aucune donnée ni capture interne), construit avec le UI kit.
+ */
+export function productMonitorTexture(name: string, accent: string): THREE.CanvasTexture {
+  return canvasTexture(512, 296, (g, w, h) => {
+    g.fillStyle = '#f4f2f7';
+    g.fillRect(0, 0, w, h);
+    g.fillStyle = '#1f1d2b';
+    g.fillRect(0, 0, w, 36);
+    g.fillStyle = '#fff';
+    g.font = '600 18px sans-serif';
+    g.fillText(name, 14, 24);
+    g.fillStyle = accent;
+    roundRect(g, w - 104, 9, 90, 18, 9);
+    g.fill();
+    g.fillStyle = '#1f1d2b';
+    g.font = '700 11px sans-serif';
+    g.fillText('UI kit Angular', w - 96, 22);
+    // barre latérale
+    g.fillStyle = '#e6e2ee';
+    g.fillRect(0, 36, 96, h - 36);
+    for (let i = 0; i < 5; i++) {
+      g.fillStyle = i === 0 ? accent : '#cfc9db';
+      roundRect(g, 12, 54 + i * 30, 72, 14, 7);
+      g.fill();
+    }
+    // mosaïque de vignettes
+    for (let r = 0; r < 2; r++)
+      for (let c = 0; c < 2; c++) {
+        const x = 112 + c * 196;
+        const y = 50 + r * 118;
+        g.fillStyle = '#2b2838';
+        roundRect(g, x, y, 184, 106, 8);
+        g.fill();
+        g.fillStyle = 'rgba(255,255,255,.75)';
+        g.font = '600 12px sans-serif';
+        g.fillText(`CAM ${r * 2 + c + 1}`, x + 10, y + 20);
+      }
+  });
+}
+
 /** Écran droit : Azura, suivi d'humeur (visuel original). */
 export function azuraMonitorTexture(): THREE.CanvasTexture {
   return canvasTexture(512, 296, (g, w, h) => {

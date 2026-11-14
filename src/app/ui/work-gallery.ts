@@ -94,6 +94,16 @@ interface Mockup {
           <span aria-hidden="true"></span> Enregistrement {{ rec() ? 'actif' : 'en pause' }}
         </label>
       </div>
+      <h4 class="states-title">Un composant et ses états : le bouton</h4>
+      <ul class="states" aria-label="États du bouton">
+        <li><span class="k-btn">Exporter</span><small>Repos</small></li>
+        <li><span class="k-btn is-hover">Exporter</span><small>Survol</small></li>
+        <li><span class="k-btn is-focus">Exporter</span><small>Focus clavier</small></li>
+        <li>
+          <span class="k-btn is-disabled" aria-disabled="true">Exporter</span
+          ><small>Désactivé</small>
+        </li>
+      </ul>
       <p class="note">
         Ces composants sont de vrais éléments HTML stylés avec les tokens ci-dessus : une couleur
         changée dans Figma devient un token, et tous les composants qui l'utilisent suivent.

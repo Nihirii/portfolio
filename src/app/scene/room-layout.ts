@@ -39,8 +39,8 @@ export const DESK_ITEMS = {
 };
 
 export const CHAIRS = {
-  /** Chaise gaming REKT : couleurs du cuir et des bandes contrastées. */
-  gaming: { x: 2.3, z: 1.3, rotY: 0.15, main: '#1c1c21', accent: '#ece9f1' },
+  /** Chaise gaming REKT bleue : couleurs du cuir et des bandes contrastées. */
+  gaming: { x: 2.3, z: 1.3, rotY: 0.15, main: '#3d63b5', accent: '#ece9f1' },
   white: { x: 1.35, z: 1.55, rotY: -0.9 },
 };
 
@@ -57,6 +57,8 @@ export const KALLAX = {
     'kallax-binder': [1, 2],
     'kallax-server': [3, 2],
   } as Record<string, [number, number]>,
+  /** Cases ajoutées : « Le salon de Léna » et « Portfolio IUT de Blagnac ». */
+  extraCells: { salon: [2, 2] as [number, number], iut: [2, 4] as [number, number] },
   /** Case de la figurine Evangelion. */
   evaFigureCell: [2, 3] as [number, number],
 };
@@ -191,6 +193,18 @@ export const INSIDE = {
   /** Champ de vision en portrait (téléphone). */
   fovPortrait: 80,
 };
+
+/**
+ * Endroits où l'on peut se rendre d'un clic (vue intérieure) : position au sol et point regardé.
+ * Choisis hors des meubles (voir `colliders()`).
+ */
+export const PLACES = {
+  entree: { x: INSIDE.start.x, z: INSIDE.start.z, lookAt: INSIDE.lookAt },
+  bureau: { x: 1.75, z: 1.6, lookAt: [2.15, 0.95, 0.2] as [number, number, number] },
+  kallax: { x: 1.4, z: 2.15, lookAt: [0.2, 0.95, 2.45] as [number, number, number] },
+  tv: { x: 3.6, z: 2.3, lookAt: [4.5, 1.1, 3.4] as [number, number, number] },
+};
+export type PlaceId = keyof typeof PLACES;
 
 /** Obstacle rectangulaire au sol (x, z). */
 export interface RectCollider {

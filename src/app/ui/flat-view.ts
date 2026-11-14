@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { PortfolioState } from '../core/portfolio-state';
 import { EASTER_EGGS } from '../data/interactive-objects';
 import { PROFILE } from '../data/profile';
-import { EXPERIMENT_SHEETS, FEATURED_SHEETS } from '../data/sheets';
+import { ARCHIVE_SHEETS, EXPERIMENT_SHEETS, FEATURED_SHEETS, PRODUCT_SHEETS } from '../data/sheets';
+import { Avatar } from './avatar';
 import { DeskPreview } from './desk-preview';
 import { SheetVisual } from './sheet-visual';
 
@@ -13,7 +14,7 @@ import { SheetVisual } from './sheet-visual';
 @Component({
   selector: 'app-flat-view',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SheetVisual, DeskPreview],
+  imports: [SheetVisual, DeskPreview, Avatar],
   template: `
     <div class="page">
       <section class="hero" aria-labelledby="hero-title">
@@ -21,21 +22,25 @@ import { SheetVisual } from './sheet-visual';
           <h1 id="hero-title">{{ profile.name }}</h1>
           <p class="hero__role">Développeuse front-end · Angular, Electron et design systems</p>
           <p class="hero__lead">
-            Je dessine des interfaces dans Figma et je les construis en Angular, avec un UI kit
-            partagé et ses design tokens, pour trois produits de vidéoprotection.
+            De la maquette Figma au UI kit Angular partagé : je conçois et je développe les
+            interfaces de trois produits de vidéoprotection, avec leurs design tokens.
           </p>
           <button type="button" class="chip chip--primary hero__cta" (click)="goToWork()">
             Voir mes réalisations
           </button>
         </div>
         <figure class="hero__visual">
-          <app-desk-preview />
-          @if (state.webglAvailable()) {
-            <figcaption>
-              <button type="button" class="link-btn" (click)="state.setMode('3d')">
-                Visiter le salon en 3D <span aria-hidden="true">→</span>
-              </button>
-            </figcaption>
+          @if (!portraitFailed()) {
+            <img
+              class="portrait"
+              [src]="profile.avatarPath"
+              alt="Portrait illustré de Léna Simonin"
+              width="960"
+              height="960"
+              (error)="portraitFailed.set(true)"
+            />
+          } @else {
+            <app-avatar [size]="220" />
           }
         </figure>
       </section>
@@ -46,7 +51,11 @@ import { SheetVisual } from './sheet-visual';
           @for (s of featured; track s.id) {
             <li>
               <button type="button" class="card" (click)="state.openSheet(s.id)">
-                <app-sheet-visual [visual]="s.visual" />
+                @if (s.cover) {
+                  <img class="card__cover" [src]="s.cover.src" [alt]="s.cover.alt" />
+                } @else {
+                  <app-sheet-visual [visual]="s.visual" />
+                }
                 <span class="card__body">
                   <span class="card__title">{{ s.title }}</span>
                   <span class="card__text">{{ s.tagline }}</span>
@@ -56,6 +65,13 @@ import { SheetVisual } from './sheet-visual';
             </li>
           }
         </ul>
+        <p class="also">
+          Au quotidien, aussi :
+          @for (p of products; track p.id; let last = $last) {
+            <button type="button" class="link-btn" (click)="state.openSheet(p.id)">
+              {{ p.title }}</button>{{ last ? '' : ' · ' }}
+          }
+        </p>
       </section>
 
       <section aria-labelledby="exp-title">
@@ -65,13 +81,51 @@ import { SheetVisual } from './sheet-visual';
             <li>
               <button type="button" class="row" (click)="state.openSheet(s.id)">
                 <span class="row__title">{{ s.title }}</span>
-                <span class="row__text">{{ s.tagline }}</span>
+                <span class="row__text">{{ s.summary }}</span>
                 <span class="row__arrow" aria-hidden="true">→</span>
               </button>
             </li>
           }
         </ul>
       </section>
+
+      <section aria-labelledby="archives-title">
+        <h2 id="archives-title">Archives</h2>
+        <ul class="experiments">
+          @for (s of archives; track s.id) {
+            <li>
+              <button type="button" class="row" (click)="state.openSheet(s.id)">
+                <span class="row__title">{{ s.title }}</span>
+                <span class="row__text">{{ s.summary }}</span>
+                <span class="row__arrow" aria-hidden="true">→</span>
+              </button>
+            </li>
+          }
+        </ul>
+      </section>
+
+      @if (state.webglAvailable()) {
+        <section class="visit" aria-labelledby="visit-title">
+          <div>
+            <h2 id="visit-title">Le salon en 3D</h2>
+            <p>
+              Les mêmes projets, rangés dans mon salon : les écrans du bureau, le KALLAX, le carnet,
+              la feuille de CV… et Hiki.
+            </p>
+            <button type="button" class="chip" (click)="state.setMode('3d')">
+              Visiter le salon en 3D <span aria-hidden="true">→</span>
+            </button>
+          </div>
+          <button
+            type="button"
+            class="visit__preview"
+            (click)="state.setMode('3d')"
+            aria-label="Visiter le salon en 3D"
+          >
+            <app-desk-preview />
+          </button>
+        </section>
+      }
 
       <section aria-labelledby="salon-title">
         <h2 id="salon-title">Dans le salon</h2>
@@ -131,10 +185,49 @@ import { SheetVisual } from './sheet-visual';
     }
     .hero__visual {
       margin: 0;
+      justify-self: end;
+      width: min(100%, 420px);
     }
-    figcaption {
-      margin-top: 12px;
-      text-align: right;
+    /* cadrage carré qui laisse respirer le visage */
+    .portrait {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: var(--radius-l);
+      border: 1px solid var(--c-line);
+    }
+    .card__cover {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      border-radius: var(--radius-m);
+    }
+    .also {
+      margin: 16px 0 0;
+      color: var(--c-text-soft);
+      font-size: 15px;
+    }
+    .visit {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 40px;
+      align-items: center;
+      p {
+        max-width: 32em;
+        color: var(--c-text-soft);
+        margin: 0 0 20px;
+      }
+    }
+    .visit__preview {
+      display: block;
+      padding: 0;
+      border: 0;
+      background: none;
+      border-radius: var(--radius-l);
+      cursor: pointer;
     }
     .link-btn {
       padding: 6px 2px;
@@ -265,9 +358,14 @@ import { SheetVisual } from './sheet-visual';
       .page {
         padding-top: 28px;
       }
-      .hero {
+      .hero,
+      .visit {
         grid-template-columns: 1fr;
         gap: 28px;
+      }
+      .hero__visual {
+        justify-self: stretch;
+        width: 100%;
       }
       .featured {
         grid-template-columns: 1fr;
@@ -294,6 +392,9 @@ export class FlatView {
   protected readonly profile = PROFILE;
   protected readonly featured = FEATURED_SHEETS;
   protected readonly experiments = EXPERIMENT_SHEETS;
+  protected readonly archives = ARCHIVE_SHEETS;
+  protected readonly products = PRODUCT_SHEETS;
+  protected readonly portraitFailed = signal(false);
   protected readonly eggs = EASTER_EGGS;
 
   goToWork() {

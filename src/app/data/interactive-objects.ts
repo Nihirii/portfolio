@@ -10,21 +10,21 @@ import { EasterEgg, InteractiveObject, InteractiveObjectId } from './types';
 export const INTERACTIVE_OBJECTS: readonly InteractiveObject[] = [
   {
     id: 'monitor-left',
-    label: 'Écran gauche — HubTV',
-    action: { type: 'sheet', sheetId: 'hubtv' },
+    label: 'Écran gauche — Icare Portal',
+    action: { type: 'sheet', sheetId: 'icare-portal' },
     primary: true,
     focus: { offset: [0.25, 0.55, 1.3] },
   },
   {
     id: 'monitor-right',
-    label: 'Écran droit — Azura',
-    action: { type: 'sheet', sheetId: 'azura' },
+    label: 'Écran droit — Moniteur Virtuel',
+    action: { type: 'sheet', sheetId: 'moniteur-virtuel' },
     primary: true,
     focus: { offset: [-0.2, 0.55, 1.3] },
   },
   {
     id: 'notebook',
-    label: 'Carnet — Mon travail',
+    label: 'Carnet — UI kit Angular partagé',
     action: { type: 'sheet', sheetId: 'work' },
     primary: true,
     focus: { offset: [0.35, 0.75, 0.75] },
@@ -65,6 +65,20 @@ export const INTERACTIVE_OBJECTS: readonly InteractiveObject[] = [
     focus: { offset: [1.25, 0.1, -0.15] },
   },
   {
+    id: 'kallax-salon',
+    label: 'Mini-salon — Le salon de Léna',
+    action: { type: 'sheet', sheetId: 'salon' },
+    primary: true,
+    focus: { offset: [1.25, 0.15, 0.1] },
+  },
+  {
+    id: 'kallax-iut',
+    label: "Boîte d'archives — Portfolio IUT de Blagnac",
+    action: { type: 'sheet', sheetId: 'iut-blagnac' },
+    primary: true,
+    focus: { offset: [1.25, -0.1, 0.1] },
+  },
+  {
     id: 'tv',
     label: 'TV TCL — allumer / éteindre',
     action: { type: 'tv-toggle' },
@@ -87,9 +101,9 @@ export const INTERACTIVE_OBJECTS: readonly InteractiveObject[] = [
   },
   {
     id: 'egg-controller',
-    label: 'Manette près du canapé',
+    label: 'Manette — aperçu HubTV sur la TV',
     action: { type: 'easter-egg', eggId: 'controller' },
-    primary: false,
+    primary: true,
     focus: null,
   },
   {
@@ -191,7 +205,7 @@ export const EASTER_EGGS: readonly EasterEgg[] = [
   {
     id: 'aquarium',
     title: 'Méduses',
-    message: 'Les méduses t’envoient un cœur… et Hiki accourt pour les regarder.'
+    message: 'Les méduses t’envoient un cœur… et Hiki accourt pour les regarder.',
   },
   {
     id: 'sunflowers',

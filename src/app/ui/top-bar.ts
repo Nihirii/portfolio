@@ -59,7 +59,7 @@ import { githubProfileUrl, PROFILE } from '../data/profile';
               (click)="state.viewFromAbove.set(!state.viewFromAbove())"
             >
               <span aria-hidden="true">{{ state.viewFromAbove() ? '🏠' : '🔭' }}</span>
-              {{ state.viewFromAbove() ? 'Vue de la pièce' : "Vue d'en haut" }}
+              {{ state.viewFromAbove() ? 'Vue de la pièce' : "Vue d'ensemble" }}
             </button>
             <button
               type="button"

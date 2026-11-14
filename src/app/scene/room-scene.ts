@@ -11,7 +11,7 @@ import { InteractiveObjectId } from '../data/types';
 import { applyBake, BakeAssets, BakeControls } from './bake/apply-bake';
 import { buildRoom, RoomBuild } from './build-room';
 import { Hiki, PetReaction } from './hiki';
-import { INSIDE, OVERVIEW } from './room-layout';
+import { INSIDE, OVERVIEW, PLACES, PlaceId } from './room-layout';
 import { MoveKey, Walker } from './walker';
 
 export interface RoomSceneCallbacks {
@@ -300,7 +300,7 @@ export class RoomScene {
     }
     this.focused = id;
     this.controls.enabled = false;
-    this.startTween(to, 1.0);
+    this.startTween(to, 0.6);
   }
 
   /** Revient à la vue d'avant la sélection. */
@@ -309,7 +309,7 @@ export class RoomScene {
     const back = this.savedView;
     this.savedView = null;
     this.focused = null;
-    this.startTween(back, 0.9, () => this.enterModeControls());
+    this.startTween(back, 0.5, () => this.enterModeControls());
   }
 
   /** Après une transition : marche (pièce) ou orbite limitée (vue d'en haut). */
@@ -345,13 +345,31 @@ export class RoomScene {
       return;
     }
     // au retour dans la pièce, on reprend la dernière position (le Walker la garde)
-    this.startTween(this.overview, 1.3, () => this.enterModeControls());
+    this.startTween(this.overview, 0.8, () => this.enterModeControls());
+  }
+
+  /**
+   * Se rend à un endroit du salon (entrée, bureau, KALLAX, TV) : courte transition, puis la marche
+   * reprend de là. Depuis la vue d'ensemble, on redescend dans la pièce.
+   */
+  travel(place: PlaceId) {
+    const p = PLACES[place];
+    this.savedView = null;
+    this.focused = null;
+    this.viewMode = 'inside';
+    this.controls.enabled = false;
+    this.walker.release();
+    this.walker.pos.set(p.x, p.z);
+    this.walker.lookAtPoint(new THREE.Vector3(...p.lookAt));
+    const aspect = (this.host.clientWidth || 1) / (this.host.clientHeight || 1);
+    this.overview = { ...this.walker.view(), fov: aspect < 1 ? INSIDE.fovPortrait : INSIDE.fov };
+    this.startTween(this.overview, 0.7, () => this.enterModeControls());
   }
 
   resetView() {
     this.savedView = null;
     this.focused = null;
-    this.startTween(this.overview, 0.9, () => this.enterModeControls());
+    this.startTween(this.overview, 0.6, () => this.enterModeControls());
   }
 
   /** Position écran (px, relative à l'hôte) d'un objet ; null si derrière la caméra. */
@@ -364,6 +382,14 @@ export class RoomScene {
     out.x = ((p.x + 1) / 2) * this.host.clientWidth;
     out.y = ((1 - p.y) / 2) * this.host.clientHeight;
     return out.visible;
+  }
+
+  /** Côté de l'écran où se trouve un objet hors champ : -1 à gauche, 1 à droite. */
+  sideOf(id: InteractiveObjectId): -1 | 1 {
+    const obj = this.room.interactives.get(id);
+    if (!obj) return 1;
+    const p = this.centerOf(obj).applyMatrix4(this.camera.matrixWorldInverse);
+    return p.x < 0 ? -1 : 1;
   }
 
   /** Petite animation des easter eggs. */
