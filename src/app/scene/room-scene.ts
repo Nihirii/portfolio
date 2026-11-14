@@ -10,6 +10,7 @@ import { INTERACTIVE_OBJECTS, objectById } from '../data/interactive-objects';
 import { InteractiveObjectId } from '../data/types';
 import { applyBake, BakeAssets, BakeControls } from './bake/apply-bake';
 import { buildRoom, RoomBuild } from './build-room';
+import { DecorAssets } from './decor-assets';
 import { Hiki, PetReaction } from './hiki';
 import { INSIDE, OVERVIEW, PLACES, PlaceId } from './room-layout';
 import { MoveKey, Walker } from './walker';
@@ -37,6 +38,7 @@ interface View {
 export type ViewMode = 'inside' | 'top';
 
 export { loadBake } from './bake/apply-bake';
+export { loadDecorAssets } from './decor-assets';
 
 export class RoomScene {
   private renderer: THREE.WebGLRenderer;
@@ -108,6 +110,7 @@ export class RoomScene {
     private canvas: HTMLCanvasElement,
     private cb: RoomSceneCallbacks,
     bakeAssets: BakeAssets | null = null,
+    decorAssets: DecorAssets = new Map(),
   ) {
     this.renderer = new THREE.WebGLRenderer({
       canvas,
@@ -124,7 +127,7 @@ export class RoomScene {
     this.renderer.shadowMap.type = THREE.PCFShadowMap;
 
     this.camera = new THREE.PerspectiveCamera(OVERVIEW.fov, 1, 0.05, 60);
-    this.room = buildRoom();
+    this.room = buildRoom(decorAssets);
     // lumière pré-calculée (Blender) : ombres et occlusion déjà dans les atlas
     this.bake = bakeAssets ? applyBake(this.room.root, bakeAssets) : null;
     if (this.bake) {

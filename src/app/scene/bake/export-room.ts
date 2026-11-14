@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { buildRoom } from '../build-room';
+import { loadDecorAssets } from '../decor-assets';
 import { forEachRoomMesh, meshSignature } from './bake-ids';
 
 /**
@@ -16,8 +17,8 @@ type Role = 'bake' | 'emit' | 'keep' | 'glass';
 
 const r4 = (v: number) => Math.round(v * 1e4) / 1e4;
 
-export function exportRoom(): string {
-  const room = buildRoom();
+export async function exportRoom(): Promise<string> {
+  const room = buildRoom(await loadDecorAssets());
   const root = room.root;
 
   // états jour (0) et nuit (1) des matériaux lumineux et des lampes
@@ -57,7 +58,8 @@ export function exportRoom(): string {
     const e = emissive.get(m);
     const lit =
       !!m.emissiveMap ||
-      (!!e && ((e.day[0] !== '000000' && e.day[1] > 0) || (e.night[0] !== '000000' && e.night[1] > 0)));
+      (!!e &&
+        ((e.day[0] !== '000000' && e.day[1] > 0) || (e.night[0] !== '000000' && e.night[1] > 0)));
     let role: Role;
     if (m.transparent || m.opacity < 1 || (m.transmission ?? 0) > 0) role = 'glass';
     else if (lit) role = 'emit';

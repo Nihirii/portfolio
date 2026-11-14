@@ -3,6 +3,7 @@ import { InteractiveObjectId } from '../data/types';
 import { addHitBox, DimEmissive, DimLight } from './build-room';
 import { box, cyl, group, mat, pointLight, rnd, sph } from './helpers';
 import { AQUARIUM, BOWL, STARS, SUNFLOWERS } from './room-layout';
+import { DecorAssets, placeModel } from './decor-assets';
 
 interface ExtrasContext {
   root: THREE.Group;
@@ -70,13 +71,20 @@ function buildAquarium({
     roughness: 0.6,
   });
   dimEmissive(glowBack, 0.45, 0.9);
-  const inner = new THREE.Mesh(new THREE.CylinderGeometry(r, r, depth - 0.01, 64, 1, true), glowBack);
+  const inner = new THREE.Mesh(
+    new THREE.CylinderGeometry(r, r, depth - 0.01, 64, 1, true),
+    glowBack,
+  );
   inner.material.side = THREE.BackSide;
   inner.rotation.x = Math.PI / 2;
   drum.add(inner);
   const bottom = new THREE.Mesh(
     new THREE.CircleGeometry(r, 64),
-    new THREE.MeshStandardMaterial({ color: '#06101f', emissive: '#123a6b', emissiveIntensity: 0.5 }),
+    new THREE.MeshStandardMaterial({
+      color: '#06101f',
+      emissive: '#123a6b',
+      emissiveIntensity: 0.5,
+    }),
   );
   bottom.position.z = depth / 2 - 0.006;
   bottom.rotation.y = Math.PI;
@@ -114,7 +122,15 @@ function buildAquarium({
   const bellGeo = new THREE.SphereGeometry(0.014, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2);
   const tentGeo = new THREE.CylinderGeometry(0.0012, 0.0005, 0.022, 4);
   tentGeo.translate(0, -0.011, 0);
-  const jellies: { g: THREE.Group; bell: THREE.Mesh; tents: THREE.Mesh[]; phase: number; a: number; rad: number; z: number }[] = [];
+  const jellies: {
+    g: THREE.Group;
+    bell: THREE.Mesh;
+    tents: THREE.Mesh[];
+    phase: number;
+    a: number;
+    rad: number;
+    z: number;
+  }[] = [];
   for (let i = 0; i < 11; i++) {
     const jg = new THREE.Group();
     const bell = new THREE.Mesh(bellGeo, jellyMat);
@@ -130,14 +146,25 @@ function buildAquarium({
     const scale = 0.7 + rnd() * 0.6;
     jg.scale.setScalar(scale);
     drum.add(jg);
-    jellies.push({ g: jg, bell, tents, phase: rnd() * 6, a: rnd() * Math.PI * 2, rad: 0.02 + rnd() * 0.08, z: -0.05 + rnd() * 0.1 });
+    jellies.push({
+      g: jg,
+      bell,
+      tents,
+      phase: rnd() * 6,
+      a: rnd() * Math.PI * 2,
+      rad: 0.02 + rnd() * 0.08,
+      z: -0.05 + rnd() * 0.1,
+    });
   }
   // easter egg : les méduses se rassemblent en cœur
   let heart = 0;
   const heartAt = (i: number) => {
     const u = (i / jellies.length) * Math.PI * 2;
     const k = 0.0055;
-    return [16 * Math.sin(u) ** 3 * k, (13 * Math.cos(u) - 5 * Math.cos(2 * u) - 2 * Math.cos(3 * u) - Math.cos(4 * u)) * k + 0.01];
+    return [
+      16 * Math.sin(u) ** 3 * k,
+      (13 * Math.cos(u) - 5 * Math.cos(2 * u) - 2 * Math.cos(3 * u) - Math.cos(4 * u)) * k + 0.01,
+    ];
   };
   const place = (t: number) =>
     jellies.forEach((j, i) => {
@@ -330,10 +357,17 @@ export function buildDuck(
   x: number,
   y: number,
   z: number,
+  assets: DecorAssets,
 ) {
   const g = group(root, 'duck');
   g.position.set(x, y, z);
   g.rotation.y = 2.3;
+  // canard en caoutchouc (modèle Poly Haven) ; sinon canard dessiné
+  if (placeModel(assets, 'canard', g, 0.085)) {
+    addHitBox(g, 0.12, 0.12, 0.12, 0, 0.05, 0);
+    register('egg-duck', g);
+    return;
+  }
   const yellow = mat('#ffd84d', { roughness: 0.4 });
   sph(g, 0.035, yellow, 0, 0.03, 0, 1.25, 0.9, 1);
   sph(g, 0.024, yellow, 0.03, 0.07, 0);

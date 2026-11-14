@@ -172,6 +172,13 @@ processeur 4 cœurs). Options utiles : `python tools/bake/bake.py --preview` (ra
 lumière), `--only day`, `--save-blend` (ouvre ensuite `tools/bake/room.blend` dans Blender).
 Les intensités se règlent dans `LIGHT`, en haut de `bake.py`.
 
+## Modèles 3D libres
+
+Quelques objets du salon viennent de [Poly Haven](https://polyhaven.com) (licence CC0) : la manette NES,
+le canard en caoutchouc et le cadre photo des tablettes d'angle. Ils sont allégés par
+`tools/assets/prepare.py` et rangés dans `public/models/` (sources et auteurs : `public/models/CREDITS.md`).
+Si un fichier manque, la version dessinée en code s'affiche à la place.
+
 ## Accessibilité
 
 - Chaque objet du salon a un vrai bouton HTML positionné au-dessus de lui : navigation au **Tab**,
