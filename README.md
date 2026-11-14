@@ -1,4 +1,8 @@
 # Le salon de Léna — portfolio 3D
+<img width="1440" height="900" alt="image" src="https://github.com/user-attachments/assets/bdea5cf8-8bd5-4575-9fa2-296d215f05e8" />
+<img width="1440" height="900" alt="image" src="https://github.com/user-attachments/assets/f33f9350-8483-4f9c-a28a-ff1847ea7252" />
+
+
 
 Portfolio de **Léna Simonin**, développeuse front-end à Lyon, présenté sous la forme d’un salon 3D interactif.
 Construit avec **Angular 22**, **TypeScript** et **Three.js**.
