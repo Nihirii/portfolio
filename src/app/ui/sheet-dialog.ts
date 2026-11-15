@@ -60,6 +60,9 @@ import { WorkGallery } from './work-gallery';
             </p>
           }
 
+          @for (g of s.gallery ?? []; track g.src) {
+            <img class="cover gallery" [src]="g.src" [alt]="g.alt" loading="lazy" />
+          }
           @if (s.stack.length) {
             <h3 class="sr-only">Outils</h3>
             <ul class="stack" aria-label="Outils">
@@ -74,11 +77,22 @@ import { WorkGallery } from './work-gallery';
               Lien direct : <a [href]="'#' + s.id">#{{ s.id }}</a>
             </p>
           }
-          @if (s.repos.length) {
+          @if (s.repos.length || s.demo) {
             <div class="links">
+              @if (s.demo) {
+                <a class="chip chip--primary" [href]="s.demo" target="_blank" rel="noopener">
+                  Jouer en ligne<span class="sr-only"> (nouvel onglet)</span> ↗
+                </a>
+              }
               @for (repo of s.repos; track repo.label) {
                 @if (repo.isPublic && repo.url) {
-                  <a class="chip chip--primary" [href]="repo.url" target="_blank" rel="noopener">
+                  <a
+                    class="chip"
+                    [class.chip--primary]="!s.demo"
+                    [href]="repo.url"
+                    target="_blank"
+                    rel="noopener"
+                  >
                     {{ repo.label }}<span class="sr-only"> sur GitHub (nouvel onglet)</span> ↗
                   </a>
                 } @else if (!repo.isPublic) {
@@ -103,6 +117,10 @@ import { WorkGallery } from './work-gallery';
       object-position: top;
       border-radius: var(--radius-m);
       border: 1px solid var(--c-line);
+    }
+    .gallery {
+      margin-top: var(--space-5);
+      max-height: none;
     }
     .kit-link {
       margin: var(--space-5) 0 0;

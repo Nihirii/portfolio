@@ -61,6 +61,10 @@ export interface Sheet {
    * Absente : l'illustration `visual` la remplace.
    */
   cover?: { src: string; alt: string };
+  /** Captures supplémentaires, affichées dans la fiche sous le texte. */
+  gallery?: { src: string; alt: string }[];
+  /** Démo jouable en ligne (bouton « Jouer en ligne »). */
+  demo?: string;
   /** Objet de la scène associé (pour la caméra et la vue 2D). */
   objectId: InteractiveObjectId | null;
 }
