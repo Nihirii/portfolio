@@ -128,19 +128,49 @@ export const SHEETS: readonly Sheet[] = [
   {
     id: 'tamagotchi',
     kind: 'project',
-    title: 'Tamagotchi JS et Python',
-    tagline: 'Le même animal virtuel, écrit dans deux langages',
-    // À relire : résumé provisoire.
+    title: 'Tamagotchi JS',
+    tagline: 'Un animal virtuel à soigner, dans une petite console en œuf',
     summary:
-      'Un animal virtuel à nourrir, faire jouer et coucher, développé une fois en JavaScript ' +
-      'et une fois en Python pour comparer les deux approches.',
-    sections: [{ heading: 'Deux versions', items: ['JavaScript', 'Python'] }],
-    stack: ['JavaScript', 'Python'],
-    repos: [
-      { label: 'Version JavaScript', url: repoUrl('tamagotchi-js'), isPublic: true },
-      { label: 'Version Python', url: repoUrl('tamagotchi-python'), isPublic: true },
+      "Un mini-jeu en JavaScript inspiré des Tamagotchi : on prend soin d'un animal virtuel en " +
+      'répondant à ses besoins. Réalisé en trois heures dans le cadre d’un exercice, pour recréer ' +
+      'en JavaScript un Tamagotchi développé d’abord en Python.',
+    sections: [
+      {
+        heading: 'Comment jouer',
+        items: [
+          'Le nourrir, lui donner à boire, le faire dormir et jouer avec lui',
+          "S'il tombe malade, le soigner d'abord : les autres actions sont bloquées jusqu'à sa guérison",
+        ],
+      },
+      {
+        heading: 'Choix de jeu',
+        items: ['La maladie, ajoutée pour donner une priorité aux actions du joueur'],
+      },
+      {
+        heading: 'Interface',
+        items: [
+          'Une petite console en œuf, avec un écran LCD et une police pixel',
+          'Sur téléphone comme sur ordinateur, un sélecteur pour jouer dans la console ou en plein écran',
+        ],
+      },
     ],
+    stack: ['JavaScript', 'HTML', 'CSS', 'Bulma'],
+    repos: [
+      { label: 'Version JavaScript', url: repoUrl('tamagotchi_js'), isPublic: true },
+      { label: 'Version Python', url: repoUrl('Tamagotchi_PY'), isPublic: true },
+    ],
+    demo: 'https://claude.ai/artifact/JcxbSNqjeYFeHj7duPXHFE',
     visual: 'pet',
+    cover: {
+      src: 'projects/tamagotchi.webp',
+      alt: "Tamagotchi JS : la console en œuf rose, l'écran LCD et Mochi le chaton en pleine forme",
+    },
+    gallery: [
+      {
+        src: 'projects/tamagotchi-ecrans.webp',
+        alt: 'Sur téléphone : accueil, mode console et mode plein écran',
+      },
+    ],
     objectId: 'kallax-console',
   },
   {
