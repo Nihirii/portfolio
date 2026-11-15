@@ -784,6 +784,8 @@ export class RoomScene {
       const material = mesh.material as THREE.Material | undefined;
       // les volumes de clic invisibles comptent, les autres objets invisibles non
       if (material && !material.visible && !h.object.userData['hitBox']) continue;
+      // vitres et objets transparents (portes vitrées des BESTÅ…) : le clic passe à travers
+      if (material?.transparent && !h.object.userData['hitBox']) continue;
       let o: THREE.Object3D | null = h.object;
       while (o) {
         const id = o.userData['interactiveId'] as InteractiveObjectId | undefined;
