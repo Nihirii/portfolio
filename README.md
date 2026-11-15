@@ -44,6 +44,12 @@ et pdf.js (≈ 110 ko gzip) seulement à l’ouverture du CV.
 La pièce pré-calculée (`public/room/`, ≈ 4 Mo : géométrie Draco 3,3 Mo + deux atlas WebP de 350 ko)
 est chargée avec la vue 3D, pendant le message « Le salon s'installe… ».
 
+## En ligne
+
+Le site est publié sur **https://nihirii.github.io/portfolio/** par GitHub Actions
+(`.github/workflows/deploy.yml`) à chaque push sur `main`. Dans les réglages du dépôt
+(**Settings → Pages**), la source doit être **GitHub Actions**.
+
 ## À compléter avant la mise en ligne
 
 | Quoi | Où |
