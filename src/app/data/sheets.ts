@@ -159,7 +159,7 @@ export const SHEETS: readonly Sheet[] = [
       { label: 'Version JavaScript', url: repoUrl('tamagotchi_js'), isPublic: true },
       { label: 'Version Python', url: repoUrl('Tamagotchi_PY'), isPublic: true },
     ],
-    demo: 'https://claude.ai/artifact/JcxbSNqjeYFeHj7duPXHFE',
+    demo: 'https://nihirii.github.io/tamagotchi_js/',
     visual: 'pet',
     cover: {
       src: 'projects/tamagotchi.webp',
