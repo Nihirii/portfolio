@@ -46,9 +46,19 @@ est chargée avec la vue 3D, pendant le message « Le salon s'installe… ».
 
 ## En ligne
 
-Le site est publié sur **https://nihirii.github.io/portfolio/** par GitHub Actions
-(`.github/workflows/deploy.yml`) à chaque push sur `main`. Dans les réglages du dépôt
-(**Settings → Pages**), la source doit être **GitHub Actions**.
+Le site est publié sur **https://nihirii.github.io/portfolio/** depuis la branche **`gh-pages`**
+(**Settings → Pages** : *Deploy from a branch*, `gh-pages`, `/ (root)`). Cette branche ne contient que
+le site construit. Pour la mettre à jour après une modification :
+
+```bash
+npx ng build --base-href /portfolio/
+```
+
+puis remplacer le contenu de la branche `gh-pages` par celui de `dist/portfolio/browser/`
+(avec un fichier vide `.nojekyll` et une copie de `index.html` nommée `404.html`).
+
+Une fois GitHub Actions disponible sur le compte, le workflow `.github/workflows/deploy.yml`
+(lancement manuel, source Pages : *GitHub Actions*) peut remplacer cette étape.
 
 ## À compléter avant la mise en ligne
 

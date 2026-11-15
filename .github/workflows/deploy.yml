@@ -1,8 +1,8 @@
 name: Publier sur GitHub Pages
 
+# Lancement manuel seulement (onglet Actions) : la publication se fait pour l'instant
+# en poussant le site construit sur la branche gh-pages (voir README).
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
