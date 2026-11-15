@@ -62,7 +62,7 @@ export interface Sheet {
    */
   cover?: { src: string; alt: string };
   /** Captures supplémentaires, affichées dans la fiche sous le texte. */
-  gallery?: { src: string; alt: string }[];
+  gallery?: { src: string; alt: string; caption?: string }[];
   /** Démo jouable en ligne (bouton « Jouer en ligne »). */
   demo?: string;
   /** Objet de la scène associé (pour la caméra et la vue 2D). */
