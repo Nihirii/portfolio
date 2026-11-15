@@ -290,7 +290,8 @@ export const SHEETS: readonly Sheet[] = [
     tagline: "Un petit jeu d'arcade : une méduse, du plancton lumineux et des tortues à éviter",
     summary:
       "Un jeu d'arcade dans le navigateur : on guide une méduse dans les profondeurs, on mange du " +
-      'plancton lumineux et on évite les tortues de mer qui traversent l’écran.',
+      'plancton lumineux et on évite les tortues de mer qui traversent l’écran. Il se joue sur ' +
+      'ordinateur comme sur mobile.',
     sections: [
       {
         heading: 'Règles',
@@ -299,6 +300,19 @@ export const SHEETS: readonly Sheet[] = [
           'Une tortue qui touche la méduse termine la partie',
           'Plus la partie dure, plus les tortues sont rapides et nombreuses',
           'Le meilleur score est gardé dans le navigateur (localStorage)',
+        ],
+      },
+      {
+        heading: 'Couleurs de la méduse',
+        items: [
+          'Plus elle mange, plus elle change de couleur : Bleu lune, Lagon (10 planctons), Rose aurore (25), Abysse violet (50) et Corail de feu (80)',
+          "Chaque palier s'annonce à l'écran, et la couleur atteinte est rappelée en fin de partie",
+        ],
+      },
+      {
+        heading: 'Un secret dans les profondeurs',
+        items: [
+          'Un easter egg transforme la méduse en méduse lune dorée pendant 10 secondes : elle repousse les tortues et chaque plancton rapporte 2 points',
         ],
       },
       {
@@ -314,8 +328,25 @@ export const SHEETS: readonly Sheet[] = [
     visual: 'pet',
     cover: {
       src: 'projects/jellyfish.webp',
-      alt: 'Capture du jeu Jellyfish : une méduse lumineuse et des tortues dans les profondeurs',
+      alt: 'Jellyfish : une méduse lumineuse et des tortues dans les profondeurs',
     },
+    gallery: [
+      {
+        src: 'projects/jellyfish-gameplay.webp',
+        alt: "Une méduse turquoise nage entre le plancton lumineux pendant que deux tortues traversent l'écran",
+        caption: 'En pleine partie',
+      },
+      {
+        src: 'projects/jellyfish-golden.webp',
+        alt: 'La méduse lune dorée, entourée de son anneau de temps, repousse une tortue',
+        caption: 'La méduse lune dorée (easter egg)',
+      },
+      {
+        src: 'projects/jellyfish-colors.webp',
+        alt: 'Les cinq couleurs de la méduse, de Bleu lune à Corail de feu',
+        caption: 'Les cinq couleurs de la méduse',
+      },
+    ],
     objectId: 'egg-aquarium',
   },
   {

@@ -60,8 +60,17 @@ import { WorkGallery } from './work-gallery';
             </p>
           }
 
-          @for (g of s.gallery ?? []; track g.src) {
-            <img class="cover gallery" [src]="g.src" [alt]="g.alt" loading="lazy" />
+          @if (s.gallery?.length) {
+            <div class="gallery">
+              @for (g of s.gallery; track g.src) {
+                <figure>
+                  <img [src]="g.src" [alt]="g.alt" loading="lazy" />
+                  @if (g.caption) {
+                    <figcaption>{{ g.caption }}</figcaption>
+                  }
+                </figure>
+              }
+            </div>
           }
           @if (s.stack.length) {
             <h3 class="sr-only">Outils</h3>
@@ -119,8 +128,30 @@ import { WorkGallery } from './work-gallery';
       border: 1px solid var(--c-line);
     }
     .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: var(--space-3);
       margin-top: var(--space-5);
-      max-height: none;
+      figure {
+        margin: 0;
+      }
+      /* une image large (bandeau) prend toute la ligne */
+      figure:has(img[src*='colors']),
+      figure:only-child {
+        grid-column: 1 / -1;
+      }
+      img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: var(--radius-m);
+        border: 1px solid var(--c-line);
+      }
+      figcaption {
+        margin-top: 4px;
+        font-size: 13px;
+        color: var(--c-muted);
+      }
     }
     .kit-link {
       margin: var(--space-5) 0 0;
