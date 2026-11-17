@@ -63,7 +63,11 @@
             ],
             "styles": [
               "src/styles.scss"
-            ]
+            ],
+            "index": {
+              "input": "src/index.html",
+              "output": "salon.html"
+            }
           },
           "configurations": {
             "production": {

@@ -11,6 +11,7 @@ export type SheetId =
   | 'azura'
   | 'league-of-stone'
   | 'tamagotchi'
+  | 'boba-panic'
   | 'ganeshka'
   | 'web-services'
   | 'work'

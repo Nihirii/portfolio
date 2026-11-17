@@ -37,7 +37,7 @@ import type { RoomScene } from '../scene/room-scene';
         <p class="loading" role="status">Le salon s'installe…</p>
       }
 
-      <h1 class="sr-only">Le salon de Léna Simonin, développeuse front-end</h1>
+      <h1 class="sr-only">Le salon de Léna Simonin, ingénieure logiciel</h1>
       <ul class="hotspots" aria-label="Objets du salon">
         @for (o of objects; track o.id) {
           <li>

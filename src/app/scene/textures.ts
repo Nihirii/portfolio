@@ -29,7 +29,7 @@ export function floorTexture(): THREE.CanvasTexture {
 const POSTER_PALETTES = [
   ['#f7c7a3', '#f29e8e', '#3d3550'],
   ['#bfe0f0', '#f6e2b3', '#2f4a52'],
-  ['#f6d6e2', '#c8b4ef', '#43365c'],
+  ['#d8e1f4', '#c8b4ef', '#43365c'],
   ['#ffe3a8', '#f5a97f', '#4a3b3b'],
   ['#cde8d6', '#9bcbd9', '#2d4744'],
   ['#f9d1b7', '#e9a6c2', '#3a2f4a'],
@@ -67,7 +67,7 @@ export function posterTexture(i: number): THREE.CanvasTexture {
 }
 
 export function artTexture(i: number): THREE.CanvasTexture {
-  const cols = ['#fbe3ec', '#e9e3fb', '#e3f1fb', '#fdf1dc', '#e5f5ec'];
+  const cols = ['#e4ebfa', '#e9e3fb', '#e3f1fb', '#fdf1dc', '#e5f5ec'];
   return canvasTexture(200, 260, (g, w, h) => {
     g.fillStyle = cols[i % 5];
     g.fillRect(0, 0, w, h);
@@ -158,7 +158,7 @@ export function hubtvTvTexture(): THREE.CanvasTexture {
     g.fillStyle = 'rgba(255,255,255,.6)';
     g.font = '16px sans-serif';
     g.fillText('Mode TV', 120, 46);
-    const cols = ['#f2b8c6', '#9fc3f0', '#c8b4ef', '#bfe8d6', '#ffe08a'];
+    const cols = ['#bbcbef', '#9fc3f0', '#c8b4ef', '#bfe8d6', '#ffe08a'];
     for (let i = 0; i < 5; i++) {
       g.fillStyle = cols[i];
       roundRect(g, 28 + i * 94, 90, 82, i === 0 ? 130 : 110, 10);
@@ -196,7 +196,7 @@ export function hubtvMonitorTexture(): THREE.CanvasTexture {
       g.fill();
     };
     card(18, 'Bureau', '#9fc3f0', false);
-    card(266, 'TV · Big Picture', '#f2b8c6', true);
+    card(266, 'TV · Big Picture', '#bbcbef', true);
     g.fillStyle = 'rgba(207,214,255,.75)';
     g.font = '15px sans-serif';
     g.fillText('Raccourci manette prêt', 18, 240);
@@ -251,7 +251,7 @@ export function azuraMonitorTexture(): THREE.CanvasTexture {
   return canvasTexture(512, 296, (g, w, h) => {
     const gr = g.createLinearGradient(0, 0, 0, h);
     gr.addColorStop(0, '#e9e3fb');
-    gr.addColorStop(1, '#fdf0f4');
+    gr.addColorStop(1, '#f1f4fc');
     g.fillStyle = gr;
     g.fillRect(0, 0, w, h);
     // Téléphone
@@ -261,7 +261,7 @@ export function azuraMonitorTexture(): THREE.CanvasTexture {
     g.fillStyle = '#4a3a4f';
     g.font = '600 18px sans-serif';
     g.fillText('Azura', 48, 50);
-    const moods = ['#f2b8c6', '#ffe08a', '#bfe8d6', '#9fc3f0', '#c8b4ef'];
+    const moods = ['#bbcbef', '#ffe08a', '#bfe8d6', '#9fc3f0', '#c8b4ef'];
     moods.forEach((c, i) => {
       g.fillStyle = c;
       g.beginPath();
@@ -307,7 +307,7 @@ export function cvPaperTexture(): THREE.CanvasTexture {
   return canvasTexture(256, 362, (g, w, h) => {
     g.fillStyle = '#fffdf9';
     g.fillRect(0, 0, w, h);
-    g.fillStyle = '#e38aa3';
+    g.fillStyle = '#8ea7df';
     g.fillRect(0, 0, w, 10);
     g.fillStyle = '#4a3a4f';
     g.font = '700 26px sans-serif';
@@ -332,7 +332,7 @@ export function notebookTexture(): THREE.CanvasTexture {
     g.fillStyle = '#4a3a4f';
     g.font = '600 24px sans-serif';
     g.fillText('Mon travail', 62, 104);
-    const sw = ['#f2b8c6', '#ffe08a', '#bfe8d6', '#9fc3f0'];
+    const sw = ['#bbcbef', '#ffe08a', '#bfe8d6', '#9fc3f0'];
     sw.forEach((c, i) => {
       g.fillStyle = c;
       roundRect(g, 54 + i * 42, 170, 34, 34, 8);
@@ -346,7 +346,7 @@ export function pixelArtTexture(kind: 'jelly' | 'cat' | 'pad'): THREE.CanvasText
   const art: Record<string, { bg: string; rows: string[]; colors: Record<string, string> }> = {
     jelly: {
       bg: '#2b2440',
-      colors: { p: '#f2b8c6', l: '#ffe3ef', w: '#ffffff', b: '#c8b4ef' },
+      colors: { p: '#bbcbef', l: '#e4ecfe', w: '#ffffff', b: '#c8b4ef' },
       rows: [
         '............',
         '....pppp....',
@@ -363,7 +363,7 @@ export function pixelArtTexture(kind: 'jelly' | 'cat' | 'pad'): THREE.CanvasText
       ],
     },
     cat: {
-      bg: '#f6d6e2',
+      bg: '#d8e1f4',
       colors: { c: '#7a6150', d: '#4e3d33', y: '#d8c24a', n: '#c98b88' },
       rows: [
         '............',
@@ -382,7 +382,7 @@ export function pixelArtTexture(kind: 'jelly' | 'cat' | 'pad'): THREE.CanvasText
     },
     pad: {
       bg: '#cfe8ff',
-      colors: { g: '#6b6b78', d: '#3b3b46', r: '#e38aa3', v: '#8f7ae6' },
+      colors: { g: '#6b6b78', d: '#3b3b46', r: '#8ea7df', v: '#8f7ae6' },
       rows: [
         '............',
         '............',
@@ -437,7 +437,7 @@ export function retroGameTexture(): THREE.CanvasTexture {
     g.fillStyle = '#ffe08a';
     [160, 172, 184, 50, 62].forEach((x, i) => g.fillRect(x, i < 3 ? 74 : 58, 6, 6));
     // héroïne méduse
-    g.fillStyle = '#f2b8c6';
+    g.fillStyle = '#bbcbef';
     g.fillRect(96, 92, 18, 10);
     g.fillRect(98, 88, 14, 4);
     g.fillStyle = '#ffffff';
@@ -618,7 +618,7 @@ export function minimalPosterTexture(i: number): THREE.CanvasTexture {
         ]);
         for (let k = 0; k < 60; k++)
           circle(
-            k % 3 ? '#f2d16b' : '#f2b8c6',
+            k % 3 ? '#f2d16b' : '#bbcbef',
             ((k * 17) % 100) / 100,
             0.66 + ((k * 29) % 34) / 100,
             0.008,

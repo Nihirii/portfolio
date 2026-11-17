@@ -139,16 +139,21 @@ export class PortfolioState {
 
   /** Le portfolio 2D est la vue par défaut ; le salon 3D se visite à la demande. */
   private initialMode(): ViewMode {
-    try {
-      const saved = this.win?.localStorage.getItem('salon-mode');
-      if (saved === '3d' && detectWebGL(this.doc)) return '3d';
-    } catch {
-      /* ignore */
-    }
+    // salon.html sert la visite 3D ; la page 2D (index.html) est une page à part.
+    if (detectWebGL(this.doc)) return '3d';
     return '2d';
   }
 
   setMode(mode: ViewMode) {
+    if (mode === '2d' && this.win && detectWebGL(this.doc)) {
+      try {
+        this.win.localStorage.setItem('salon-mode', '2d');
+      } catch {
+        /* ignore */
+      }
+      this.win.location.href = 'index.html' + (this.win.location.hash || '');
+      return;
+    }
     this.mode.set(mode);
     try {
       this.win?.localStorage.setItem('salon-mode', mode);

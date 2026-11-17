@@ -230,5 +230,6 @@ export class TopBar {
   home(e: Event) {
     e.preventDefault();
     this.state.closeAll();
+    this.state.setMode('2d');
   }
 }

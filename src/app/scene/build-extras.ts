@@ -203,7 +203,7 @@ function buildSunflowers({ root, register }: ExtrasContext) {
   g.position.set(SUNFLOWERS.x, SUNFLOWERS.y, SUNFLOWERS.z);
   g.scale.setScalar(0.72);
   cyl(g, 0.07, 0.09, 0.3, '#f6f1e8', 0, 0, 0, 20);
-  cyl(g, 0.072, 0.072, 0.02, '#f2b8c6', 0, 0.24, 0, 20);
+  cyl(g, 0.072, 0.072, 0.02, '#bbcbef', 0, 0.24, 0, 20);
   const petal = mat('#f7c948', { roughness: 0.7 });
   const heart = mat('#6b4423', { roughness: 0.9 });
   (
@@ -308,13 +308,13 @@ function buildBowl({ root, register }: ExtrasContext) {
   const g = group(root, 'bowl');
   g.position.set(BOWL.x, 0, BOWL.z);
   g.rotation.y = BOWL.rotY; // le long du mur
-  box(g, 0.34, 0.006, 0.24, '#f6c9d3', 0, 0, 0, 0.003); // tapis
+  box(g, 0.34, 0.006, 0.24, '#cbd8f4', 0, 0, 0, 0.003); // tapis
   cyl(g, 0.07, 0.055, 0.045, '#ffffff', -0.07, 0.006, 0, 20);
   cyl(g, 0.065, 0.065, 0.005, '#c9a07a', -0.07, 0.045, 0, 20); // croquettes
   cyl(g, 0.07, 0.055, 0.045, '#cbbcf6', 0.08, 0.006, 0, 20);
   cyl(g, 0.064, 0.064, 0.004, mat('#a9dcff', { roughness: 0.1 }), 0.08, 0.044, 0, 20); // eau
   // petit poisson sur le tapis
-  const fish = sph(g, 0.022, '#e38aa3', 0.0, 0.01, 0.09, 1.6, 0.3, 0.9);
+  const fish = sph(g, 0.022, '#8ea7df', 0.0, 0.01, 0.09, 1.6, 0.3, 0.9);
   fish.castShadow = false;
   addHitBox(g, 0.4, 0.12, 0.3, 0, 0.05, 0);
   register('egg-bowl', g);
@@ -344,7 +344,7 @@ export function buildTeardown(
   const driver = group(g);
   driver.position.set(-0.04, 0.008, -0.09);
   driver.rotation.y = 0.3;
-  cyl(driver, 0.008, 0.009, 0.06, '#e38aa3', 0, 0, 0, 8).rotation.z = Math.PI / 2;
+  cyl(driver, 0.008, 0.009, 0.06, '#8ea7df', 0, 0, 0, 8).rotation.z = Math.PI / 2;
   cyl(driver, 0.002, 0.002, 0.06, '#b9b9c4', 0.055, 0.006, 0, 6).rotation.z = Math.PI / 2;
   addHitBox(g, 0.3, 0.08, 0.3, 0, 0.02, 0.04);
   register('egg-teardown', g);

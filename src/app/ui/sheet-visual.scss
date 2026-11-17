@@ -7,7 +7,7 @@
   height: 150px;
   margin: 0 0 16px;
   border-radius: 18px;
-  background: linear-gradient(135deg, #fdf0f4, #eef2fd);
+  background: linear-gradient(135deg, #f1f4fc, #eef2fd);
   border: 1px solid var(--c-line);
   overflow: hidden;
   color: #4a3a4f;
@@ -46,7 +46,7 @@ i {
     width: 26px;
     height: 30px;
     border-radius: 4px;
-    background: #f2b8c6;
+    background: #bbcbef;
   }
   i + i {
     background: #cbbcf6;
@@ -75,7 +75,7 @@ i {
   i {
     height: 6px;
     border-radius: 50%;
-    background: #f2b8c6;
+    background: #bbcbef;
     margin-bottom: 4px;
   }
 }
@@ -98,7 +98,7 @@ i {
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: #f2b8c6;
+    background: #bbcbef;
   }
   i:nth-child(2) {
     background: #ffe08a;
@@ -141,7 +141,7 @@ i {
   height: 88px;
   border-radius: 8px;
   border: 3px solid #fff;
-  background: linear-gradient(160deg, #5b3a8e, #c25579);
+  background: linear-gradient(160deg, #2a3f8e, #5a79bd);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   transform: translateX(calc((var(--i) - 2) * 34px)) rotate(calc((var(--i) - 2) * 9deg));
   transform-origin: 50% 120%;
@@ -150,7 +150,7 @@ i {
   width: 96px;
   height: 116px;
   border-radius: 50% 50% 46% 46% / 58% 58% 42% 42%;
-  background: #f2b8c6;
+  background: #bbcbef;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -274,7 +274,7 @@ i {
     width: 40%;
     height: 100%;
     border-radius: 3px;
-    background: #f2b8c6;
+    background: #bbcbef;
   }
 }
 .f3 {
@@ -289,7 +289,7 @@ i {
     height: 10px;
     border-radius: 50% 50% 50% 0;
     transform: rotate(-45deg);
-    background: #c25579;
+    background: #5a79bd;
   }
 }
 .tokens {
@@ -301,7 +301,7 @@ i {
     width: 18px;
     height: 18px;
     border-radius: 5px;
-    background: #f2b8c6;
+    background: #bbcbef;
   }
   i:nth-child(2) {
     background: #cbbcf6;

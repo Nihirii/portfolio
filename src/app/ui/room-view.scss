@@ -5,7 +5,7 @@
 .stage {
   position: relative;
   background:
-    radial-gradient(70% 60% at 30% 20%, #fde3ea 0%, transparent 70%),
+    radial-gradient(70% 60% at 30% 20%, #e4ecfc 0%, transparent 70%),
     radial-gradient(60% 60% at 90% 10%, #e6defc 0%, transparent 70%), var(--c-bg);
   transition: background-color 2s ease;
   height: 100%;
@@ -93,7 +93,7 @@
   position: absolute;
   top: -10px;
   font-size: 22px;
-  color: #ff7fa6;
+  color: #85a9f9;
   text-shadow: 0 2px 0 #fff;
   animation: float-up 1.4s ease-out forwards;
 }

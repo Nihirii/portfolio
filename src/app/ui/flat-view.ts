@@ -20,10 +20,10 @@ import { SheetVisual } from './sheet-visual';
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero__text">
           <h1 id="hero-title">{{ profile.name }}</h1>
-          <p class="hero__role">Développeuse front-end · Angular, Electron et design systems</p>
+          <p class="hero__role">Ingénieure logiciel · PHP, C#, Angular et design systems</p>
           <p class="hero__lead">
-            De la maquette Figma au UI kit Angular partagé : je conçois et je développe les
-            interfaces de trois produits de vidéoprotection, avec leurs design tokens.
+            Je conçois et développe des solutions de vidéosurveillance cloud de bout en bout :
+            back-end en PHP et C#, interfaces en Angular, de la maquette Figma au UI kit partagé.
           </p>
           <button type="button" class="chip chip--primary hero__cta" (click)="goToWork()">
             Voir mes réalisations
@@ -127,20 +127,6 @@ import { SheetVisual } from './sheet-visual';
         </section>
       }
 
-      <section aria-labelledby="salon-title">
-        <h2 id="salon-title">Dans le salon</h2>
-        <ul class="eggs">
-          <li>
-            <strong>Hiki</strong> : la chatte de la maison. Elle se laisse caresser dans la version
-            3D.
-          </li>
-          @for (e of eggs; track e.id) {
-            <li>
-              <strong>{{ e.title }}</strong> : {{ e.message }}
-            </li>
-          }
-        </ul>
-      </section>
     </div>
   `,
   styles: `
