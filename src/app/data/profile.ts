@@ -2,7 +2,7 @@ import { Profile } from './types';
 
 export const PROFILE: Profile = {
   name: 'Léna Simonin',
-  role: 'Développeuse front-end',
+  role: 'Ingénieure logiciel',
   city: 'Lyon',
   // Renseigner le pseudo GitHub pour afficher le bouton « GitHub » et les liens de dépôts.
   githubUsername: 'Nihirii',

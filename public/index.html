@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Page 2D du portfolio (HTML autonome). La visite 3D Angular est servie par salon.html. -->
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Léna Simonin · Ingénieure logiciel</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Portfolio de Léna Simonin, ingénieure logiciel à Lyon : vidéosurveillance cloud, PHP, C#, Angular et design systems.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout : grille éditoriale 12 colonnes, titres surdimensionnés, méduses ASCII en couche fixe derrière le contenu. */
+:root{
+  --bg:#f3f6fe; --surface:#ffffff; --ice:#e6ecfb; --line:#d3dcf2; --sky:#a8bdf0;
+  --accent:#385093; --ink:#121a3a; --ink-soft:#3c4870; --muted:#5b6790;
+  --jelly:rgba(56,80,147,.22); --jelly-glow:transparent; --card-shadow:rgba(10,24,48,.10);
+  --sheen:rgba(255,255,255,.65); --on-accent:#ffffff;
+  --f-display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --f-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#050a1c; --surface:#0a1230; --ice:#101b3d; --line:#1d2b56; --sky:#2f4a8f;
+  --accent:#a9bdff; --ink:#e9eeff; --ink-soft:#b7c2e6; --muted:#8592c0;
+  --jelly:rgba(170,205,255,.42); --jelly-glow:rgba(130,175,255,.6); --card-shadow:rgba(0,0,0,.5);
+  --sheen:rgba(169,189,255,.14); --on-accent:#03101f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#050a1c; --surface:#0a1230; --ice:#101b3d; --line:#1d2b56; --sky:#2f4a8f;
+  --accent:#a9bdff; --ink:#e9eeff; --ink-soft:#b7c2e6; --muted:#8592c0;
+  --jelly:rgba(170,205,255,.42); --jelly-glow:rgba(130,175,255,.6); --card-shadow:rgba(0,0,0,.5);
+  --sheen:rgba(169,189,255,.14); --on-accent:#03101f; color-scheme:dark}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--f-body);-webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background-color .6s var(--ease),color .6s var(--ease)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(120% 70% at 80% -10%,var(--ice),transparent 60%),linear-gradient(to bottom,transparent 55%,color-mix(in srgb,var(--ice) 60%,transparent))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{position:relative;z-index:1;max-width:1320px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+@media (min-width:760px){.wrap{padding-left:max(40px,env(safe-area-inset-left,0px));padding-right:max(40px,env(safe-area-inset-right,0px))}}
+.mono{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* Méduses ASCII */
+#abyss{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+#abyss canvas{display:block;filter:drop-shadow(0 0 6px var(--jelly-glow))}
+
+/* En-tête */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:color-mix(in srgb,var(--bg) 78%,transparent);border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
+.top .wrap{display:flex;align-items:center;gap:16px;min-height:64px;flex-wrap:wrap;padding-block:8px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;margin-right:auto}
+.brand__mark{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;border:1px solid var(--ink);font:700 12px var(--f-display);letter-spacing:-.02em}
+.brand__name{font:500 14px var(--f-display);letter-spacing:-.01em}
+.brand__name small{display:block;font:400 11px var(--f-mono);letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+nav.links{display:flex;gap:4px;flex-wrap:wrap}
+.lnk{border:0;background:none;padding:10px 12px;border-radius:999px;font-size:15px;font-weight:500;text-decoration:none;cursor:pointer;color:var(--ink-soft);transition:color .2s,background-color .2s}
+.lnk:hover{color:var(--ink);background:var(--ice)}
+.tools{display:flex;gap:6px}
+.tog{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);cursor:pointer;font:500 12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);transition:border-color .2s,color .2s}
+.tog:hover{border-color:var(--accent);color:var(--ink)}
+.tog__dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent),0 0 12px var(--jelly-glow)}
+@media (max-width:720px){nav.links{order:3;width:100%;overflow-x:auto;flex-wrap:nowrap;margin-inline:-8px}.lnk{white-space:nowrap}}
+
+/* Hero */
+.hero{padding-block:clamp(48px,9vw,120px) clamp(40px,6vw,80px)}
+.hero__grid{display:grid;grid-template-columns:1fr;gap:40px;align-items:end}
+@media (min-width:980px){.hero__grid{grid-template-columns:minmax(0,1fr) 300px}}
+.hero h1{margin:18px 0 0;font:700 clamp(52px,11.5vw,168px)/.86 var(--f-display);letter-spacing:-.055em;text-wrap:balance}
+.hero h1 .l{display:block;overflow:hidden;padding-bottom:.06em;padding-right:.1em;margin-right:-.1em}
+.hero h1 .l span{display:inline-block;animation:rise 1.1s var(--ease) both}
+.hero h1 .l:nth-child(2) span{animation-delay:.12s;font-weight:300;color:var(--accent)}
+@keyframes rise{from{transform:translateY(60%)}to{transform:none}}
+.hero__lede{display:grid;gap:24px;margin-top:40px;max-width:760px}
+@media (min-width:760px){.hero__lede{grid-template-columns:200px 1fr;gap:32px}}
+.hero__role{font:500 15px/1.4 var(--f-display);letter-spacing:-.01em}
+.hero__text{margin:0;font-size:clamp(18px,1.7vw,21px);line-height:1.55;color:var(--ink-soft);max-width:58ch}
+.ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.btn{display:inline-flex;align-items:center;gap:12px;min-height:52px;padding:0 24px;border-radius:999px;border:1px solid var(--ink);background:var(--ink);color:var(--bg);font-weight:600;font-size:16px;text-decoration:none;cursor:pointer;position:relative;overflow:hidden;transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 14px 30px -12px var(--card-shadow)}
+.btn .arr{transition:transform .35s var(--ease)}
+.btn:hover .arr{transform:translateX(4px)}
+.btn--ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn--ghost:hover{border-color:var(--ink)}
+.portrait{position:relative;justify-self:start;width:min(380px,100%)}
+@media (min-width:980px){.hero__grid{grid-template-columns:minmax(0,1fr) 380px}}
+.portrait__frame{position:relative;aspect-ratio:1;padding:12px;max-width:100%}
+.portrait__frame img{width:100%;height:100%;object-fit:cover;display:block;border-radius:6px;transition:transform 1.2s var(--ease)}
+.portrait:hover .portrait__frame img{transform:scale(1.02)}
+.portrait__meta{display:flex;justify-content:space-between;margin-top:10px;padding-inline:12px}
+/* Motifs : coins HUD, pixels, étincelles (repris de l'avatar) */
+.hud{--hc:var(--accent);--hl:22px;background:
+ linear-gradient(var(--hc),var(--hc)) top left/var(--hl) 1.5px,linear-gradient(var(--hc),var(--hc)) top left/1.5px var(--hl),
+ linear-gradient(var(--hc),var(--hc)) top right/var(--hl) 1.5px,linear-gradient(var(--hc),var(--hc)) top right/1.5px var(--hl),
+ linear-gradient(var(--hc),var(--hc)) bottom left/var(--hl) 1.5px,linear-gradient(var(--hc),var(--hc)) bottom left/1.5px var(--hl),
+ linear-gradient(var(--hc),var(--hc)) bottom right/var(--hl) 1.5px,linear-gradient(var(--hc),var(--hc)) bottom right/1.5px var(--hl);background-repeat:no-repeat}
+.px{position:absolute;background:var(--accent);animation:blink 4s steps(1) infinite}
+.px--a{width:14px;height:14px;top:-18px;right:34px}
+.px--b{width:8px;height:8px;top:-30px;right:16px;background:var(--sky);animation-delay:1.3s}
+.px--c{width:10px;height:10px;bottom:46px;left:-20px;background:var(--sky);animation-delay:2.1s}
+@media (max-width:600px){.spark{display:none}}
+@keyframes blink{0%,100%{opacity:1}45%{opacity:.25}}
+.spark{position:absolute;fill:var(--accent);animation:twinkle 3.2s var(--ease) infinite}
+.spark--a{width:18px;height:18px;left:-28px;top:30%}
+.spark--b{width:12px;height:12px;right:-10px;bottom:30%;animation-delay:1.6s}
+@keyframes twinkle{0%,100%{transform:scale(1) rotate(0);opacity:1}50%{transform:scale(.55) rotate(45deg);opacity:.5}}
+
+/* Bande défilante */
+.ticker{position:relative;z-index:1;border-block:1px solid var(--line);overflow:hidden;background:color-mix(in srgb,var(--surface) 60%,transparent)}
+.ticker__track{display:flex;width:max-content;animation:slide 38s linear infinite}
+.ticker__track span{font:300 clamp(22px,3vw,36px) var(--f-display);letter-spacing:-.03em;padding:18px 28px;white-space:nowrap;display:flex;align-items:center;gap:56px}
+.ticker__track span::after{content:"✳";font-size:.55em;color:var(--accent)}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* Sections */
+section.block{padding-block:clamp(72px,10vw,140px) 0}
+.sec-head{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:40px;align-items:end}
+@media (min-width:860px){.sec-head{grid-template-columns:minmax(0,1fr) minmax(0,380px);gap:40px}}
+.sec-head h2{margin:8px 0 0;font:700 clamp(40px,7vw,96px)/.92 var(--f-display);letter-spacing:-.05em}
+.sec-head p{margin:0;color:var(--ink-soft)}
+.sec-head .mono{display:inline-flex;align-items:center;gap:10px}
+.sec-head .mono::before{content:"";width:8px;height:8px;background:var(--accent);box-shadow:12px -6px 0 -1px var(--sky)}
+.sec-head h2::after{content:"_";color:var(--accent);font-weight:300;animation:caret 1.1s steps(1) infinite}
+@keyframes caret{50%{opacity:0}}
+
+/* Cartes */
+.feat{display:grid;grid-template-columns:1fr;gap:20px}
+@media (min-width:900px){.feat{grid-template-columns:repeat(2,minmax(0,1fr))}.feat .card:first-child{grid-column:1/-1;flex-direction:row}.feat .card:first-child .card__vis{flex:0 0 64%;border-bottom:0;border-right:1px solid var(--line)}.feat .card:first-child .card__body{padding:32px;justify-content:flex-end}}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:20px}
+.card{--rx:0deg;--ry:0deg;--mx:50%;--my:50%;position:relative;display:flex;flex-direction:column;text-align:left;width:100%;padding:0;border:1px solid var(--line);border-radius:22px;background:var(--surface);cursor:pointer;overflow:hidden;transform:perspective(1100px) rotateX(var(--rx)) rotateY(var(--ry));transition:transform .5s var(--ease),box-shadow .5s var(--ease),border-color .3s;min-width:0}
+.card:hover,.card:focus-visible{box-shadow:0 30px 60px -30px var(--card-shadow);border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.card::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(420px circle at var(--mx) var(--my),var(--sheen),transparent 45%);opacity:0;transition:opacity .4s}
+.card:hover::after{opacity:1}
+.card__vis::after{content:"";position:absolute;inset:12px;--hc:var(--accent);--hl:16px;background:
+ linear-gradient(var(--hc),var(--hc)) top right/var(--hl) 1.5px,linear-gradient(var(--hc),var(--hc)) top right/1.5px var(--hl),
+ linear-gradient(var(--hc),var(--hc)) bottom left/var(--hl) 1.5px,linear-gradient(var(--hc),var(--hc)) bottom left/1.5px var(--hl),
+ linear-gradient(var(--hc),var(--hc)) bottom right/var(--hl) 1.5px,linear-gradient(var(--hc),var(--hc)) bottom right/1.5px var(--hl);background-repeat:no-repeat;opacity:.35;transition:inset .5s var(--ease),opacity .4s;pointer-events:none}
+.card:hover .card__vis::after{inset:20px;opacity:1}
+.card__vis{position:relative;aspect-ratio:16/10;overflow:hidden;background:linear-gradient(150deg,var(--ice),color-mix(in srgb,var(--sky) 55%,var(--ice)));border-bottom:1px solid var(--line);max-width:100%}
+.card__vis img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .9s var(--ease)}
+.card:hover .card__vis img{transform:scale(1.05)}
+.ascii{position:absolute;inset:0;display:grid;place-items:center;margin:0;font:clamp(10px,1.15vw,13px)/1.25 var(--f-mono);color:var(--ink);white-space:pre;transition:transform .9s var(--ease),letter-spacing .9s var(--ease)}
+.card:hover .ascii{transform:scale(1.04)}
+.ascii code{font:inherit}
+.ascii b{color:var(--accent);font-weight:500}
+.card__tag{position:absolute;top:14px;right:14px;padding:6px 10px;border-radius:999px;background:color-mix(in srgb,var(--surface) 85%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.card__body{display:flex;flex-direction:column;gap:10px;padding:22px 22px 24px;flex:1}
+.card__title{margin:0;font:500 clamp(22px,2.2vw,30px)/1.05 var(--f-display);letter-spacing:-.04em}
+.feat .card:first-child .card__title{font-size:clamp(28px,3.6vw,48px)}
+.card__text{margin:0;color:var(--ink-soft);font-size:16px}
+.card__foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:auto;padding-top:10px}
+.stack{display:flex;flex-wrap:wrap;gap:6px;padding:0;margin:0;list-style:none}
+.stack li{font:400 11px var(--f-mono);letter-spacing:.04em;padding:5px 9px;border:1px solid var(--line);border-radius:999px;color:var(--ink-soft)}
+.go{flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);transition:background-color .35s var(--ease),color .35s,transform .45s var(--ease),border-color .35s}
+.card:hover .go{background:var(--accent);color:var(--on-accent);border-color:var(--accent);transform:rotate(-45deg)}
+
+/* Lignes */
+.rows{border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;width:100%;padding:26px 4px;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;cursor:pointer;position:relative;overflow:hidden}
+@media (min-width:760px){.row{grid-template-columns:120px minmax(0,1fr) minmax(0,1.1fr) auto}}
+.row::before{content:"";position:absolute;inset:0;background:var(--ice);transform:scaleY(0);transform-origin:bottom;transition:transform .5s var(--ease);z-index:-1}
+.row:hover::before{transform:scaleY(1)}
+.row__title{font:500 clamp(22px,3vw,36px)/1 var(--f-display);letter-spacing:-.04em;transition:transform .5s var(--ease)}
+.row:hover .row__title{transform:translateX(10px)}
+.row__text{color:var(--ink-soft);font-size:16px}
+@media (max-width:759px){.row .mono,.row__text{grid-column:1/-1}.row .mono{order:-1}}
+
+/* Salon 3D */
+.visit{border:1px solid var(--line);display:grid;grid-template-columns:1fr;gap:28px;align-items:center;padding:clamp(24px,4vw,48px);border-radius:28px;background:var(--ink);color:var(--bg);overflow:hidden;position:relative}
+@media (min-width:900px){.visit{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}}
+.visit h2{margin:10px 0 16px;font:700 clamp(36px,5vw,68px)/.95 var(--f-display);letter-spacing:-.05em}
+.visit p{margin:0 0 28px;opacity:.8;max-width:46ch}
+.visit .mono{color:inherit;opacity:.65}
+.visit .btn{background:var(--bg);color:var(--ink);border-color:var(--bg)}
+.visit__img{display:block;border-radius:18px;overflow:hidden;aspect-ratio:16/10;max-width:100%}
+.visit__img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 1.2s var(--ease)}
+.visit__img:hover img{transform:scale(1.04)}
+
+/* À propos */
+.about{display:grid;grid-template-columns:1fr;gap:40px}
+@media (min-width:900px){.about{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:64px}}
+.about__big{margin:0;font:300 clamp(24px,3vw,38px)/1.25 var(--f-display);letter-spacing:-.035em;text-wrap:pretty}
+.about__big em{font-style:normal;color:var(--accent);font-weight:500}
+.likes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:18px;overflow:hidden;margin:0;padding:0;list-style:none}
+.likes li{background:var(--surface);padding:18px;display:flex;flex-direction:column;gap:6px;font-weight:500;min-width:0}
+.likes li .mono{font-size:11px}
+.objects{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:12px;margin-top:40px;padding:0;list-style:none}
+.objects li{padding:16px 18px;border:1px dashed var(--line);border-radius:14px;font-size:15px;color:var(--ink-soft)}
+.objects strong{display:block;color:var(--ink);font:500 14px var(--f-display);letter-spacing:-.02em;margin-bottom:4px}
+
+footer{position:relative;z-index:1;margin-top:clamp(80px,10vw,140px);border-top:1px solid var(--line)}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;padding-block:28px 40px}
+.footer__big{font:700 clamp(40px,9vw,128px)/.9 var(--f-display);letter-spacing:-.06em;margin:40px 0 0;color:transparent;-webkit-text-stroke:1px var(--sky)}
+
+/* Fiches */
+dialog.sheet{position:fixed;inset:0 0 0 auto;margin:0;width:min(720px,100%);max-width:100%;height:100%;max-height:100%;padding:0;border:0;border-left:1px solid var(--line);background:var(--surface);color:var(--ink);overflow:auto;overscroll-behavior:contain}
+dialog.sheet[open]{animation:sheet-in .55s var(--ease)}
+dialog.sheet::backdrop{background:color-mix(in srgb,var(--ink) 35%,transparent);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+@keyframes sheet-in{from{transform:translateX(40px)}}
+.sheet__in{padding:calc(20px + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) calc(48px + env(safe-area-inset-bottom,0px)) 20px}
+@media (min-width:600px){.sheet__in{padding-left:44px;padding-right:max(44px,env(safe-area-inset-right,0px))}}
+.sheet__bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px}
+.close{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:none;cursor:pointer;font-size:18px;transition:transform .4s var(--ease),border-color .2s}
+.close:hover{transform:rotate(90deg);border-color:var(--ink)}
+.sheet h2{margin:0;font:700 clamp(36px,6vw,64px)/.95 var(--f-display);letter-spacing:-.05em}
+.sheet__tag{margin:14px 0 0;font:300 clamp(18px,2vw,22px)/1.35 var(--f-display);letter-spacing:-.02em;color:var(--accent)}
+.sheet__sum{font-size:18px;color:var(--ink-soft);margin:24px 0}
+.sheet figure{margin:0 0 16px}
+.sheet figure img{width:100%;border-radius:14px;display:block;border:1px solid var(--line)}
+.sheet figcaption{margin-top:6px}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,160px),1fr));gap:12px;margin-top:12px}
+.gal .wide{grid-column:1/-1}
+.sheet h3{margin:32px 0 10px;font:500 13px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.sheet ul.items{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.sheet ul.items li{position:relative;padding-left:22px}
+.sheet ul.items li::before{content:"~";position:absolute;left:0;color:var(--accent);font-family:var(--f-mono)}
+.repos{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.repo{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line);text-decoration:none;font-weight:500;font-size:15px}
+a.repo:hover{border-color:var(--accent);color:var(--accent)}
+.repo--off{color:var(--muted);border-style:dashed}
+
+/* Avatar jour / nuit */
+.av-night{display:none!important}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .av-day{display:none!important}:root:not([data-theme="light"]) .av-night{display:block!important}}
+:root[data-theme="dark"] .av-day{display:none!important}
+:root[data-theme="dark"] .av-night{display:block!important}
+/* CV */
+.sheet--wide{width:min(960px,100%)!important}
+.cv__head{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.cv__av{margin:0;width:120px;padding:8px;flex:none;--hl:14px}
+.cv__av img{width:100%;display:block;border-radius:4px}
+.caret{color:var(--accent);animation:caret 1.1s steps(1) infinite}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:0;padding:0;list-style:none}
+.kpis li{background:var(--surface);padding:16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.kpis b{font:700 clamp(22px,3vw,30px)/1 var(--f-display);letter-spacing:-.04em;color:var(--accent)}
+.kpis span{font-size:13px;color:var(--muted)}
+@media (max-width:520px){.kpis{grid-template-columns:1fr}}
+.cv__focus{margin-top:14px}
+.stack li.now{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.tl{list-style:none;margin:0;padding:0 0 0 22px;border-left:1.5px solid var(--line);display:grid;gap:28px}
+.tl>li{position:relative}
+.tl>li::before{content:"";position:absolute;left:-29px;top:4px;width:11px;height:11px;background:var(--surface);border:1.5px solid var(--accent)}
+.tl>li.head::before{background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+.tl__meta{display:flex;flex-wrap:wrap;gap:4px 14px;margin:0;font-size:11px}
+.tl__now{color:var(--accent)}
+.tl h4{margin:6px 0 8px;font:500 20px/1.15 var(--f-display);letter-spacing:-.03em}
+.tl__role{margin:-4px 0 8px;font-size:11px}
+.tl__p{margin:0 0 4px;color:var(--ink-soft)}
+.tl .stack{margin-top:10px}
+.cv__side{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:10px;margin:0;padding:0;list-style:none}
+.cv__side li{display:flex;flex-direction:column;gap:6px;padding:14px;border:1px solid var(--line);border-radius:12px;font-size:14px;color:var(--ink-soft);transition:border-color .3s}
+.cv__side li:hover{border-color:var(--accent)}
+.cv__side strong{color:var(--accent);text-transform:none;letter-spacing:0;font-size:13px}
+.cv__side em{font-style:normal;font-size:11px;text-transform:none;letter-spacing:.02em;margin-top:auto}
+.cv__cols{display:grid;grid-template-columns:1fr;gap:0 40px}
+@media (min-width:700px){.cv__cols{grid-template-columns:1fr 1fr}}
+.cv__edu{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.cv__edu li{display:flex;flex-direction:column;gap:2px}
+.cv__edu strong{font:500 16px var(--f-display);letter-spacing:-.02em}
+.cv__edu li>span:last-child{color:var(--muted);font-size:14px}
+.cv__lang{margin:0;display:flex;gap:12px;align-items:baseline}
+.cv__lang .mono{color:var(--accent)}
+.cv__mail{font-family:var(--f-mono);font-size:13px;user-select:all}
+button.repo{background:none;cursor:pointer;color:var(--ink)}
+button.repo:hover{border-color:var(--accent);color:var(--accent)}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+:root[data-motion="reduced"] *,:root[data-motion="reduced"] *::before,:root[data-motion="reduced"] *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+</style>
+</head>
+<body>
+<div id="abyss" aria-hidden="true"></div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" id="brand">
+      <span class="brand__mark">LS</span>
+      <span class="brand__name">Léna Simonin<small>Ingénieure logiciel · Lyon</small></span>
+    </a>
+    <nav class="links" aria-label="Accès directs">
+      <a class="lnk" href="#projets">Réalisations</a>
+      <button class="lnk" type="button" data-open="about">À propos</button>
+      <button class="lnk" type="button" data-open="cv">CV</button>
+      <a class="lnk" href="https://github.com/Nihirii" target="_blank" rel="noopener">GitHub ↗</a>
+      <a class="lnk" href="salon.html" data-visit>Salon 3D</a>
+    </nav>
+    <div class="tools" role="group" aria-label="Réglages">
+      <button class="tog" type="button" id="themeBtn" aria-pressed="false"><span class="tog__dot" aria-hidden="true"></span><span id="themeLbl">Surface</span></button>
+      <button class="tog" type="button" id="motionBtn" aria-pressed="false" aria-label="Mouvement réduit">Calme</button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero__grid">
+        <div>
+          <p class="mono">Ingénieure logiciel — Lyon · 45.76° N, 4.83° E</p>
+          <h1><span class="l"><span>Léna</span></span><span class="l"><span>Simonin</span></span></h1>
+          <div class="hero__lede">
+            <p class="hero__role">Full-stack · PHP, C#, Angular et design systems</p>
+            <div>
+              <p class="hero__text">Je conçois et développe des solutions de vidéosurveillance cloud de bout en bout : back-end en PHP et C#, interfaces en Angular, de la maquette Figma au UI kit partagé et ses design tokens.</p>
+              <div class="ctas">
+                <a class="btn" href="#projets">Voir mes réalisations <span class="arr" aria-hidden="true">→</span></a>
+                <a class="btn btn--ghost" href="salon.html" data-visit>Visiter le salon en 3D <span class="arr" aria-hidden="true">↗</span></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figure class="portrait" style="margin:0">
+          <div class="portrait__frame hud"><img class="av-day" src="me/lena-avatar.jpg" alt="Portrait illustré de Léna Simonin, cheveux roux, nœud bleu nuit, devant une méduse en pixels"><img class="av-night" src="me/lena-avatar-night.jpg" alt="Portrait illustré de Léna Simonin, version nuit"></div>
+          <span class="px px--a" aria-hidden="true"></span><span class="px px--b" aria-hidden="true"></span><span class="px px--c" aria-hidden="true"></span>
+          <svg class="spark spark--a" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 13.4 10.6 24 12 13.4 13.4 12 24 10.6 13.4 0 12 10.6 10.6Z"/></svg>
+          <svg class="spark spark--b" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 13.4 10.6 24 12 13.4 13.4 12 24 10.6 13.4 0 12 10.6 10.6Z"/></svg>
+          <figcaption class="portrait__meta mono"><span>ID · LS-01</span><span>Lyon, FR</span></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker__track" id="ticker"></div></div>
+
+  <section class="block" id="projets" aria-labelledby="projets-t">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><p class="mono">Sélection</p><h2 id="projets-t">Réalisations</h2></div>
+        <p>Le travail au quotidien sur un UI kit partagé, et deux projets personnels conçus de bout en bout.</p>
+      </div>
+      <div class="feat" id="feat"></div>
+
+      <div class="sec-head" style="margin-top:72px;margin-bottom:24px">
+        <div><p class="mono">Au quotidien, aussi</p></div>
+      </div>
+      <div class="rows" id="products"></div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="exp-t">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><p class="mono">Jeux, outils, essais</p><h2 id="exp-t">Expérimen&shy;tations</h2></div>
+        <p>Des projets plus courts ou plus libres, souvent nés d'une envie ou d'un exercice.</p>
+      </div>
+      <div class="grid" id="exps"></div>
+
+      <div class="sec-head" style="margin-top:72px;margin-bottom:24px">
+        <div><p class="mono">Archives</p></div>
+      </div>
+      <div class="rows" id="archives"></div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="visit-t">
+    <div class="wrap">
+      <div class="visit">
+        <div>
+          <p class="mono">Visite interactive · Three.js</p>
+          <h2 id="visit-t">Le salon en 3D</h2>
+          <p>Les mêmes projets, rangés dans mon salon : les écrans du bureau, le KALLAX, le carnet, la feuille de CV… et Hiki.</p>
+          <a class="btn" href="salon.html" data-visit>Visiter le salon en 3D <span class="arr" aria-hidden="true">→</span></a>
+        </div>
+        <a class="visit__img" href="salon.html" data-visit aria-label="Visiter le salon en 3D"><img src="projects/salon.webp" alt="Le salon de Léna en 3D, vu d'en haut, à la lumière du jour"></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="apropos" aria-labelledby="about-t">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><p class="mono">Profil</p><h2 id="about-t">À propos</h2></div>
+      </div>
+      <div class="about">
+        <div>
+          <p class="about__big">Ingénieure logiciel chez Hirsch Secure, je conçois des solutions de vidéosurveillance cloud de bout en bout : back-end en <em>PHP</em> et <em>C#</em>, interfaces en <em>Angular</em> et <em>Electron</em>, dessinées d'abord dans <em>Figma</em>. Je maintiens aussi le UI kit Angular partagé par plusieurs produits de la holding.</p>
+          <div class="ctas"><button class="btn btn--ghost" type="button" data-open="about">Lire la fiche <span class="arr" aria-hidden="true">→</span></button><button class="btn btn--ghost" type="button" data-open="cv">Voir le CV <span class="arr" aria-hidden="true">→</span></button></div>
+        </div>
+        <div>
+          <p class="mono" style="margin:0 0 12px">Ce que j'aime</p>
+          <ul class="likes" id="likes"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap" style="display:block;padding-bottom:0">
+    <p class="footer__big" aria-hidden="true">Léna Simonin</p>
+  </div>
+  <div class="wrap">
+    <span class="mono">© 2026 · Léna Simonin · Ingénieure logiciel, Lyon</span>
+    <a class="mono" href="https://github.com/Nihirii" target="_blank" rel="noopener" style="text-decoration:none">github.com/Nihirii ↗</a>
+  </div>
+</footer>
+
+<dialog class="sheet" id="sheet" aria-labelledby="sheet-t"><div class="sheet__in" id="sheetIn"></div></dialog>
+
+<script>
+(function(){
+const GH='https://github.com/Nihirii';
+const gh=r=>GH+'/'+r;
+const SHEETS=[
+{id:'about',kind:'about',title:'Léna Simonin',tagline:'Ingénieure logiciel à Lyon',summary:"Ingénieure logiciel chez Hirsch Secure, je conçois des solutions de vidéosurveillance cloud de bout en bout : back-end en PHP et C#, interfaces en Angular et Electron, dessinées d'abord dans Figma. Je maintiens aussi le UI kit Angular partagé par plusieurs produits de la holding.",sections:[{h:'Ce que je fais',i:['Maquettes Figma de plusieurs produits de vidéoprotection','Back-end PHP et C#, interfaces Angular et applications de bureau Electron','UI kit Angular partagé et design tokens']},{h:'Ce salon',i:['Cliquez sur les écrans, le KALLAX, le carnet et la feuille de CV','Hiki se laisse caresser','Quelques objets cachent un petit secret']}],stack:['Angular','TypeScript','Electron','Figma','Design tokens','Three.js'],repos:[]},
+{id:'hubtv',kind:'Projet perso',title:'HubTV',tagline:'Passer du bureau Windows au jeu sur la TV, sans se lever',summary:"HubTV fait basculer le PC entre le bureau Windows et une session de jeu sur la télévision. Un raccourci manette lance la bascule, Steam Big Picture prend le relais sur la TV, et une télécommande Android permet de piloter l'ensemble depuis le canapé.",sections:[{h:'Le problème',i:['Passer du bureau Windows au jeu sur la TV, sans se lever du canapé']},{h:'Mon rôle',i:['Projet personnel : conception et développement']},{h:'Choix techniques',i:['Un raccourci manette déclenche la bascule entre bureau et TV','Steam Big Picture prend le relais sur la TV',"Une télécommande Android pilote le PC depuis le canapé"]},{h:'Résultat',i:['Le PC passe du bureau Windows au jeu sur la TV, manette en main']}],stack:['Windows','Steam Big Picture','Android'],repos:[{l:'Dépôt HubTV',u:gh('hubtv'),pub:false}],vis:'hubtv',cover:{src:'projects/hubtv.webp',alt:'Trois écrans de la télécommande Android HubTV : Salon, Son et PC'},gallery:[{src:'projects/hubtv-salon.webp',alt:'Écran Salon : mode actuel, Jeux sur TV ou Bureau, profil de jeu 4K 60 ou 120 Hz',c:'Salon'},{src:'projects/hubtv-son.webp',alt:'Écran Son : volume du PC avec boutons −5, Muet et +5',c:'Son'},{src:'projects/hubtv-pc.webp',alt:'Écran PC : état du PC et allumage à distance par le réseau',c:'PC'}]},
+{id:'azura',kind:'Projet perso',title:'Azura',tagline:'Humeur, journal et routines, même sans réseau',summary:"Azura est une application Android de suivi d'humeur. Elle réunit un journal, des routines et l'historique de l'humeur, et elle a été conçue pour fonctionner entièrement hors ligne.",sections:[{h:'Le problème',i:['Suivre son humeur, tenir un journal et ses routines, même sans réseau']},{h:'Mon rôle',i:["Projet personnel : conception et développement de l'application Android"]},{h:'Choix technique : le hors-ligne',i:["L'application fonctionne entièrement hors ligne : la saisie d'humeur, le journal et les routines restent disponibles sans connexion"]},{h:'Résultat',i:["Suivi de l'humeur au fil des jours, journal personnel et routines réunis dans une seule application"]}],stack:['Android','Hors ligne'],repos:[{l:'Dépôt Azura',u:gh('azura'),pub:false}],vis:'azura',cover:{src:'projects/azura.webp',alt:'Maquette de l’application Azura : humeur du jour, courbe de la semaine, routines et journal, en mode hors ligne'}},
+{id:'league-of-stone',kind:'Archive',title:'League of Stone',tagline:'Un jeu de cartes',summary:'League of Stone est un jeu de cartes, rangé dans le KALLAX sous la forme de sa boîte.',sections:[],stack:[],repos:[{l:'Voir sur GitHub',u:gh('league-of-stone'),pub:true}],vis:'cards'},
+{id:'tamagotchi',kind:'Jeu',title:'Tamagotchi JS',tagline:'Tama·Sub : un requin-baleine virtuel à soigner, dans une console ocean tech',summary:"Un mini-jeu en JavaScript inspiré des Tamagotchi : on prend soin d’un petit requin-baleine virtuel en répondant à ses besoins. Réalisé en trois heures dans le cadre d’un exercice, pour recréer en JavaScript un Tamagotchi développé d’abord en Python.",sections:[{h:'Comment jouer',i:['Nourrir le requin-baleine, lui donner à boire, le faire dormir et jouer avec lui',"S'il tombe malade, le soigner d'abord : les autres actions sont bloquées jusqu'à sa guérison"]},{h:'Choix de jeu',i:['La maladie, ajoutée pour donner une priorité aux actions du joueur']},{h:'Interface',i:['Une console ocean tech : coque bleu abysse au contour néon cyan, écran façon sonar avec ligne de balayage, boutons lumineux et bulles en fond','Sur téléphone comme sur ordinateur, un sélecteur pour jouer dans la console ou en plein écran']},{h:'Émotions',i:['Le requin-baleine change d’expression selon ses jauges : content, faim, soif, fatigué, ennui, malade et mort','Sprites dessinés en SVG']}],stack:['JavaScript','HTML','CSS','SVG','Bulma'],repos:[{l:'Version JavaScript',u:gh('tamagotchi_js'),pub:true},{l:'Version Python',u:gh('Tamagotchi_PY'),pub:true}],demo:'https://nihirii.github.io/tamagotchi_js/',cover:{src:'projects/tamagotchi.webp',alt:'Tama·Sub sur téléphone : accueil, mode console et plein écran avec le requin-baleine Bubulle'},gallery:[{src:'projects/tamagotchi-ecrans.webp',alt:'Mode plein écran sur ordinateur : Bubulle dort, ses jauges au-dessus',c:'Plein écran sur ordinateur',wide:true},{src:'projects/tamagotchi-console.webp',alt:'Mode console : le requin-baleine est content',c:'Mode console'},{src:'projects/tamagotchi-mobile.webp',alt:'Plein écran sur téléphone : le requin-baleine a faim',c:'Plein écran sur téléphone'},{src:'projects/tamagotchi-fin.webp',alt:'Écran de fin de partie',c:'Écran de fin'},{src:'projects/tamagotchi-emotions.webp',alt:'Les 7 émotions du requin-baleine : content, faim, soif, fatigué, ennui, malade et mort',c:'Les 7 émotions',wide:true}]},
+{id:'boba-panic',kind:'Jeu',title:'Boba Panic',tagline:'La mini-usine à bubble tea qui déraille, jouable sur ordinateur et téléphone',summary:"Un client passe commande, le gobelet avance sur le tapis roulant et on le prépare poste par poste : base, sirop, toppings, opercule, puis service. Les recettes peuvent être délicieuses… ou franchement dégueu (chocolat-cornichon, lait fraise aux perles wasabi, thé noir à l'ail).",sections:[{h:'Modes de jeu',i:['Tranquille : huit commandes sans chrono, avec un retour immédiat et la possibilité de corriger','Rush : la file s’impatiente, le verdict tombe quand le client reçoit son verre','Labo : on mélange tout librement, le client goûte, donne une note et réagit à la recette']},{h:'Secrets',i:['22 secrets cachés dans l’usine : recettes secrètes, réactions de clients et interactions avec le décor','Un carnet garde la trace des découvertes et propose des indices ; progression et records restent dans le navigateur (localStorage)']},{h:'Direction artistique néon / nuit',i:['Un boba shop ouvert tard le soir : fond bleu nuit, enseignes néon roses et cyan, grille rétro qui défile sous le menu','Une couleur néon par machine (cuve rose, pompes violettes, trémies vertes, presse dorée) et un tapis à LED','Les animations néon se coupent si le système demande moins d’animations']},{h:'Commandes',i:['Souris ou toucher : un appui sur un ingrédient le verse, puis le tapis avance','Clavier : touches 1 à 7 pour choisir, Entrée pour l’action principale, « − » pour retirer une dose de topping']},{h:'Technique',i:['Un seul fichier index.html autonome : HTML, CSS et JavaScript, sans dépendance','Sons générés avec la Web Audio API']}],stack:['JavaScript','HTML','CSS','Web Audio API'],repos:[{l:'Voir sur GitHub',u:gh('boba-panic'),pub:true}],demo:'https://nihirii.github.io/boba-panic/',vis:'boba',cover:{src:'projects/boba-panic.webp',alt:'Menu de Boba Panic : enseigne néon au-dessus de trois gobelets et des modes Tranquille, Rush et Labo'},gallery:[{src:'projects/boba-panic-usine.webp',alt:'L’usine : trémies à perles, gobelet lumineux sur le tapis et ticket de commande',c:'L’usine',wide:true},{src:'projects/boba-panic-resultat.webp',alt:'Écran de résultat : le client compare le ticket et le verre',c:'Le verdict',wide:true},{src:'projects/boba-panic-mobile.webp',alt:'Boba Panic sur téléphone',c:'Sur téléphone'}]},
+{id:'ganeshka',kind:'Archive',title:'Ganeshka',tagline:'Un projet web',summary:'Ganeshka est un projet web, rangé dans le KALLAX sous la forme d’un classeur d’échantillons.',sections:[],stack:[],repos:[{l:'Voir sur GitHub',u:gh('ganeshka'),pub:true}],vis:'swatches'},
+{id:'web-services',kind:'Archive',title:'Web services',tagline:'Des API et services web',summary:'Une série de services web : conception des routes, échanges de données et documentation.',sections:[],stack:[],repos:[{l:'Voir sur GitHub',u:gh('web-services'),pub:true}],vis:'server'},
+{id:'icare-portal',kind:'Produit',title:'Icare Portal',tagline:'Produit de vidéoprotection · maquettes Figma et front Angular',summary:"Icare Portal fait partie des plusieurs produits de vidéoprotection sur lesquels je travaille : j'en conçois les maquettes dans Figma et je les intègre avec le UI kit Angular partagé.",sections:[{h:'Mon rôle',i:['Maquettes Figma : parcours, écrans et prototypes','Intégration front avec le UI kit Angular partagé']}],stack:['Figma','Angular','Design tokens'],repos:[]},
+{id:'moniteur-virtuel',kind:'Produit',title:'Moniteur Virtuel',tagline:'Produit de vidéoprotection · maquettes Figma et front Angular',summary:"Moniteur Virtuel fait partie des plusieurs produits de vidéoprotection sur lesquels je travaille : j'en conçois les maquettes dans Figma et je les intègre avec le UI kit Angular partagé.",sections:[{h:'Mon rôle',i:['Maquettes Figma : parcours, écrans et prototypes','Intégration front avec le UI kit Angular partagé']}],stack:['Figma','Angular','Design tokens'],repos:[]},
+{id:'salon',kind:'Projet',title:'Le salon de Léna',tagline:'Ce portfolio : une page 2D et une visite 3D de mon salon, où chaque objet ouvre une fiche',summary:'Ce portfolio se lit en 2D ou se visite en 3D : dans mon salon, les écrans, le KALLAX, le carnet et la feuille de CV ouvrent les mêmes fiches que le menu.',sections:[{h:'Choix de conception',i:['La 2D par défaut, rapide et lisible ; la scène 3D se charge seulement quand on la visite','Les mêmes fiches en 2D et en 3D, ouvertes depuis le menu ou depuis les objets du salon','Lumière pré-calculée dans Blender (Cycles) : rendu doux, et léger pour le téléphone','Navigation au clavier, lecteurs d’écran et réduction des animations pris en compte']},{h:'Technique',i:['Angular 22 et TypeScript','Three.js : pièce construite en code à partir des cotes de mon salon','Contenu typé : fiches et objets cliquables décrits dans des fichiers de données']}],stack:['Angular','TypeScript','Three.js','Blender'],repos:[{l:'Dépôt du portfolio',u:gh('portfolio'),pub:false}],cover:{src:'projects/salon.webp',alt:"Le salon de Léna en 3D, vu d'en haut, à la lumière du jour"}},
+{id:'jellyfish',kind:'Jeu',title:'Jellyfish',tagline:"Un petit jeu d'arcade : une méduse, du plancton lumineux et des tortues à éviter",summary:"Un jeu d'arcade dans le navigateur : on guide une méduse dans les profondeurs, on mange du plancton lumineux et on évite les tortues de mer qui traversent l’écran. Il se joue sur ordinateur comme sur mobile.",sections:[{h:'Règles',i:['Chaque plancton mangé rapporte 1 point','Une tortue qui touche la méduse termine la partie','Plus la partie dure, plus les tortues sont rapides et nombreuses','Le meilleur score est gardé dans le navigateur (localStorage)']},{h:'Couleurs de la méduse',i:["Plus elle mange, plus elle change de couleur : Bleu lune, Lagon (10 planctons), Rose aurore (25), Abysse violet (50) et Corail de feu (80)","Chaque palier s'annonce à l'écran, et la couleur atteinte est rappelée en fin de partie"]},{h:'Un secret dans les profondeurs',i:['Un easter egg transforme la méduse en méduse lune dorée pendant 10 secondes : elle repousse les tortues et chaque plancton rapporte 2 points']},{h:'Choix technique',i:['HTML, CSS et JavaScript vanilla avec <canvas> : pas de dépendance, pas de build','Commandes à la souris, au doigt ou aux flèches du clavier']}],stack:['JavaScript','Canvas','HTML','CSS'],repos:[{l:'Voir sur GitHub',u:gh('jellyfish'),pub:true}],cover:{src:'projects/jellyfish.webp',alt:'Jellyfish : une méduse lumineuse et des tortues dans les profondeurs'},gallery:[{src:'projects/jellyfish-gameplay.webp',alt:"Une méduse turquoise nage entre le plancton lumineux pendant que deux tortues traversent l'écran",c:'En pleine partie'},{src:'projects/jellyfish-golden.webp',alt:'La méduse lune dorée, entourée de son anneau de temps, repousse une tortue',c:'La méduse lune dorée (easter egg)'},{src:'projects/jellyfish-colors.webp',alt:'Les cinq couleurs de la méduse, de Bleu lune à Corail de feu',c:'Les cinq couleurs de la méduse'}]},
+{id:'routine-carte',kind:'Projet perso',title:'Routine & Care',tagline:'Des routines de soin et de maison qui s’adaptent à l’énergie du jour',summary:"Une application mobile pour organiser ses routines du quotidien, des soins du visage aux tâches de la maison, sans pression : la journée s’ajuste à l’énergie du moment et ce qui n’est pas fait attendra.",sections:[{h:'Le problème',i:['Tenir ses routines au quotidien sans culpabiliser les jours où l’énergie manque']},{h:'Fonctionnalités',i:['Mode « Énergie basse » : un jour sans, la journée s’allège','Routines en pause, à reprendre là où on les a laissées','Progression du jour (0/13) et temps restant estimé','Routines favorites et routines du jour classées par moment : matin, soir…','Six espaces : Accueil, Soins, Maison, Planning, Produits et Analyses']},{h:'Ton et UI',i:['Des messages doux (« On commence doucement ? », « Rien n’est obligatoire »)','Une interface sombre aux couleurs prune et lavande, avec une mascotte lapin']},{h:'Technique',i:['Application développée en Flutter (Dart)']}],stack:['Flutter','Dart','Android'],repos:[{l:'Dépôt routine-care',u:gh('routine-care'),pub:false}],vis:'routine',cover:{src:'projects/routine-care.webp',alt:'Routine & Care : l’écran d’accueil avec le mode Énergie basse, une routine en pause et la progression du jour'},gallery:[{src:'projects/routine-care-accueil.webp',alt:'Écran d’accueil de Routine & Care sur téléphone',c:'Accueil'}]},
+{id:'iut-blagnac',kind:'Projet d’équipe · 2021–2022',title:'Créateur de portfolios gamifié',tagline:'IUT de Blagnac · un site pour que les étudiants construisent leur portfolio en validant leurs compétences',summary:"Pour le passage du DUT au BUT, un site qui permet aux élèves de concevoir leur portfolio au fur et à mesure de leurs projets scolaires et de valider leurs compétences sous forme gamifiée à la fin de chaque UE.",sections:[{h:'Contexte',i:['Projet réalisé à l’IUT de Blagnac en équipe de 6','Mon rôle : développeuse web']},{h:'Le principe',i:['Chaque étudiant construit son portfolio au fil de ses projets scolaires','La validation des compétences prend une forme gamifiée à la fin de chaque UE']}],stack:['React','Sass'],repos:[{l:'Dépôt Portfolio_IUT_Blagnac',u:gh('Portfolio_IUT_Blagnac'),pub:false}]},
+{id:'work',kind:'Pro · vidéoprotection',title:'UI kit Angular partagé',tagline:'Figma → token → composant Angular, pour plusieurs produits de vidéoprotection',summary:"Je conçois dans Figma les maquettes de plusieurs produits de vidéoprotection, je les développe en Angular et Electron, et je maintiens le UI kit Angular partagé par ces produits, avec ses design tokens.",sections:[{h:'Le problème',i:['Plusieurs produits de vidéoprotection qui partagent les mêmes composants, de Figma au code']},{h:'Mon rôle',i:['Maquettes Figma : parcours, écrans et prototypes pour les plusieurs produits','Intégration des écrans en Angular, applications de bureau Electron','Maintenance du UI kit Angular partagé et de ses design tokens']},{h:'Choix technique et UI',i:['Des design tokens (couleurs, typographie, espacements) communs à Figma et au code','Des composants Figma alignés sur le UI kit Angular']},{h:'Résultat',i:['Un même UI kit Angular pour les plusieurs produits, cohérent entre Figma et le code']}],stack:['Figma','Angular','Electron','TypeScript','SCSS','Design tokens'],repos:[],vis:'work',cover:{src:'projects/ui-kit.webp',alt:'Du composant Figma au token puis au composant Angular, jusqu’au mur vidéo d’un produit de vidéoprotection'}}
+];
+const LIKES=[['Jeux vidéo','01'],['Démonter des consoles','02'],['Consoles rétro','03'],['Hiki, ma chatte','04'],['Le dev','05'],['Les méduses','06']];
+const byId=id=>SHEETS.find(s=>s.id===id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* Visuels ASCII des cartes sans image */
+const VIS={
+work:`┌─ figma ──────┐     ┌─ tokens ──────────────┐     ┌─ angular ────────┐
+│ ▢ Button     │ ──▶ │ <b>--color-primary</b>       │ ──▶ │ &lt;ui-button&gt;      │
+│ ▢ Input      │     │ <b>--space-4</b>  : 16px     │     │ &lt;ui-input&gt;       │
+│ ▢ Card       │     │ <b>--radius-m</b> : 16px     │     │ &lt;ui-card&gt;        │
+└──────────────┘     └───────────────────────┘     └──────────────────┘
+          plusieurs produits de vidéoprotection · 1 UI kit partagé`,
+hubtv:` ┌──────────────────────────┐
+ │   BUREAU  <b>──▶</b>  TV          │
+ │      ▢▢▢        ▶ Big Picture │
+ └────────────┬─────────────┘
+          ═══╧═══
+    <b>[ ⌂ ]</b> + <b>[ ▶ ]</b>   raccourci manette`,
+azura:`   ╭──────────────╮
+   │ ◔  humeur     │
+   │ ▁▂▄▆▅▃▄▆▇  │
+   │ ☐ routine    │
+   │ ✎ journal    │
+   │   <b>hors ligne</b> │
+   ╰──────────────╯`,
+cards:`  ┌──────┐┌──────┐┌──────┐
+  │ ♠  7 ││ ◆  3 ││ ✦  9 │
+  │      ││  <b>⚔</b>   ││      │
+  │ 7  ♠ ││ 3  ◆ ││ 9  ✦ │
+  └──────┘└──────┘└──────┘`,
+swatches:`  ███ ███ ███ ███
+  ▓▓▓ ▓▓▓ ▓▓▓ ▓▓▓
+  ░░░ ░░░ ░░░ ░░░
+  #0A1830  #2A73B0  #9CCBEA`,
+server:`  ┌─────────────────────┐
+  │ <b>GET</b>    /api/items  200 │
+  │ <b>POST</b>   /api/items  201 │
+  │ <b>PUT</b>    /api/items/:id  │
+  │ <b>DELETE</b> /api/items/:id  │
+  └─────────────────────┘`,
+boba:`      ╭──────╮        <b>tapis</b> ═══▶
+      │ ░░░░ │   base · sirop · topping
+      │ ▒▒▒▒ │   ○ ○ ○ ○ ○
+      │ ●●●● │
+      ╰──────╯   <b>Tranquille · Rush · Labo</b>`,
+routine:`   ☐ ─── ☐ ─── ☐
+   │     │     │
+  [ ♦ ] [ ♣ ] [ ♥ ]
+     <b>bientôt</b>`
+};
+
+function stackHtml(st){return st&&st.length?'<ul class="stack">'+st.slice(0,4).map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul>':'<span></span>';}
+function card(s,i){
+  const vis=s.cover?'<img src="'+esc(s.cover.src)+'" alt="" loading="lazy">':'<pre class="ascii" aria-hidden="true"><code>'+(VIS[s.vis]||VIS.routine)+'</code></pre>';
+  return '<button class="card" type="button" data-open="'+s.id+'"><div class="card__vis">'+vis+'<span class="card__tag mono">'+esc(s.kind)+'</span></div><div class="card__body"><h3 class="card__title">'+esc(s.title)+'</h3><p class="card__text">'+esc(s.tagline)+'</p><div class="card__foot">'+stackHtml(s.stack)+'<span class="go" aria-hidden="true">→</span></div></div><span class="sr-only">Lire la fiche</span></button>';
+}
+function row(s){return '<button class="row" type="button" data-open="'+s.id+'"><span class="mono">'+esc(s.kind)+'</span><span class="row__title">'+esc(s.title)+'</span><span class="row__text">'+esc(s.tagline)+'</span><span class="go" aria-hidden="true">→</span></button>';}
+
+document.getElementById('feat').innerHTML=['work','hubtv','azura'].map(byId).map(card).join('');
+document.getElementById('products').innerHTML=['icare-portal','moniteur-virtuel'].map(byId).map(row).join('');
+document.getElementById('exps').innerHTML=['jellyfish','boba-panic','tamagotchi','salon','routine-carte'].map(byId).map(card).join('');
+document.getElementById('archives').innerHTML=['iut-blagnac','league-of-stone','ganeshka','web-services'].map(byId).map(row).join('');
+document.getElementById('likes').innerHTML=LIKES.map(([l,n])=>'<li><span class="mono">'+n+'</span>'+esc(l)+'</li>').join('');
+const tk=['Angular','TypeScript','Electron','Figma','Design tokens','Three.js','Canvas','Web Audio','Android'];
+document.getElementById('ticker').innerHTML=[...tk,...tk].map(t=>'<span>'+t+'</span>').join('');
+
+/* Inclinaison + reflet des cartes */
+const fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
+document.querySelectorAll('.card').forEach(c=>{
+  c.addEventListener('pointermove',e=>{
+    const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+    c.style.setProperty('--mx',x*100+'%');c.style.setProperty('--my',y*100+'%');
+    if(fine&&!reduced()){c.style.setProperty('--ry',((x-.5)*5).toFixed(2)+'deg');c.style.setProperty('--rx',((.5-y)*5).toFixed(2)+'deg');}
+  });
+  c.addEventListener('pointerleave',()=>{c.style.setProperty('--rx','0deg');c.style.setProperty('--ry','0deg');});
+});
+
+/* Fiches */
+const dlg=document.getElementById('sheet'),inner=document.getElementById('sheetIn');
+let lastFocus=null;
+function sheetHtml(s){
+  let h='<div class="sheet__bar"><span class="mono">'+esc(s.kind==='about'?'À propos':s.kind)+'</span><button class="close" type="button" data-close aria-label="Fermer">✕</button></div>';
+  h+='<h2 id="sheet-t">'+esc(s.title)+'</h2><p class="sheet__tag">'+esc(s.tagline)+'</p>';
+  if(s.kind==='about')h+='<figure style="margin-top:24px;max-width:220px"><img class="av-day" src="me/lena-avatar.jpg" alt="Portrait illustré de Léna Simonin, cheveux roux, nœud bleu nuit, devant une méduse en pixels"><img class="av-night" src="me/lena-avatar-night.jpg" alt="Portrait illustré de Léna Simonin, version nuit"></figure>';
+  h+='<p class="sheet__sum">'+esc(s.summary)+'</p>';
+  if(s.cover)h+='<figure><img src="'+esc(s.cover.src)+'" alt="'+esc(s.cover.alt)+'"></figure>';
+  if(s.gallery)h+='<div class="gal">'+s.gallery.map(g=>'<figure'+(g.wide?' class="wide"':'')+'><img src="'+esc(g.src)+'" alt="'+esc(g.alt)+'" loading="lazy">'+(g.c?'<figcaption class="mono">'+esc(g.c)+'</figcaption>':'')+'</figure>').join('')+'</div>';
+  s.sections.forEach(sec=>{h+='<h3>'+esc(sec.h)+'</h3><ul class="items">'+sec.i.map(i=>'<li>'+esc(i)+'</li>').join('')+'</ul>';});
+  if(s.stack.length)h+='<h3>Stack</h3><ul class="stack">'+s.stack.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
+  if(s.repos.length||s.demo){h+='<h3>Liens</h3><div class="repos">';
+    if(s.demo)h+='<a class="repo" href="'+esc(s.demo)+'" target="_blank" rel="noopener">'+(s.id==='tamagotchi'||s.id==='boba-panic'?'Jouer à la démo':'Voir la démo')+' ↗</a>';
+    s.repos.forEach(r=>{h+=r.pub?'<a class="repo" href="'+esc(r.u)+'" target="_blank" rel="noopener">'+esc(r.l)+' ↗</a>':'<span class="repo repo--off">'+esc(r.l)+' · privé</span>';});
+    h+='</div>';}
+  return h;
+}
+const CV={
+ job:'Software Development Engineer',
+ summary:"Ingénieure logiciel chez <b>Hirsch Secure</b>, je conçois des solutions de <b>vidéosurveillance cloud</b> de bout en bout : back-end en PHP et C#, interfaces en Angular et Electron, dessinées d'abord dans Figma. Je maintiens aussi le UI kit Angular partagé par plusieurs produits de la holding.",
+ kpis:[['4+ ans','dans la vidéosurveillance cloud'],['3','solutions conçues chez Hirsch Secure'],['7','personnes encadrées en gestion de projet']],
+ focus:['Vidéosurveillance cloud','Hyperviseur & NVR',"Détection d'intrusion","Reconnaissance d'objets",'Dashboards temps réel','UI/UX'],
+ exp:[
+  {when:"sept. 2024 → aujourd'hui",head:true,org:'Hirsch Secure (ex-Prysm – Cossilys) · Vaulx-en-Velin',t:'Software Development Engineer',i:['Conception et développement de <b>3 solutions de vidéosurveillance</b> distinctes','Développement back-end en <b>PHP</b> et <b>C#</b>',"Développement des interfaces web en <b>Angular</b> et JavaScript, avec une attention portée à l'ergonomie"],c:['PHP','C#','Angular','JavaScript','jQuery','SCSS','CSS']},
+  {when:'2022 → sept. 2024',org:'Alternance · Mastère Ynov',t:'Alternante développeuse web',i:["Conception et déploiement de solutions 100 % cloud de vidéosurveillance, intégrant de la détection d'intrusion et de la reconnaissance d'objets","En charge de la maintenance et du développement web de l'hyperviseur cloud et des NVR au sein d'une équipe de 4 personnes (3 ingénieurs logiciels et 1 développeur web)",'Maintenance, amélioration et ajout de nouvelles fonctionnalités, et ponctuellement développement sur les NVR',"Conception de l'interface d'une solution de vidéosurveillance pour les banques (Angular, Sass, Windows)"],c:['PHP','JavaScript','jQuery','HTML','CSS','C','Linux','Angular','Sass']},
+  {when:'mai 2022 → juin 2022',org:'Université Lyon 1 · Service ICAP',t:'Stagiaire développeuse web',i:["Création d'un ETL permettant l'échange d'informations entre différentes plateformes","Création d'un tableau de bord en temps réel présentant les statistiques recueillies grâce aux autres plateformes"],c:['Chart.js','PHP','JavaScript']}],
+ team:[
+  {when:'2023 → 2024',org:'ChangeLab',t:"Application Volont'aide",role:'Cheffe de projet',p:"Projet incubé au sein de ChangeLab : une plateforme numérique qui facilite la recherche et la participation à des missions bénévoles, en mettant en relation les volontaires avec des organisations à but non lucratif ou des particuliers ayant besoin d'aide. J'ai dirigé une <b>équipe de 7 personnes</b>, de niveau Bachelor 2 à Mastère 2, tout au long de l'année.",c:['Flutter','Bloc','Node.js','Express']},
+  {when:'2023 → 2024',org:"Projet de fin d'études · équipe de 3",t:"PWA Let's Eat",role:'Développeuse web',p:"Une PWA qui permet aux personnes d'un même bâtiment de commander ensemble avant 10h30 et de n'avoir qu'un seul livreur. Le projet vise à réduire l'impact écologique et à promouvoir les petits restaurateurs locaux.",c:['React Native','Express','PWA']},
+  {when:'2021 → 2022',org:'IUT de Blagnac · équipe de 6',t:'Site de création de portfolio',role:'Développeuse web',p:"Pour le passage du DUT au BUT, un site qui permet aux élèves de concevoir leur portfolio au fur et à mesure de leurs projets scolaires et de valider leurs compétences sous forme gamifiée à la fin de chaque UE.",c:['React','Sass']}],
+ side:[['league-of-stone','Jeu de cartes au tour par tour : decks, combats et gestion de partie côté front.',['React','Sass']],['tamagotchi','Animal virtuel à nourrir, faire jouer et garder en vie, avec ses jauges qui baissent en temps réel.',['JavaScript','Python']],['bubble-tea-maker',"Mini-jeu où l'on compose son bubble tea : thé, lait, perles et toppings.",['JavaScript','SCSS']],['e-commerce','Boutique en ligne avec catalogue, fiches produits et panier.',['Vue.js']],['meteo-app','Application mobile qui affiche la météo du jour et les prévisions de la semaine.',['Flutter']],['portfolio-ami','Site portfolio statique réalisé pour un ami, rapide et facile à mettre à jour.',['Gatsby','React']]],
+ edu:[['2022 → 2024','Mastère expert développement web','Ynov, Lyon'],['2019 → 2022','Licence MIASHS','Université Mirail, Toulouse']],
+ stackNow:['PHP','C#','Angular','JavaScript'],stack:['jQuery','SCSS','React','Vue','C','Linux','Windows','Git','SVN','Figma','UI/UX'],
+ email:'lena.simonin7@gmail.com'
+};
+function chips(c){return '<ul class="stack">'+c.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';}
+function tl(list){return '<ol class="tl">'+list.map(e=>'<li'+(e.head?' class="head"':'')+'><p class="tl__meta mono"><span>'+esc(e.when)+'</span>'+(e.head?'<span class="tl__now">en poste</span>':'')+'<span>'+esc(e.org)+'</span></p><h4>'+esc(e.t)+'</h4>'+(e.role?'<p class="tl__role mono">rôle · '+esc(e.role)+'</p>':'')+(e.p?'<p class="tl__p">'+e.p+'</p>':'<ul class="items">'+e.i.map(x=>'<li>'+x+'</li>').join('')+'</ul>')+chips(e.c)+'</li>').join('')+'</ol>';}
+function cvHtml(){
+  let h='<div class="sheet__bar"><span class="mono">Curriculum vitæ</span><button class="close" type="button" data-close aria-label="Fermer">✕</button></div>';
+  h+='<div class="cv">';
+  h+='<div class="cv__head"><figure class="cv__av hud"><img class="av-day" src="me/lena-avatar.jpg" alt="Portrait illustré de Léna Simonin"><img class="av-night" src="me/lena-avatar-night.jpg" alt="Portrait illustré de Léna Simonin, version nuit"></figure><div><h2 id="sheet-t">Léna Simonin</h2><p class="sheet__tag">'+esc(CV.job)+'<span class="caret" aria-hidden="true">_</span></p></div></div>';
+  h+='<p class="sheet__sum">'+CV.summary+'</p>';
+  h+='<ul class="kpis">'+CV.kpis.map(([n,l])=>'<li><b>'+esc(n)+'</b><span>'+esc(l)+'</span></li>').join('')+'</ul>';
+  h+='<ul class="stack cv__focus">'+CV.focus.map(f=>'<li>#'+esc(f)+'</li>').join('')+'</ul>';
+  h+='<h3>Expériences</h3>'+tl(CV.exp);
+  h+='<h3>Projets en équipe</h3>'+tl(CV.team);
+  h+='<h3>Side projects</h3><ul class="cv__side">'+CV.side.map(([n,d,l])=>'<li><strong class="mono">'+esc(n)+'</strong><span>'+esc(d)+'</span><em class="mono">'+l.map(esc).join(' · ')+'</em></li>').join('')+'</ul>';
+  h+='<div class="cv__cols"><div><h3>Formation</h3><ul class="cv__edu">'+CV.edu.map(([y,t,w])=>'<li><span class="mono">'+esc(y)+'</span><strong>'+esc(t)+'</strong><span>'+esc(w)+'</span></li>').join('')+'</ul><h3>Langues</h3><p class="cv__lang">Anglais <span class="mono">B2</span></p></div>';
+  h+='<div><h3>Stack</h3><ul class="stack">'+CV.stackNow.map(x=>'<li class="now">'+esc(x)+'</li>').join('')+CV.stack.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><p class="mono" style="margin:10px 0 0;font-size:11px">En plein : utilisé au quotidien</p></div></div>';
+  h+='<h3>Contact</h3><div class="repos"><span class="repo cv__mail" id="cvMail">'+esc(CV.email)+'</span><button class="repo" type="button" id="cvCopy">Copier l’e-mail</button><a class="repo" href="'+GH+'" target="_blank" rel="noopener">github.com/Nihirii ↗</a><a class="repo" href="cv/lena-simonin-cv.pdf" target="_blank" rel="noopener">CV en PDF ↗</a><span class="repo repo--off">Lyon</span></div>';
+  return h+'</div>';
+}
+function selectMail(){const el=document.getElementById('cvMail');if(!el)return;const r=document.createRange();r.selectNodeContents(el);const sel=getSelection();sel.removeAllRanges();sel.addRange(r);}
+document.addEventListener('click',e=>{if(e.target.id!=='cvCopy')return;const b=e.target;const done=()=>{b.textContent='E-mail copié';setTimeout(()=>{b.textContent='Copier l’e-mail'},2000)};
+  try{navigator.clipboard.writeText(CV.email).then(done,selectMail);}catch(err){selectMail();}});
+function open(id,push){
+  const s=id==='cv'?null:byId(id);
+  if(id!=='cv'&&!s)return;
+  inner.innerHTML=id==='cv'?cvHtml():sheetHtml(s);
+  dlg.classList.toggle('sheet--wide',id==='cv');
+  if(!dlg.open){lastFocus=document.activeElement;dlg.showModal();}
+  dlg.scrollTop=0;inner.querySelector('[data-close]').focus();
+  if(push!==false&&location.hash!=='#'+id){try{history.replaceState(null,'','#'+id)}catch(e){}}
+}
+function close(){if(dlg.open)dlg.close();}
+dlg.addEventListener('close',()=>{try{if(location.hash)history.replaceState(null,'',location.pathname+location.search)}catch(e){};if(lastFocus&&lastFocus.isConnected)lastFocus.focus({preventScroll:true});});
+dlg.addEventListener('click',e=>{if(e.target===dlg||e.target.closest('[data-close]'))close();});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b){e.preventDefault();open(b.dataset.open);}});
+function fromHash(){const h=location.hash.slice(1);if(!h)return close();if(h==='projets'){close();return;}if(h==='cv'||byId(h))open(h,false);}
+addEventListener('hashchange',fromHash);fromHash();
+
+/* Salon 3D : ouvre directement la visite */
+document.querySelectorAll('[data-visit]').forEach(a=>a.addEventListener('click',()=>{try{localStorage.setItem('salon-mode','3d')}catch(e){}}));
+
+/* Thème : partagé avec le salon 3D (clé salon-night) */
+const root=document.documentElement,mq=matchMedia('(prefers-color-scheme: dark)');
+const themeBtn=document.getElementById('themeBtn'),themeLbl=document.getElementById('themeLbl');
+try{const n=localStorage.getItem('salon-night');if(n)root.dataset.theme=n==='1'?'dark':'light';}catch(e){}
+const isDark=()=>root.dataset.theme?root.dataset.theme==='dark':mq.matches;
+function syncTheme(){const d=isDark();themeLbl.textContent=d?'Abysses':'Surface';themeBtn.setAttribute('aria-pressed',String(d));themeBtn.setAttribute('aria-label',d?'Mode abysses (passer en surface)':'Mode surface (plonger dans les abysses)');}
+themeBtn.addEventListener('click',()=>{const d=!isDark();root.dataset.theme=d?'dark':'light';try{localStorage.setItem('salon-night',d?'1':'0')}catch(e){};syncTheme();});
+mq.addEventListener&&mq.addEventListener('change',syncTheme);syncTheme();
+
+/* Mouvement réduit */
+const motionBtn=document.getElementById('motionBtn'),rmq=matchMedia('(prefers-reduced-motion: reduce)');
+let calm=rmq.matches;
+function reduced(){return calm;}
+function syncMotion(){root.dataset.motion=calm?'reduced':'full';motionBtn.setAttribute('aria-pressed',String(calm));}
+motionBtn.addEventListener('click',()=>{calm=!calm;syncMotion();});syncMotion();
+
+/* Méduses ASCII volumétriques : champ de densité → rampe de caractères */
+const cv=document.createElement('canvas');document.getElementById('abyss').appendChild(cv);
+const ctx=cv.getContext('2d');
+const RAMP=" .·:-=+*#%@";
+let W=0,H=0,DPR=1,CW=7,CH=12,col='rgba(56,80,147,.22)',jellies=[];
+function readColor(){col=getComputedStyle(root).getPropertyValue('--jelly').trim()||col;}
+function setup(){
+  DPR=Math.min(2,devicePixelRatio||1);W=innerWidth;H=innerHeight;
+  cv.width=W*DPR;cv.height=H*DPR;cv.style.width=W+'px';cv.style.height=H+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);ctx.font='9px "JetBrains Mono",ui-monospace,monospace';ctx.textBaseline='top';
+  CW=ctx.measureText('M').width||5.4;CH=9.5;
+  const n=W<700?3:5,sizes=[22,14,28,11,17];
+  jellies=[];
+  for(let i=0;i<n;i++){const R=sizes[i%5]*(W<700?.8:1);jellies.push({R,x:(i+.5)/n*W+(Math.random()-.5)*W/(n*2),y:H*(.15+Math.random()*.9),ph:Math.random()*6.28,k:Math.random()*10,a:.45+R/38,vx:0});}
+  readColor();
+}
+function jellyRows(j,t){
+  const R=j.R,pulse=Math.sin(t*1.5+j.ph),sx=1+.10*pulse,Hb=Math.max(4,Math.round(R*CW*1.15/CH*(1-.07*pulse))),L=Math.round(R*2.1);
+  const cols=Math.round(R*2.6)+6,cx=cols/2,rows=Hb+L,out=[];
+  const T=[-.85,-.55,-.25,.05,.35,.65,.9];
+  for(let r=0;r<rows;r++){
+    let line='';
+    for(let c=0;c<cols;c++){
+      const ux=(c-cx)/(R*sx);let d=0;
+      if(r<=Hb){
+        const uy=(r-Hb)/Hb, h=1+uy, lip=.05*Math.sin(ux*9+t*3+j.k);
+        const hw=Math.pow(Math.sin(Math.min(1,h)*Math.PI/2),.85)*(1+.06*Math.max(0,h-.8));
+        const xn=ux/hw, q=xn*xn;
+        if(h>0&&q<1&&uy<.08+lip){
+          const z=Math.sqrt(1-q)*Math.sqrt(Math.min(1,h*2.5)), diff=Math.max(0,-.45*xn-.55*uy+.7*z), rim=Math.pow(1-z,1.6);
+          d=.85*rim+.22*diff*diff*diff;
+          const ang=Math.atan2(ux,-uy); d+=.28*Math.pow(Math.max(0,Math.cos(ang*9)),10)*(1-q);
+          const g=Math.abs(ux)-.3, gy=uy+.38; d+=.5*Math.max(0,1-(g*g+gy*gy)/.02);
+          d*=.9+.1*Math.sin(uy*14-t*2+ux*3);
+        }
+      }
+      if(r>=Hb-1){
+        const s=(r-Hb+1)/L;
+        for(let k=-1;k<=1;k+=2){const ax=k*.1+.22*Math.sin(s*7-t*2.2+j.k+k)*(.25+s), w=.07*(1-s*.5), dd=(ux-ax)/w; d=Math.max(d,(.6-.45*s)*Math.exp(-dd*dd)*(s<.55?1:Math.max(0,(1-s)/.45)));}
+        for(let i=0;i<T.length;i++){const x0=T[i]*sx*.95, ax=x0*(1+.1*s)+(.28*s+.04)*Math.sin(s*5-t*1.8+i*1.3+j.k), w=.035+.03*(1-s), dd=(ux-ax)/w; d=Math.max(d,.5*Math.pow(1-s,1.3)*Math.exp(-dd*dd));}
+      }
+      const idx=Math.min(RAMP.length-1,Math.max(0,Math.floor(d*(RAMP.length-1)+.15)));
+      line+=RAMP[idx];
+    }
+    out.push(line);
+  }
+  return {out,cols,pulse};
+}
+let tt=0,lastT=performance.now(),raf=0,frameN=0;
+function draw(now){
+  const dt=Math.min(.05,(now-lastT)/1000);lastT=now;
+  if(!reduced())tt+=dt;
+  if(++frameN%30===0)readColor();
+  ctx.clearRect(0,0,W,H);ctx.fillStyle=col;
+  const sc=scrollY*.06;
+  jellies.forEach(j=>{
+    const {out,cols,pulse}=jellyRows(j,tt);
+    if(!reduced()){j.y-=(6+j.R*.5+Math.max(0,-pulse)*14)*dt;if(j.y<-out.length*CH-40){j.y=H+20;j.x=Math.random()*W;}}
+    const x0=j.x+Math.sin(tt*.2+j.ph)*24-cols*CW/2, y0=j.y-sc*(j.R/15);
+    ctx.globalAlpha=Math.min(1,j.a);
+    for(let r=0;r<out.length;r++){const yy=y0+r*CH;if(yy<-CH||yy>H)continue;ctx.fillText(out[r],x0+Math.sin(r*.12-tt*1.2+j.ph)*r*.25,yy);}
+  });
+  ctx.globalAlpha=1;
+  if(!reduced()||frameN<2)raf=requestAnimationFrame(draw);else raf=0;
+}
+function kick(){if(!raf){lastT=performance.now();raf=requestAnimationFrame(draw);}}
+setup();kick();
+(document.fonts&&document.fonts.ready||Promise.resolve()).then(()=>{setup();});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{setup();kick();},200)});
+motionBtn.addEventListener('click',kick);
+themeBtn.addEventListener('click',()=>{readColor();kick();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;}else kick();});
+})();
+</script>
+</body>
+</html>

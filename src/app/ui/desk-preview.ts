@@ -21,14 +21,14 @@ import { HIKI } from '../scene/room-layout';
       <rect class="frame" x="58" y="34" width="38" height="50" rx="2" />
       <rect fill="#cbbcf6" x="63" y="39" width="28" height="40" />
       <rect class="frame" x="104" y="44" width="30" height="30" rx="2" />
-      <rect fill="#f2b8c6" x="109" y="49" width="20" height="20" />
+      <rect fill="#bbcbef" x="109" y="49" width="20" height="20" />
       <!-- écrans -->
       <g class="screen">
         <rect class="bezel" x="122" y="96" width="94" height="58" rx="4" />
         <rect class="glass" x="127" y="101" width="84" height="48" rx="2" />
         <rect fill="#9fc3f0" x="134" y="108" width="30" height="18" rx="2" opacity=".9" />
         <rect fill="#cbbcf6" x="168" y="108" width="36" height="8" rx="2" />
-        <rect fill="#f2b8c6" x="168" y="119" width="24" height="7" rx="2" />
+        <rect fill="#bbcbef" x="168" y="119" width="24" height="7" rx="2" />
         <rect class="bezel" x="164" y="154" width="10" height="20" />
       </g>
       <g class="screen">

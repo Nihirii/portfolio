@@ -86,5 +86,5 @@ import { Avatar } from './avatar';
 })
 export class SheetVisual {
   readonly visual = input.required<Visual>();
-  protected readonly swatches = ['#f2b8c6', '#cbbcf6', '#9fc3f0', '#bfe8d6', '#ffe08a', '#e7c9a6'];
+  protected readonly swatches = ['#bbcbef', '#cbbcf6', '#9fc3f0', '#bfe8d6', '#ffe08a', '#e7c9a6'];
 }

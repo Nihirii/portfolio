@@ -25,8 +25,8 @@ export function buildLavaLamp(
   const metal = mat('#c3c0cc', { metalness: 0.6, roughness: 0.35 });
   cyl(g, 0.04, 0.065, 0.1, metal, 0, 0, 0, 24);
   const liquid = new THREE.MeshStandardMaterial({
-    color: '#ff8fb8',
-    emissive: '#ff6fa0',
+    color: '#95b4f9',
+    emissive: '#769ef8',
     emissiveIntensity: 0.1,
     transparent: true,
     opacity: 0.55,
