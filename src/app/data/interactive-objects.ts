@@ -80,7 +80,7 @@ export const INTERACTIVE_OBJECTS: readonly InteractiveObject[] = [
   },
   {
     id: 'kallax-routine',
-    label: 'Carnet et cartes — Routine&Carte',
+    label: 'Carnet et cartes — Routine & Care',
     action: { type: 'sheet', sheetId: 'routine-carte' },
     primary: true,
     focus: { offset: [1.25, 0.25, 0.1] },
@@ -94,7 +94,7 @@ export const INTERACTIVE_OBJECTS: readonly InteractiveObject[] = [
   },
   {
     id: 'kallax-iut',
-    label: "Boîte d'archives — Portfolio IUT de Blagnac",
+    label: "Boîte d'archives — Créateur de portfolios gamifié (IUT de Blagnac)",
     action: { type: 'sheet', sheetId: 'iut-blagnac' },
     primary: true,
     focus: { offset: [1.25, -0.1, 0.1] },

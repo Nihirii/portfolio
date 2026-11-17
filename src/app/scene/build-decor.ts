@@ -87,7 +87,7 @@ export function buildCornerShelves(
       box(poro, 0.022, 0.005, 0.004, '#3a2a2a', s * 0.03, 0.09, -0.083, 0.002),
     );
     sph(poro, 0.022, '#7a3b3b', 0, 0.055, -0.078, 1, 0.8, 0.5);
-    sph(poro, 0.012, '#f08aa0', 0, 0.047, -0.086, 1, 0.6, 0.5);
+    sph(poro, 0.012, '#8faceb', 0, 0.047, -0.086, 1, 0.6, 0.5);
     dimLight(pointLight(g, 0xffd8a0, 0.05, 1.4, -0.16, levels[1] + 0.1, 0.16), 0.02, 0.7);
   }
 
