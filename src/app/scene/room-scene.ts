@@ -169,7 +169,7 @@ export class RoomScene {
     this.outline.edgeStrength = 3.2;
     this.outline.edgeGlow = 0.2;
     this.outline.edgeThickness = 1.2;
-    this.outline.visibleEdgeColor.set('#ff8fb3');
+    this.outline.visibleEdgeColor.set('#95b4f9');
     this.outline.hiddenEdgeColor.set('#b38fff');
     this.composer.addPass(this.outline);
     this.composer.addPass(new OutputPass());

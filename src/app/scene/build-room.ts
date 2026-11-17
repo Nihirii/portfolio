@@ -391,7 +391,7 @@ export function buildRoom(assets: DecorAssets = new Map()): RoomBuild {
   // deux écrans Acer
   (
     [
-      ['monitor-left', MONITORS.left, productMonitorTexture('Icare Portal', '#f2b8c6')],
+      ['monitor-left', MONITORS.left, productMonitorTexture('Icare Portal', '#bbcbef')],
       ['monitor-right', MONITORS.right, productMonitorTexture('Moniteur Virtuel', '#cbbcf6')],
     ] as const
   ).forEach(([id, m, tex]) => {
@@ -473,7 +473,7 @@ export function buildRoom(assets: DecorAssets = new Map()): RoomBuild {
     );
     paper.rotation.x = -Math.PI / 2;
     paper.receiveShadow = true;
-    box(g, 0.05, 0.006, 0.014, '#e38aa3', 0, 0.002, -0.12, 0.002); // trombone
+    box(g, 0.05, 0.006, 0.014, '#8ea7df', 0, 0.002, -0.12, 0.002); // trombone
     addHitBox(g, 0.22, 0.06, 0.29, 0, 0.02, 0);
     register('cv-sheet', g);
   }
@@ -607,15 +607,15 @@ export function buildRoom(assets: DecorAssets = new Map()): RoomBuild {
     ).forEach(([x, z]) => cyl(g, 0.02, 0.02, 0.03, '#1d1d22', x, 0, z, 8));
     (
       [
-        ['#f2b8c6', XA + 0.2, -0.12],
+        ['#bbcbef', XA + 0.2, -0.12],
         ['#fbf3e8', XA + 0.7, 0.1],
         ['#e2d8f7', XC + 0.35, -0.1],
-        ['#f2b8c6', XB - 0.25, 0.15],
+        ['#bbcbef', XB - 0.25, 0.15],
       ] as const
     ).forEach(([c, x, ry]) =>
       box(g, 0.42, 0.4, 0.13, c, x, 0.47, Z0 + 0.36, 0.09).rotation.set(-0.22, ry, 0),
     );
-    box(g, 0.8, 0.035, 0.55, '#f6c9d3', (XA + XC) / 2, 0.47, ZC - 0.38, 0.015);
+    box(g, 0.8, 0.035, 0.55, '#cbd8f4', (XA + XC) / 2, 0.47, ZC - 0.38, 0.015);
   }
 
   // rebord derrière le canapé + tablettes d'angle en chêne (build-decor.ts)
@@ -641,7 +641,7 @@ export function buildRoom(assets: DecorAssets = new Map()): RoomBuild {
     box(pad, 0.15, 0.03, 0.09, '#f2f2f2', 0, 0, 0, 0.02);
     sph(pad, 0.035, '#f2f2f2', -0.07, 0.02, 0.02, 1, 0.6, 1.2);
     sph(pad, 0.035, '#f2f2f2', 0.07, 0.02, 0.02, 1, 0.6, 1.2);
-    sph(pad, 0.012, '#e38aa3', 0.05, 0.035, -0.01);
+    sph(pad, 0.012, '#8ea7df', 0.05, 0.035, -0.01);
     sph(pad, 0.012, '#8f7ae6', -0.05, 0.035, -0.01);
     addHitBox(pad, 0.28, 0.1, 0.2, 0, 0.02, 0.01);
     register('egg-controller', pad);
@@ -729,8 +729,8 @@ export function buildRoom(assets: DecorAssets = new Map()): RoomBuild {
     box(g, 0.26, 0.06, 0.18, '#d9d6e3', 0, 0, 0, 0.012);
     box(g, 0.26, 0.012, 0.18, '#8f7ae6', 0, 0.06, 0, 0.004);
     box(g, 0.1, 0.05, 0.02, '#3b3b46', 0.02, 0.06, 0.02, 0.004); // cartouche
-    box(g, 0.085, 0.03, 0.022, '#f2b8c6', 0.02, 0.085, 0.02, 0.003); // étiquette
-    sph(g, 0.008, '#e38aa3', -0.09, 0.035, -0.091);
+    box(g, 0.085, 0.03, 0.022, '#bbcbef', 0.02, 0.085, 0.02, 0.003); // étiquette
+    sph(g, 0.008, '#8ea7df', -0.09, 0.035, -0.091);
     box(g, 0.03, 0.012, 0.004, '#6b6b78', -0.05, 0.03, -0.091, 0.002);
     addHitBox(g, 0.32, 0.16, 0.24, 0, 0.06, 0);
     register('egg-retro', g);
@@ -979,9 +979,9 @@ function buildProjectProp(g: THREE.Group, id: string, tickers: ((t: number) => v
   switch (id) {
     case 'kallax-cards': {
       // boîte de cartes + cartes en éventail
-      box(g, 0.18, 0.1, 0.13, '#5b3a8e', -0.02, 0, 0.02, 0.008);
+      box(g, 0.18, 0.1, 0.13, '#2a3f8e', -0.02, 0, 0.02, 0.008);
       box(g, 0.185, 0.03, 0.135, '#e9c46a', -0.02, 0.1, 0.02, 0.008);
-      const cards = ['#f2b8c6', '#9fc3f0', '#ffe08a', '#bfe8d6'];
+      const cards = ['#bbcbef', '#9fc3f0', '#ffe08a', '#bfe8d6'];
       cards.forEach((c, k) => {
         const card = box(g, 0.06, 0.085, 0.004, c, 0.08 + k * 0.012, 0.0, -0.08, 0.004);
         card.rotation.z = -0.35 + k * 0.2;
@@ -992,7 +992,7 @@ function buildProjectProp(g: THREE.Group, id: string, tickers: ((t: number) => v
     case 'kallax-console': {
       // console de poche en forme d'œuf, sur un petit socle
       cyl(g, 0.05, 0.06, 0.02, '#ffffff', 0, 0, 0, 20);
-      const egg = sph(g, 0.07, '#f2b8c6', 0, 0.1, 0, 1, 1.15, 0.55);
+      const egg = sph(g, 0.07, '#bbcbef', 0, 0.1, 0, 1, 1.15, 0.55);
       egg.rotation.x = 0.15;
       const screen = new THREE.Mesh(new THREE.PlaneGeometry(0.06, 0.05), glow('#cfeccf', 0.6));
       screen.position.set(0, 0.115, -0.04);
@@ -1014,11 +1014,11 @@ function buildProjectProp(g: THREE.Group, id: string, tickers: ((t: number) => v
       // classeur d'échantillons avec onglets de couleur
       const b = box(g, 0.05, 0.24, 0.2, '#e7c9a6', -0.03, 0, 0, 0.008);
       b.rotation.z = 0.08;
-      ['#f2b8c6', '#c8b4ef', '#9fc3f0', '#bfe8d6', '#ffe08a'].forEach((c, k) => {
+      ['#bbcbef', '#c8b4ef', '#9fc3f0', '#bfe8d6', '#ffe08a'].forEach((c, k) => {
         box(g, 0.04, 0.03, 0.022, c, 0.0, 0.03 + k * 0.042, -0.1, 0.004);
       });
       // échantillons sortis
-      ['#f6d6e2', '#cfe8ff'].forEach((c, k) => {
+      ['#d8e1f4', '#cfe8ff'].forEach((c, k) => {
         const s = box(g, 0.07, 0.004, 0.07, c, 0.1, 0.0 + k * 0.006, -0.02 + k * 0.03, 0.002);
         s.rotation.y = k * 0.4;
       });
@@ -1072,7 +1072,7 @@ function buildPlush(g: THREE.Group) {
   [-1, 1].forEach((s) => {
     sph(head, 0.012, eye, s * 0.032, 0.002, 0.066, 0.7, 1, 0.45);
     sph(head, 0.0035, mat('#ffffff', { roughness: 0.2 }), s * 0.03, 0.007, 0.071);
-    sph(head, 0.012, mat('#f7b8c9', { roughness: 0.8 }), s * 0.055, -0.02, 0.058, 1.2, 0.7, 0.35); // joues
+    sph(head, 0.012, mat('#bbcdf4', { roughness: 0.8 }), s * 0.055, -0.02, 0.058, 1.2, 0.7, 0.35); // joues
   });
   // petite bouche
   const mouth = new THREE.Mesh(
@@ -1149,7 +1149,7 @@ function buildKallaxExtras(
     box(g, 0.2, 0.012, 0.06, '#e9e6ef', 0, 0, 0.04, 0.003); // socle
     box(g, 0.22, 0.13, 0.014, '#16151b', 0, 0.02, 0.05, 0.005); // TV
     box(g, 0.2, 0.11, 0.002, '#4b3f8f', 0, 0.03, 0.042, 0); // écran
-    box(g, 0.05, 0.035, 0.001, '#f2b8c6', -0.055, 0.06, 0.0405, 0);
+    box(g, 0.05, 0.035, 0.001, '#bbcbef', -0.055, 0.06, 0.0405, 0);
     box(g, 0.05, 0.035, 0.001, '#cbbcf6', 0.0, 0.06, 0.0405, 0);
     box(g, 0.05, 0.035, 0.001, '#9fc3f0', 0.055, 0.06, 0.0405, 0);
     const pad = group(g);
@@ -1169,7 +1169,7 @@ function buildKallaxExtras(
     ph.rotation.x = 0.18;
     box(ph, 0.075, 0.15, 0.009, '#2a2638', 0, 0, 0, 0.008);
     box(ph, 0.066, 0.135, 0.001, '#f7f2fb', 0, 0.0075, -0.005, 0);
-    ['#f2b8c6', '#ffe08a', '#bfe8d6', '#9fc3f0', '#cbbcf6'].forEach((c, k) =>
+    ['#bbcbef', '#ffe08a', '#bfe8d6', '#9fc3f0', '#cbbcf6'].forEach((c, k) =>
       sph(ph, 0.0055, c, -0.024 + k * 0.012, 0.11, -0.006),
     );
     box(ph, 0.05, 0.004, 0.001, '#c8b4ef', 0, 0.085, -0.0058, 0);
@@ -1188,7 +1188,7 @@ function buildKallaxExtras(
       box(g, 0.05, 0.002, 0.004, '#b8a596', 0.005, 0.012, -0.03 + k * 0.02, 0),
     );
     for (let k = 0; k < 5; k++)
-      box(g, 0.06, 0.004, 0.085, k % 2 ? '#f2b8c6' : '#9fc3f0', 0.08, k * 0.004, 0.0, 0.003);
+      box(g, 0.06, 0.004, 0.085, k % 2 ? '#bbcbef' : '#9fc3f0', 0.08, k * 0.004, 0.0, 0.003);
   }
 
   // boîte d'archives avec étiquette

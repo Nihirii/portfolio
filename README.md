@@ -6,12 +6,21 @@
 
 
 
-Portfolio de **Léna Simonin**, développeuse front-end à Lyon, présenté sous la forme d’un salon 3D interactif.
+Portfolio de **Léna Simonin**, ingénieure logiciel à Lyon : une page 2D aux couleurs Creative Studio × Ocean Tech,
+et une visite 3D interactive de son salon.
 Construit avec **Angular 22**, **TypeScript** et **Three.js**.
 
 La disposition reprend la version « Idéal » de la maquette *Mon salon en 3D* : bureau avec les deux écrans
 Acer, KALLAX 5 × 5 éclairé, meuble TV IKEA blanc et TV TCL entre deux colonnes BESTÅ, canapé YULIN,
 coin cosy, hamac à chat sous la fenêtre… et Hiki.
+
+## Structure du site
+
+- `public/index.html` : la page d’accueil 2D, en HTML autonome (méduses ASCII, mode Abysses, fiches projets, CV).
+  Elle est copiée telle quelle à la racine du build.
+- `salon.html` : la visite 3D Angular (`src/index.html`, sortie renommée dans `angular.json`).
+  Le bouton « Retour au portfolio » ramène à `index.html`.
+- Les deux pages partagent le thème jour / nuit (`localStorage` : `salon-night`).
 
 ## Lancer le projet
 
@@ -57,7 +66,7 @@ npx ng build --base-href /portfolio/
 ```
 
 puis remplacer le contenu de la branche `gh-pages` par celui de `dist/portfolio/browser/`
-(avec un fichier vide `.nojekyll` et une copie de `index.html` nommée `404.html`).
+(avec un fichier vide `.nojekyll` et une copie de `index.html`, la page 2D, nommée `404.html`).
 
 Une fois GitHub Actions disponible sur le compte, le workflow `.github/workflows/deploy.yml`
 (lancement manuel, source Pages : *GitHub Actions*) peut remplacer cette étape.
