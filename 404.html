@@ -314,7 +314,7 @@ button.repo:hover{border-color:var(--accent);color:var(--accent)}
           </div>
         </div>
         <figure class="portrait" style="margin:0">
-          <div class="portrait__frame hud"><img class="av-day" src="me/lena-avatar.jpg" alt="Portrait illustré de Léna Simonin, cheveux roux, nœud bleu nuit, devant une méduse en pixels"><img class="av-night" src="me/lena-avatar-night.jpg" alt="Portrait illustré de Léna Simonin, version nuit"></div>
+          <div class="portrait__frame hud"><img class="av-day" src="me/lena-avatar.jpg" alt="Photo de Léna Simonin, cheveux roux, pull noir à col roulé"><img class="av-night" src="me/lena-avatar-night.jpg" alt="Photo de Léna Simonin, cheveux roux, pull noir à col roulé"></div>
           <span class="px px--a" aria-hidden="true"></span><span class="px px--b" aria-hidden="true"></span><span class="px px--c" aria-hidden="true"></span>
           <svg class="spark spark--a" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 13.4 10.6 24 12 13.4 13.4 12 24 10.6 13.4 0 12 10.6 10.6Z"/></svg>
           <svg class="spark spark--b" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 13.4 10.6 24 12 13.4 13.4 12 24 10.6 13.4 0 12 10.6 10.6Z"/></svg>
@@ -505,7 +505,7 @@ let lastFocus=null;
 function sheetHtml(s){
   let h='<div class="sheet__bar"><span class="mono">'+esc(s.kind==='about'?'À propos':s.kind)+'</span><button class="close" type="button" data-close aria-label="Fermer">✕</button></div>';
   h+='<h2 id="sheet-t">'+esc(s.title)+'</h2><p class="sheet__tag">'+esc(s.tagline)+'</p>';
-  if(s.kind==='about')h+='<figure style="margin-top:24px;max-width:220px"><img class="av-day" src="me/lena-avatar.jpg" alt="Portrait illustré de Léna Simonin, cheveux roux, nœud bleu nuit, devant une méduse en pixels"><img class="av-night" src="me/lena-avatar-night.jpg" alt="Portrait illustré de Léna Simonin, version nuit"></figure>';
+  if(s.kind==='about')h+='<figure style="margin-top:24px;max-width:220px"><img class="av-day" src="me/lena-avatar.jpg" alt="Photo de Léna Simonin, cheveux roux, pull noir à col roulé"><img class="av-night" src="me/lena-avatar-night.jpg" alt="Photo de Léna Simonin, cheveux roux, pull noir à col roulé"></figure>';
   h+='<p class="sheet__sum">'+esc(s.summary)+'</p>';
   if(s.cover)h+='<figure><img src="'+esc(s.cover.src)+'" alt="'+esc(s.cover.alt)+'"></figure>';
   if(s.gallery)h+='<div class="gal">'+s.gallery.map(g=>'<figure'+(g.wide?' class="wide"':'')+'><img src="'+esc(g.src)+'" alt="'+esc(g.alt)+'" loading="lazy">'+(g.c?'<figcaption class="mono">'+esc(g.c)+'</figcaption>':'')+'</figure>').join('')+'</div>';
@@ -540,7 +540,7 @@ function tl(list){return '<ol class="tl">'+list.map(e=>'<li'+(e.head?' class="he
 function cvHtml(){
   let h='<div class="sheet__bar"><span class="mono">Curriculum vitæ</span><button class="close" type="button" data-close aria-label="Fermer">✕</button></div>';
   h+='<div class="cv">';
-  h+='<div class="cv__head"><figure class="cv__av hud"><img class="av-day" src="me/lena-avatar.jpg" alt="Portrait illustré de Léna Simonin"><img class="av-night" src="me/lena-avatar-night.jpg" alt="Portrait illustré de Léna Simonin, version nuit"></figure><div><h2 id="sheet-t">Léna Simonin</h2><p class="sheet__tag">'+esc(CV.job)+'<span class="caret" aria-hidden="true">_</span></p></div></div>';
+  h+='<div class="cv__head"><figure class="cv__av hud"><img class="av-day" src="me/lena-avatar.jpg" alt="Photo de Léna Simonin"><img class="av-night" src="me/lena-avatar-night.jpg" alt="Photo de Léna Simonin, cheveux roux, pull noir à col roulé"></figure><div><h2 id="sheet-t">Léna Simonin</h2><p class="sheet__tag">'+esc(CV.job)+'<span class="caret" aria-hidden="true">_</span></p></div></div>';
   h+='<p class="sheet__sum">'+CV.summary+'</p>';
   h+='<ul class="kpis">'+CV.kpis.map(([n,l])=>'<li><b>'+esc(n)+'</b><span>'+esc(l)+'</span></li>').join('')+'</ul>';
   h+='<ul class="stack cv__focus">'+CV.focus.map(f=>'<li>#'+esc(f)+'</li>').join('')+'</ul>';
