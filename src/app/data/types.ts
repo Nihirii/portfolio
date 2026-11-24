@@ -20,6 +20,7 @@ export type SheetId =
   | 'salon'
   | 'routine-carte'
   | 'jellyfish'
+  | 'dojo'
   | 'iut-blagnac';
 
 /** Illustrations originales disponibles pour les fiches (dessinées en CSS/SVG). */

@@ -361,6 +361,38 @@ export const SHEETS: readonly Sheet[] = [
     objectId: 'kallax-salon',
   },
   {
+    id: 'dojo',
+    kind: 'project',
+    title: 'Ma-Aï Dôjô',
+    tagline: 'Le site du club de Ninjutsu Bujinkan Ma-Aï Dôjô, à Lyon : vitrine et espace adhérent',
+    summary:
+      'Le site du Bujinkan Ma-Aï Dôjô, un club de Ninjutsu à Lyon : horaires, tarifs, galerie et contact, ' +
+      'et un espace adhérent avec le programme technique, le suivi de progression et des documents réservés aux membres.',
+    sections: [
+      {
+        heading: 'Espace adhérent',
+        items: [
+          'Programme technique réservé aux adhérents, présenté comme une carte des techniques',
+          'Suivi du parcours : fiches « lues » et « travaillées », chaque élève ne voit que sa progression',
+          'Documents privés, lisibles seulement par les adhérents dont l’accès est actif',
+        ],
+      },
+      {
+        heading: 'Choix techniques',
+        items: [
+          'HTML, CSS et JavaScript sans framework, publié sur GitHub Pages',
+          'Supabase pour la connexion, la progression et le stockage, avec des règles d’accès en base',
+        ],
+      },
+    ],
+    stack: ['HTML', 'CSS', 'JavaScript', 'Supabase'],
+    repos: [{ label: 'Voir sur GitHub', url: repoUrl('dojo'), isPublic: true }],
+    demo: 'https://nihirii.github.io/dojo/',
+    visual: 'swatches',
+    cover: { src: 'projects/dojo.webp', alt: 'Accueil du site du Ma-Aï Dôjô' },
+    objectId: null,
+  },
+  {
     id: 'jellyfish',
     kind: 'project',
     title: 'Jellyfish',
