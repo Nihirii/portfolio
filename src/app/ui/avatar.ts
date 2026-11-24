@@ -8,7 +8,7 @@ import { PROFILE } from '../data/profile';
   template: `
     <span class="ring" [style.--size.px]="size()">
       @if (!failed()) {
-        <img [src]="src" [alt]="'Portrait illustré de ' + name" (error)="failed.set(true)" />
+        <img [src]="src" [alt]="'Photo de ' + name" (error)="failed.set(true)" />
       } @else {
         <span class="fallback" role="img" [attr.aria-label]="name">
           <span aria-hidden="true">🪼</span>

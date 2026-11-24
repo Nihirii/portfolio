@@ -34,7 +34,7 @@ import { SheetVisual } from './sheet-visual';
             <img
               class="portrait"
               [src]="profile.avatarPath"
-              alt="Portrait illustré de Léna Simonin"
+              alt="Photo de Léna Simonin"
               width="960"
               height="960"
               (error)="portraitFailed.set(true)"
